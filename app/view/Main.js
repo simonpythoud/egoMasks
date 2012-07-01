@@ -1,14 +1,18 @@
 Ext.define("EgoMasks.view.Main", {
-    extend: 'Ext.Panel',
+    extend: 'Ext.Carousel', //'Ext.Panel',
     requires: [
-    'Ext.TitleBar',
+    'EgoMasks.view.Overview',
+    'EgoMasks.view.Integration', 
+    'EgoMasks.view.Documentation'
     ],
     config: {
-        layout: 'card',
+        direction: 'vertical',
         items: [{
             xtype: 'overview' 
         },{
             xtype: 'integration'
+        },{
+            xtype: 'documentation'
         }]
     }
 });
