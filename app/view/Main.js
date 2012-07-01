@@ -3,7 +3,8 @@ Ext.define("EgoMasks.view.Main", {
     requires: [
     'EgoMasks.view.Overview',
     'EgoMasks.view.Integration', 
-    'EgoMasks.view.Documentation'
+    'EgoMasks.view.Documentation', 
+    'EgoMasks.view.Statistics'
     ],
     config: {
         direction: 'vertical',
@@ -13,6 +14,8 @@ Ext.define("EgoMasks.view.Main", {
             xtype: 'integration'
         },{
             xtype: 'documentation'
+        },{
+            xtype: 'statistics'
         }]
     }
 });

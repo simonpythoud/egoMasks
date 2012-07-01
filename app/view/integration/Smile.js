@@ -5,8 +5,7 @@ Ext.define("EgoMasks.view.integration.Smile", {
     'Ext.TitleBar',
     ],
     config: {
-        tabBarPosition: 'bottom',
-
+        layout: 'vbox',
         items: [
         {
             docked: 'top',

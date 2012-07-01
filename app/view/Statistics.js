@@ -1,5 +1,6 @@
 Ext.define("EgoMasks.view.Statistics", {
     extend: 'Ext.Panel',
+    xtype: 'statistics',
     requires: [
     'Ext.TitleBar'
     ],
