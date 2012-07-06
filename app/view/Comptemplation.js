@@ -10,7 +10,12 @@ Ext.define("EgoMasks.view.Contemplation", {
         items: [{   
             docked: 'top',
             xtype: 'titlebar',
-            title: 'Contemplation'   
+            title: 'Contemplation',
+            items: [{
+                ui: 'back',
+                text: 'Back',
+                align: 'left'
+            }]
         },{
             html: 'Contemplate the 21 Masks, one by one. <br />Then contemplate Joy, Love, Happiness'
         }]

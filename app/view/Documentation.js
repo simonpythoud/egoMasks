@@ -11,7 +11,12 @@ Ext.define("EgoMasks.view.Documentation", {
         items: [{
             docked: 'top',
             xtype: 'titlebar',
-            title: 'Documentation'
+            title: 'Documentation',
+            items: [{
+                ui: 'back',
+                text: 'Back',
+                align: 'left'
+            }]
         },{
             html: 'Learn how to practice the Emotional Integration'
         },{

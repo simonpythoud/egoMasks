@@ -2,8 +2,15 @@ Ext.application({
     name: 'EgoMasks',
 
     requires: [
-        'Ext.MessageBox'
+    'Ext.DateExtras',
+    'Ext.MessageBox'
     ],
+       
+    controllers: ["Overview", "Integration", "Main"],
+    
+    stores: ["Integrations"],
+       
+    models: ["Integration"],
 
     views: ['Main'],
 
@@ -42,6 +49,6 @@ Ext.application({
                     window.location.reload();
                 }
             }
-        );
+            );
     }
 });

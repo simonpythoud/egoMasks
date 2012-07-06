@@ -3,6 +3,7 @@ Ext.define("EgoMasks.view.Overview", {
     xtype: 'overview',
     requires: [
     'EgoMasks.view.overview.List',
+    'EgoMasks.view.overview.Detail',
     'Ext.TitleBar'
     ],
     config: {
@@ -12,22 +13,25 @@ Ext.define("EgoMasks.view.Overview", {
         items: [{
             docked: 'top',
             xtype: 'titlebar',
-            title: 'Emotional Integration', 
+            title: 'Emotional Integration',
             flex: 1
         },{
             xtype: 'button',
-            text: 'New Integration', 
-            flex: 1
-        },{
-            xtype: 'button',
-            text: 'Statistics', 
+            text: 'New Integration',
+            id: 'openNewIntegration',
             flex: 1
         },{
             xtype: 'overviewlist', 
+            flex: 2
+        },{
+            xtype: 'button',
+            text: 'Statistics',
+            id: 'openStatistics',
             flex: 1
         },{
             xtype: 'button',
-            text: 'Documentation', 
+            text: 'Documentation',
+            id: 'openDocumentation',
             flex: 1
         }]
     }

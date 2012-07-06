@@ -1,5 +1,5 @@
 Ext.define("EgoMasks.view.Integration", {
-    extend: 'Ext.Carousel', //'Ext.Panel',
+    extend: 'Ext.Panel',
     xtype: 'integration',
     requires: [
     'EgoMasks.view.integration.Information',
@@ -8,12 +8,13 @@ Ext.define("EgoMasks.view.Integration", {
     'Ext.TitleBar'
     ],
     config: {
+        layout: 'card',
         items: [{
-            xtype: 'integrationinfo'
+            xtype: 'information'
         },{
-            xtype: 'integrationmasks'
+            xtype: 'masks'
         },{
-            xtype: 'integrationsmile'
+            xtype: 'smile'
         }]
     }
 });

@@ -1,17 +1,18 @@
 Ext.define("EgoMasks.view.integration.Masks", {
     extend: 'Ext.Panel',
-    xtype: 'integrationmasks',
+    xtype: 'masks',
     requires: [
-    'Ext.TitleBar'
+    'Ext.TitleBar',
+    'Ext.Label'
     ],
     config: {
         layout: 'vbox',
         defaults: {
-            xtype: 'button',
-            flex: 1,
             defaults: {
-                xtype: 'button',
-                flex: 1
+                defaults: {
+                    xtype: 'button',
+                    flex: 1
+                }
             }
         },
         items: [{
@@ -19,110 +20,134 @@ Ext.define("EgoMasks.view.integration.Masks", {
             xtype: 'titlebar',
             title: 'Integration'
         },{ 
-            xtype: 'label', 
-            html: 'Denials'
-        },{
-            xtype: 'container', 
-            layout: 'hbox',
+            cls: 'masksGroup',
             items: [{ 
-                text: 'Fear'
-            }, { 
-                text: 'Shame'
+                xtype: 'label', 
+                html: 'Denials'
+            },{
+                layout: 'hbox',
+                items: [{ 
+                    text: 'Fear'
+                }, { 
+                    text: 'Shame'
+                },{ 
+                    text: 'Pride'
+                }]
             },{ 
-                text: 'Pride'
+                xtype: 'button',
+                text: 'Go to Emotions'
             }]
         },{ 
-            text: 'Go to Emotions'
-        },{ 
-            xtype: 'label', 
-            html: 'Emotions'
-        },{
-            xtype: 'container', 
-            layout: 'hbox',
-            items: [{  
-                text: 'Abandonment'
-            }, { 
-                text: 'Rejection'
-            },{ 
-                text: 'Guilt'
-            }]
-        },{ 
-            text: 'Go to Roles'
-        },{ 
-            xtype: 'label', 
-            html: 'Roles'
-        },{
-            xtype: 'container', 
-            layout: 'hbox',
+            cls: 'masksGroup',
             items: [{ 
-                text: 'Persecutor'
-            }, { 
-                text: 'Savior'
+                xtype: 'label', 
+                html: 'Emotions'
+            },{
+                layout: 'hbox',
+                items: [{  
+                    text: 'Abandonment'
+                }, { 
+                    text: 'Rejection'
+                },{ 
+                    text: 'Guilt'
+                }]
             },{ 
-                text: 'Victim'
+                xtype: 'button',
+                text: 'Go to Roles'
             }]
         },{ 
-            text: 'Go to Tools'
-        },{ 
-            xtype: 'label', 
-            html: 'Tools'
-        },{
-            xtype: 'container', 
-            layout: 'hbox',
+            cls: 'masksGroup',
             items: [{ 
-                text: 'Power'
-            }, { 
-                text: 'Control'
+                xtype: 'label', 
+                html: 'Roles'
+            },{
+                layout: 'hbox',
+                items: [{ 
+                    text: 'Persecutor'
+                }, { 
+                    text: 'Savior'
+                },{ 
+                    text: 'Victim'
+                }]
             },{ 
-                text: 'Manipulation'
+                xtype: 'button',
+                text: 'Go to Tools'
             }]
         },{ 
-            text: 'Go to Expectations'
-        },{ 
-            xtype: 'label', 
-            html: 'Expectations'
-        },{
-            xtype: 'container', 
-            layout: 'hbox',
+            cls: 'masksGroup',
             items: [{ 
-                text: 'Egocentrism'
-            }, { 
-                text: 'False Hope'
+                xtype: 'label', 
+                html: 'Tools'
+            },{
+                layout: 'hbox',
+                items: [{ 
+                    text: 'Power'
+                }, { 
+                    text: 'Control'
+                },{ 
+                    text: 'Manipulation'
+                }]
             },{ 
-                text: 'Over Certainty'
+                xtype: 'button',
+                text: 'Go to Expectations'
             }]
         },{ 
-            text: 'Go to Needs'
-        },{ 
-            xtype: 'label', 
-            html: 'Needs'
-        },{
-            xtype: 'container', 
-            layout: 'hbox',
+            cls: 'masksGroup',
             items: [{ 
-                text: 'Obtain'
-            }, { 
-                text: 'Accumulate'
+                xtype: 'label', 
+                html: 'Expectations'
+            },{
+                layout: 'hbox',
+                items: [{ 
+                    text: 'Egocentrism'
+                }, { 
+                    text: 'False Hope'
+                },{ 
+                    text: 'Over Certainty'
+                }]
             },{ 
-                text: 'Attain'
+                xtype: 'button',
+                text: 'Go to Needs'
             }]
         },{ 
-            text: 'Go to Attachements'
-        },{ 
-            xtype: 'label', 
-            html: 'Attachements'
-        },{
-            xtype: 'container', 
-            layout: 'hbox',
+            cls: 'masksGroup',
             items: [{ 
-                text: 'Physical'
-            }, { 
-                text: 'Emotional'
+                xtype: 'label', 
+                html: 'Needs'
+            },{
+                layout: 'hbox',
+                items: [{ 
+                    text: 'Obtain'
+                }, { 
+                    text: 'Accumulate'
+                },{ 
+                    text: 'Attain'
+                }]
             },{ 
-                text: 'Mental'
+                xtype: 'button',
+                text: 'Go to Attachements'
             }]
         },{ 
-            text: 'Go to Happy Faces'
+            cls: 'masksGroup',
+            items: [{ 
+                xtype: 'label', 
+                html: 'Attachements'
+            },{
+                layout: 'hbox',
+                items: [{ 
+                    text: 'Physical'
+                }, { 
+                    text: 'Emotional'
+                },{ 
+                    text: 'Mental'
+                }]
+            }]
+        },{ 
+            xtype: 'button',
+            text: 'Go to Happy Faces',
+            ui: 'action',
+            id: 'enjoyIntegration', 
+            docked: 'bottom'
         }]
     }
 });

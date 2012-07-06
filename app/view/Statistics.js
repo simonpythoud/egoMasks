@@ -10,7 +10,12 @@ Ext.define("EgoMasks.view.Statistics", {
         items: [{
             docked: 'top',
             xtype: 'titlebar',
-            title: 'Statistics'
+            title: 'Statistics',
+            items: [{
+                ui: 'back',
+                text: 'Back',
+                align: 'left'
+            }]
         }]
     }
 });
