@@ -158,7 +158,7 @@ $include-button-highlights: $include-highlights !default;
   $mask-height: $button-height;
   $mask-width: $mask-height/2.33;
 
-  $mask-offset: $button-radius - $overlap-width - $button-stroke-weight + $shadow-width - .02em;
+  $mask-offset: .4em - $overlap-width - $button-stroke-weight + $shadow-width - .02em;
 
   $tip-width: $mask-width - $mask-offset + $shadow-width;
 
