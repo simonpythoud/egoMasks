@@ -23,6 +23,8 @@ Ext.define('EgoMasks.controller.Overview', {
     }, 
 
     showIntegrationDetails: function(list, index, node, record){
+        list.deselectAll();
+        
         if(!this.detail)this.detail = Ext.Viewport.add({xtype:'detail'});
         
         var integrationDetails = [
