@@ -2,7 +2,7 @@
 
 $picker-row-height: 2.5em !default;
 $picker-active-border: .12em solid $active-color !default;
-$picker-sheet-radius: .4em !default;
+$picker-sheet-radius: .2em !default;
 $picker-title-color: darken(desaturate($base-color, 10%), 25%) !default;
 $picker-title-bg-color: lighten(saturate($base-color, 10%), 5%) !default;
 $picker-title-bg-gradient: $base-gradient !default;

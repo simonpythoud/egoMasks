@@ -17,3 +17,26 @@
 @include sencha-msgbox;
 
 // Your custom code goes here...
+
+.x-button-normal {
+    margin: .5em 0 ;
+}
+
+.x-container.masksGroup {
+    padding: 1em;
+    
+    .x-button-normal {
+        margin: .5em;
+    }
+    
+    .x-container {
+        .x-button-normal {
+            margin: .5em;
+            height: 5em;
+        }
+    }
+}
+
+.x-docked-bottom {
+    @include border-radius(0);
+}
