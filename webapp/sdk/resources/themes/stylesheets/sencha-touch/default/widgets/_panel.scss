@@ -14,7 +14,7 @@ $panel-border-radius: .3em;
     .x-msgbox.x-floating,
     .x-form.x-floating {
       padding: 6px;
-      @if $include-border-radius { @include border-radius($panel-border-radius); }
+      //@if $include-border-radius { @include border-radius($panel-border-radius); }
       -webkit-box-shadow: rgba(0,0,0,.8) 0 .2em .6em;
       @include background-gradient(darken($base-color, 40%), 'flat');
 
