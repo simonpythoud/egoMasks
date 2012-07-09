@@ -6,7 +6,7 @@ Ext.application({
     'Ext.MessageBox'
     ],
        
-    controllers: ["Overview", "Integration", "Main"],
+    controllers: ["Overview", "Integration", "Main", "Documentation"],
     
     stores: ["Integrations"],
        

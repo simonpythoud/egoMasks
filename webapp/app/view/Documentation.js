@@ -21,16 +21,20 @@ Ext.define("EgoMasks.view.Documentation", {
             html: 'Learn how to practice the Emotional Integration'
         },{
             xtype: 'button',
-            text: 'Introduction (PDF)'
+            text: 'Introduction to the Ego (PDF)',
+            id: 'openIntroductionToEgo'
         },{
             xtype: 'button',
-            text: 'Tree of integration (PDF)'
+            text: 'Tree of integration (PDF)',
+            id: 'openTreeOfIntegration'
         },{
             xtype: 'button',
-            text: 'Manual: Secret of the Ego (PDF)'
+            text: 'Emotional Integration (PDF)',
+            id: 'openEmotionalIntegration'
         },{
             xtype: 'button',
-            text: 'Video: EGO Roadmap (Youtube)'
+            text: 'Video: EGO Roadmap (Youtube)',
+            id: 'openEgoVideo'
         }]
     }
 });
