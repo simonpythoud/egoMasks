@@ -8,7 +8,7 @@ var mongo = require('mongoskin');// https://github.com/guileen/node-mongoskin
 
 var db = mongo.db('mongodb://heroku:PremaShanti@staff.mongohq.com:10045/app5749441?auto_reconnect=true');
 
-var app = module.exports = express.createServer();
+var app = express.createServer();
 
 var MemoryStore = express.session.MemoryStore;
 var sessionStore = new MemoryStore({
@@ -103,6 +103,6 @@ app.get('/integrations', function(req, res){
 
 var port = process.env.PORT || 3000;
 app.listen(port, function(){
-    console.log(app.address());
+    console.log(app);
     console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });
