@@ -3,8 +3,8 @@
  */
  
 var express = require('express');
-var mongo = require('mongoskin');
-// https://github.com/guileen/node-mongoskin
+var mongo = require('mongoskin');// https://github.com/guileen/node-mongoskin
+//var optimist = require("optimist");
 
 var db = mongo.db('mongodb://heroku:PremaShanti@staff.mongohq.com:10045/app5749441?auto_reconnect=true');
 
@@ -101,7 +101,7 @@ app.del('/integrations/:id', function(req, res){
     });
 });
 
-var port = process.env.PORT || 4000;
+var port = process.env.PORT || 3000;
 app.listen(port, function(){
     console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });
