@@ -65,43 +65,44 @@ app.get('/integrations', function(req, res){
     });
 });
 
-// Insert new integration
-app.post('/integrations', function(req, res){
-    db.collection('integrations').save().toArray(function(errors, posts){
-        console.log(posts);
-        res.send({
-            success: errors?false: true,
-            errors: errors,
-            integrations: posts // Give new id
-        });
-    });
-});
-
-// Update an existing integration
-app.put('/integrations', function(req, res){
-    db.collection('integrations').find().toArray(function(errors, posts){
-        console.log(posts);
-        res.send({
-            success: errors?false: true,
-            errors: errors,
-            integrations: posts
-        });
-    });
-});
-
-// Delete an integration
-app.del('/integrations/:id', function(req, res){
-    db.collection('integrations').find().toArray(function(errors, posts){
-        console.log(posts);
-        res.send({
-            success: errors?false: true,
-            errors: errors,
-            integrations: posts // Give deleted id
-        });
-    });
-});
+//// Insert new integration
+//app.post('/integrations', function(req, res){
+//    db.collection('integrations').save().toArray(function(errors, posts){
+//        console.log(posts);
+//        res.send({
+//            success: errors?false: true,
+//            errors: errors,
+//            integrations: posts // Give new id
+//        });
+//    });
+//});
+//
+//// Update an existing integration
+//app.put('/integrations', function(req, res){
+//    db.collection('integrations').find().toArray(function(errors, posts){
+//        console.log(posts);
+//        res.send({
+//            success: errors?false: true,
+//            errors: errors,
+//            integrations: posts
+//        });
+//    });
+//});
+//
+//// Delete an integration
+//app.del('/integrations/:id', function(req, res){
+//    db.collection('integrations').find().toArray(function(errors, posts){
+//        console.log(posts);
+//        res.send({
+//            success: errors?false: true,
+//            errors: errors,
+//            integrations: posts // Give deleted id
+//        });
+//    });
+//});
 
 var port = process.env.PORT || 3000;
 app.listen(port, function(){
+    console.log(app.address());
     console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });
