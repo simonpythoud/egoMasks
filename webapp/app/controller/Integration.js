@@ -27,17 +27,41 @@ Ext.define('EgoMasks.controller.Integration', {
     //called when the Application is launched, remove if not needed
     launch: function(app) {
         this.mainCtrl = app.getController('Main');
+        this.overviewCtrl = app.getController('Overview');
         this.integration = this.getIntegrationPanel();
         this.information = this.getInformationPanel();
         this.masks = this.getMasksPanel();
         this.smile = this.getSmilePanel();
+        
     },
     
     startIntegration: function(btn, event, e){
-        this.integration.setActiveItem(this.masks);
+        // Get value from the form
+        var values = this.information.getValues();
+        values.timestamp = (new Date()).valueOf();
+        
+        // Create a model of integration
+        this.currentIntegration = Ext.create('EgoMasks.model.Integration', values);
+        
+        if(validateData(this.currentIntegration)){
+            // Save the model
+            this.currentIntegration.save();
+        
+            // Add the model to the overview list store
+            this.overviewCtrl.store.add(this.currentIntegration);
+        
+            this.integration.setActiveItem(this.masks);
+        }
     },
     
     enjoyIntegration: function(btn, event, e){
+        // Set the duration of the integration
+        var duration = (new Date()).valueOf() - this.currentIntegration.get('timestamp');
+        this.currentIntegration.set('duration', duration);
+        
+        // Save the model
+        this.currentIntegration.save();
+        
         this.integration.setActiveItem(this.smile);
     },
     

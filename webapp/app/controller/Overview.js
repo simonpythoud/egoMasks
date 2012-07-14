@@ -30,7 +30,8 @@ Ext.define('EgoMasks.controller.Overview', {
         var integrationDetails = [
         '<b>Title</b>: ' + record.get('title'),
         '<b>Description</b>: ' + record.get('description'),
-        '<b>Date</b>: ' + Ext.Date.format(new Date(record.get('timestamp')), 'j/d/Y')
+        '<b>Date</b>: ' + Ext.Date.format(new Date(record.get('timestamp')), 'j/d/Y'),
+         '<b>Duration</b>: ' + Math.floor(record.get('duration')/60000) + 'min'
         ].join('<br />');
         
         this.detail.down('#htmlArea').setHtml(integrationDetails);

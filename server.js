@@ -3,16 +3,10 @@
  */
  
 var express = require('express');
-//var mysql = require('mysql');
-//
-//var client = mysql.createClient({
-//    'port':3306,
-//    'host':'us-mm-auto-sfo-01.cleardb.com',
-//    'user':'',
-//    'password':''
-//});
-//
-//client.query('USE heroku_');
+var mongo = require('mongoskin');
+// https://github.com/guileen/node-mongoskin
+
+var db = mongo.db('mongodb://heroku:PremaShanti@staff.mongohq.com:10045/app5749441?auto_reconnect=true');
 
 var app = module.exports = express.createServer();
 
@@ -59,7 +53,55 @@ app.configure('production', function(){
 // Enable the JSONP feature
 app.enable("jsonp callback");
 
-var port = process.env.PORT || 3000;
+// Get integrations
+app.get('/integrations', function(req, res){
+    db.collection('integrations').find().toArray(function(errors, posts){
+        console.log(posts);
+        res.send({
+            success: errors?false: true,
+            errors: errors,
+            integrations: posts
+        });
+    });
+});
+
+// Insert new integration
+app.post('/integrations', function(req, res){
+    db.collection('integrations').save().toArray(function(errors, posts){
+        console.log(posts);
+        res.send({
+            success: errors?false: true,
+            errors: errors,
+            integrations: posts // Give new id
+        });
+    });
+});
+
+// Update an existing integration
+app.put('/integrations', function(req, res){
+    db.collection('integrations').find().toArray(function(errors, posts){
+        console.log(posts);
+        res.send({
+            success: errors?false: true,
+            errors: errors,
+            integrations: posts
+        });
+    });
+});
+
+// Delete an integration
+app.del('/integrations/:id', function(req, res){
+    db.collection('integrations').find().toArray(function(errors, posts){
+        console.log(posts);
+        res.send({
+            success: errors?false: true,
+            errors: errors,
+            integrations: posts // Give deleted id
+        });
+    });
+});
+
+var port = process.env.PORT || 4000;
 app.listen(port, function(){
     console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });

@@ -12,17 +12,19 @@ Ext.define('EgoMasks.view.overview.Detail', {
         // Set the width and height of the panel
         width: (Ext.os.deviceType == 'Phone') ? '95%' : 300,
         height: (Ext.os.deviceType == 'Phone') ? '70%' : 200,
-
-        layout: 'fit',
+        
+        scrollable: {
+            direction: 'vertical',
+            directionLock: true
+        },
         
         items: [{
-            xtype: 'titlebar',
-            title: 'Detail of the integration',
-            docked: 'top'
-        },{
-            id: 'htmlArea',
-            setStyleHtmlContent: true, 
-            html: ''
-        }]
+                xtype: 'titlebar',
+                title: 'Detail of the integration',
+                docked: 'top'
+            },{
+                id: 'htmlArea',
+                setStyleHtmlContent: true
+            }]
     }
 });

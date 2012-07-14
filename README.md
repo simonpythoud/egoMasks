@@ -22,3 +22,7 @@ Animation avec les bonhommes sourires bougeant dans le corps.
 Adapter les boutons pour téléphone
 
 Quotes of the day in quizz part
+
+Models: Mask, Integration, MasksGroup
+
+Stores: Masks, Integrations, MasksGroups
