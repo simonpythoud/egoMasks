@@ -43,7 +43,7 @@ Ext.define('EgoMasks.controller.Integration', {
         // Create a model of integration
         this.currentIntegration = Ext.create('EgoMasks.model.Integration', values);
         
-        if(validateData(this.currentIntegration)){
+        if(this.validateData(this.currentIntegration)){
             // Save the model
             this.currentIntegration.save();
         
