@@ -91,7 +91,8 @@
         "resources/images",
         "resources/icons",
         "resources/startup",
-		"resources/docs"
+		"resources/docs",
+		"resources/data"
     ],
 
     /**
