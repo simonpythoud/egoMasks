@@ -21,15 +21,15 @@ Ext.define("EgoMasks.view.Documentation", {
             html: 'Learn how to practice the Emotional Integration'
         },{
             xtype: 'button',
-            text: 'Introduction to the Ego (PDF)',
+            text: 'Introduction to the Ego',
             id: 'openIntroductionToEgo'
         },{
             xtype: 'button',
-            text: 'Tree of integration (PDF)',
+            text: 'Tree of integration',
             id: 'openTreeOfIntegration'
         },{
             xtype: 'button',
-            text: 'Emotional Integration (PDF)',
+            text: 'Emotional Integration',
             id: 'openEmotionalIntegration'
         },{
             xtype: 'button',

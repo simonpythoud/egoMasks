@@ -3,7 +3,8 @@ Ext.define("EgoMasks.view.integration.Information", {
     xtype: 'information',
     requires: [
     'Ext.TitleBar',
-    'Ext.form.FieldSet'
+    'Ext.form.FieldSet', 
+    'Ext.field.DatePicker'
     ],
     config: {
         items: [{
@@ -32,6 +33,11 @@ Ext.define("EgoMasks.view.integration.Information", {
                 label: 'Description',
                 placeHolder: 'Enter the description of what you want to integrate (optional)',
                 autoCapitalize: true
+            },{
+                xtype: 'datepickerfield',
+                name: 'timestamp',
+                label: 'Date',
+                value: new Date()
             }]
         },{
             xtype: 'button',

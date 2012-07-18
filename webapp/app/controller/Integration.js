@@ -12,6 +12,9 @@ Ext.define('EgoMasks.controller.Integration', {
             completeIntegrationBtn: 'integration smile button#completeIntegration'
         },
         control: {
+            integrationPanel: {
+                activate: 'newIntegration'
+            },
             startIntegrationBtn: {
                 tap: 'startIntegration'
             }, 
@@ -33,6 +36,15 @@ Ext.define('EgoMasks.controller.Integration', {
         this.masks = this.getMasksPanel();
         this.smile = this.getSmilePanel();
         
+    },
+    
+    newIntegration: function(){
+        // Reset fields
+        this.information.setValues({
+            title: '',
+            description: '',
+            timestamp: new Date()
+        });
     },
     
     startIntegration: function(btn, event, e){

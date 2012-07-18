@@ -10,7 +10,7 @@ Ext.application({
     
     stores: ["Integrations"],
        
-    models: ["Integration"],
+    models: ["Integration", "MaskGroup", "Mask", "Document"],
 
     views: ['Main'],
 
