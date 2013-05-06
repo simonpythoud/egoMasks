@@ -66,7 +66,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>arrogance.png</icon>
         </mask>
         <mask>
             <mask_id>2</mask_id>
@@ -75,7 +75,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>pride.png</icon>
         </mask>
         <mask>
             <mask_id>3</mask_id>
@@ -84,7 +84,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>shame.png</icon>
         </mask>
         <mask>
             <mask_id>4</mask_id>
@@ -93,7 +93,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>fear.png</icon>
         </mask>
         <mask>
             <mask_id>5</mask_id>
@@ -102,7 +102,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>abandon.png</icon>
         </mask>
         <mask>
             <mask_id>6</mask_id>
@@ -111,7 +111,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>reject.png</icon>
         </mask>
         <mask>
             <mask_id>7</mask_id>
@@ -120,7 +120,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>guilt.png</icon>
         </mask>
         <mask>
             <mask_id>8</mask_id>
@@ -129,7 +129,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>persecutor.png</icon>
         </mask>
         <mask>
             <mask_id>9</mask_id>
@@ -138,7 +138,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>victim.png</icon>
         </mask>
         <mask>
             <mask_id>10</mask_id>
@@ -147,7 +147,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>savior.png</icon>
         </mask>
         <mask>
             <mask_id>11</mask_id>
@@ -156,7 +156,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>power.png</icon>
         </mask>
         <mask>
             <mask_id>12</mask_id>
@@ -165,7 +165,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>control.png</icon>
         </mask>
         <mask>
             <mask_id>13</mask_id>
@@ -174,7 +174,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>manipulation.png</icon>
         </mask>
         <mask>
             <mask_id>14</mask_id>
@@ -183,7 +183,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>obtain.png</icon>
         </mask>
         <mask>
             <mask_id>15</mask_id>
@@ -192,7 +192,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>accumulate.png</icon>
         </mask>
         <mask>
             <mask_id>16</mask_id>
@@ -201,7 +201,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>attain.png</icon>
         </mask>
         <mask>
             <mask_id>17</mask_id>
@@ -210,7 +210,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>falsehope.png</icon>
         </mask>
         <mask>
             <mask_id>18</mask_id>
@@ -219,7 +219,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>overcertainty.png</icon>
         </mask>
         <mask>
             <mask_id>19</mask_id>
@@ -228,7 +228,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>egocentrism.png</icon>
         </mask>
         <mask>
             <mask_id>20</mask_id>
@@ -237,7 +237,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>identity.png</icon>
         </mask>
         <mask>
             <mask_id>21</mask_id>
@@ -246,7 +246,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>relationship.png</icon>
         </mask>
         <mask>
             <mask_id>22</mask_id>
@@ -255,7 +255,7 @@
             <description></description>
             <example></example>
             <color></color>
-            <icon></icon>
+            <icon>possession.png</icon>
         </mask>
     </masks>
 </root>

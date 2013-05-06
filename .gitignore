@@ -15,3 +15,7 @@ node_modules
 npm-debug.log
 .DS_Store
 android-sdk
+
+.idea
+
+EgoMasks.iml
