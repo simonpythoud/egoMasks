@@ -120,11 +120,7 @@ app.post('/integrations', function(req, res){
                 title: title,
                 description: description,
                 timestamp: timestamp,
-                user_id: user._id,
-                comments: '',
-                feedback: '',
-                duration: ''
-
+                user_id: user._id
             },
             function(errors, result) {
 
@@ -170,53 +166,36 @@ app.post('/integrations', function(req, res){
   **/
 app.put('/integrations/:id', function(req, res){
 
-    var option = req.body.option, // "comment" || "feedback"
-    errors = [],
-    id = db.bson_serializer.ObjectID.createFromHexString(req.params.id);
-
-    if(option == "comment"){
+    if(req.body.comment || req.body.feedback || req.body.duration){
 
         db.collection('integrations').update(
-            {_id: id},
+            {_id: db.bson_serializer.ObjectID.createFromHexString(req.params.id)},
             { $set: {
-                comment: req.body.comment
+                comment: req.body.comment,
+                feedback: req.body.feedback,
+                duration: req.body.duration
             }},
-            function(err, result) {
-                if (err) errors.push(err);
-            }
-        );
-    } else if(option == "feedback" ) {
-
-        db.collection('integrations').update(
-            {_id: id},
-            { $set: {
-                feedback: req.body.feedback
-            }},
-            function(err, result) {
-                if (err)  errors.push(err);
+            function(errors, result) {
+                res.send({
+                    success: errors? false: true,
+                    errors: errors
+                });
             }
         );
     } else {
-        errors.push('No matching option ("comment" || "feedback")');
+        res.send({
+            success: false,
+            errors: ['Should contains value for comment or/and feedback)']
+        });
     }
-
-    res.send({
-        success: errors?false: true,
-        errors: errors
-    });
-
-
 });
 
 // Delete an integration
 app.del('/integrations/:id', function(req, res){
-    var errors = [];
-
-    db.collection('integrations').remove({_id: db.bson_serializer.ObjectID.createFromHexString(req.params.id)}, function(err, result) {
-        if (err) errors.push("Not deleted: "+ err);
+    db.collection('integrations').remove({_id: db.bson_serializer.ObjectID.createFromHexString(req.params.id)}, function(errors, result) {
         res.send({
             success: errors?false: true,
-            errors: errors
+            errors: ["Not deleted: "+ errors]
         });
     });
 });
