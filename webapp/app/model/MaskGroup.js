@@ -3,7 +3,7 @@ Ext.define('EgoMasks.model.Mask', {
     
     config: {
         fields: [{
-            name: 'id', 
+            name: '_id', 
             type: 'int'
         },{
             name: 'name', 

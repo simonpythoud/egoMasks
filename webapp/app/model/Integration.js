@@ -4,12 +4,18 @@ Ext.define('EgoMasks.model.Integration', {
     config: {
         fields: [{
             name: 'id', 
-            type: 'int'
+            type: 'string'
         },{
             name: 'title', 
             type: 'string'
         },{
             name: 'description', 
+            type: 'string'
+        },{
+            name: 'comment', 
+            type: 'string'
+        },{
+            name: 'feedback', 
             type: 'string'
         },{
             name: 'timestamp', 

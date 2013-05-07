@@ -3,7 +3,7 @@ Ext.define('EgoMasks.model.MaskGroup', {
     
     config: {
         fields: [{
-            name: 'id', 
+            name: '_id', 
             type: 'int'
         },{
             name: 'group_id', 
