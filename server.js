@@ -43,7 +43,7 @@ app.configure(function(){
     }));
     app.use(express.methodOverride());
     app.use(app.router);
-    app.use(express.static(__dirname + '/webapp')); //'/webapp/build/production'
+    app.use(express.static(__dirname + '/webapp/build/EgoMasks/production')); // '/webapp/build/EgoMasks/production'
     app.set('view engine', 'jade');
 });
 
@@ -76,14 +76,17 @@ app.get('/integrations', function(req, res){
 // Get a specific integration
 // Provide full details with maybe stats (TODO)
 app.get('/integrations/:id', function(req, res){
-    db.collection('integrations').findOne({_id:  db.bson_serializer.ObjectID.createFromHexString(req.params.id)}, function(errors, results){
-        console.log(results);
-        res.send({
-            success: errors?false: true,
-            errors: errors,
-            integrations: results
-        });
-    });
+    db.collection('integrations').findOne(
+        {_id:  db.bson_serializer.ObjectID.createFromHexString(req.params.id)},
+        function(errors, results){
+            console.log(results);
+            res.send({
+                success: errors?false: true,
+                errors: errors,
+                integrations: results
+            });
+        }
+    );
 });
 
 //
@@ -192,12 +195,15 @@ app.put('/integrations/:id', function(req, res){
 
 // Delete an integration
 app.del('/integrations/:id', function(req, res){
-    db.collection('integrations').remove({_id: db.bson_serializer.ObjectID.createFromHexString(req.params.id)}, function(errors, result) {
-        res.send({
-            success: errors?false: true,
-            errors: ["Not deleted: "+ errors]
-        });
-    });
+    db.collection('integrations').remove(
+        {_id: db.bson_serializer.ObjectID.createFromHexString(req.params.id)},
+        function(errors, result) {
+            res.send({
+                success: errors?false: true,
+                errors: ["Not deleted: "+ errors]
+            });
+        }
+    );
 });
 
 
@@ -240,14 +246,17 @@ app.get('/maskIntegrations', function(req, res){
 
 // Get all masks integration for a specific integration
 app.get('/maskIntegrations/:id', function(req, res){
-    db.collection('maskIntegrations').findOne({_id:  db.bson_serializer.ObjectID.createFromHexString(req.params.id), user_id: user._id},function(errors, results){
-        console.log(results);
-        res.send({
-            success: errors?false: true,
-            errors: errors,
-            masks: results
-        });
-    });
+    db.collection('maskIntegrations').findOne(
+        {_id:  db.bson_serializer.ObjectID.createFromHexString(req.params.id), user_id: user._id},
+        function(errors, results){
+            console.log(results);
+            res.send({
+                success: errors?false: true,
+                errors: errors,
+                masks: results
+            });
+        }
+    );
 });
 
 // Add a mask integrations

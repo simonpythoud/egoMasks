@@ -1,18 +1,42 @@
+// DO NOT DELETE - this directive is required for Sencha Cmd packages to work.
+//@require @packageOverrides
+
+//<debug>
+Ext.Loader.setPath({
+    'Ext': 'touch/src',
+    'EgoMasks': 'app'
+});
+//</debug>
+
 Ext.application({
     name: 'EgoMasks',
 
     requires: [
-    'Ext.DateExtras',
-    'Ext.MessageBox'
+        'Ext.DateExtras',
+        'Ext.MessageBox'
+    ],
+    
+    controllers: [
+        'Overview', 
+        'Integration', 
+        'Main', 
+        'Documentation'
+    ],
+    
+    stores: [
+        'Integrations'
     ],
        
-    controllers: ["Overview", "Integration", "Main", "Documentation"],
-    
-    stores: ["Integrations"],
-       
-    models: ["Integration", "MaskGroup", "Mask", "Document"],
+    models: [
+        'Integration', 
+        'MaskGroup', 
+        'Mask', 
+        'Document'
+    ],
 
-    views: ['Main'],
+    views: [
+        'Main'
+    ],
 
     icon: {
         '57': 'resources/icons/Icon.png',
@@ -49,6 +73,6 @@ Ext.application({
                     window.location.reload();
                 }
             }
-            );
+        );
     }
 });

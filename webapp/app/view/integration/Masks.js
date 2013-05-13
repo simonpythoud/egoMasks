@@ -37,9 +37,6 @@ Ext.define("EgoMasks.view.integration.Masks", {
                             },{ 
                                 text: 'Pride'
                             }]
-                    },{ 
-                        xtype: 'button',
-                        text: 'Go to Emotions'
                     }]
             },{ 
                 cls: 'masksGroup',
@@ -55,9 +52,6 @@ Ext.define("EgoMasks.view.integration.Masks", {
                             },{ 
                                 text: 'Guilt'
                             }]
-                    },{ 
-                        xtype: 'button',
-                        text: 'Go to Roles'
                     }]
             },{ 
                 cls: 'masksGroup',
@@ -73,9 +67,6 @@ Ext.define("EgoMasks.view.integration.Masks", {
                             },{ 
                                 text: 'Victim'
                             }]
-                    },{ 
-                        xtype: 'button',
-                        text: 'Go to Tools'
                     }]
             },{ 
                 cls: 'masksGroup',
@@ -91,9 +82,6 @@ Ext.define("EgoMasks.view.integration.Masks", {
                             },{ 
                                 text: 'Manipulation'
                             }]
-                    },{ 
-                        xtype: 'button',
-                        text: 'Go to Expectations'
                     }]
             },{ 
                 cls: 'masksGroup',
@@ -109,9 +97,6 @@ Ext.define("EgoMasks.view.integration.Masks", {
                             },{ 
                                 text: 'Over Certainty'
                             }]
-                    },{ 
-                        xtype: 'button',
-                        text: 'Go to Needs'
                     }]
             },{ 
                 cls: 'masksGroup',
@@ -127,9 +112,6 @@ Ext.define("EgoMasks.view.integration.Masks", {
                             },{ 
                                 text: 'Attain'
                             }]
-                    },{ 
-                        xtype: 'button',
-                        text: 'Go to Attachements'
                     }]
             },{ 
                 cls: 'masksGroup',
