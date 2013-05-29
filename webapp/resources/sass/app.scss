@@ -5,7 +5,8 @@
 @import 'sencha-touch/default/all';
 
 // Examples of using the icon mixin:
-// @include icon('user');
+@include icon('play');
+@include icon('pause');
 
 .x-body {
     /*background-color: #000;*/

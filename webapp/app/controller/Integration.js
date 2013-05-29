@@ -33,6 +33,9 @@ Ext.define('EgoMasks.controller.Integration', {
             completeIntegrationBtn: {
                 tap: 'completeIntegration'
             }, 
+            integrationBoxMaskName: {
+                tap: 'switchTimer'
+            },
             masksListBtns: {
                 tap: 'selectMask'
             }
@@ -43,6 +46,8 @@ Ext.define('EgoMasks.controller.Integration', {
     launch: function(app) {
         this.currentIntegrationRecord = null;
         this.currentSelectedMaskRecord = null;
+        
+        this.integrationInProgress = false;
         
         this.mainCtrl = app.getController('Main');
         this.overviewCtrl = app.getController('Overview');
@@ -151,26 +156,86 @@ Ext.define('EgoMasks.controller.Integration', {
     },
     
     selectMask: function(btn, event, e){
+        this.stopTimer();
         this.currentSelectedMaskRecord = btn.getRecord();
         
         this.integrationBoxMaskName.setText(this.currentSelectedMaskRecord.get('name'));
         //With tpl: this.integrationBoxMaskName.setRecord(maskRecord);
         
-        if(true){} // If the maskIntegrationRecord exist (same mask id, same integration id), continue with it
-        else{} // Else, create a new one   
+        if(true){ /// If the maskIntegrationRecord exist (same mask id, same integration id), continue with it
+            this.elapsedTime = 0; // Set the real elapsed time if exist
+        } 
+        else{
+            // Else, create a new one  
+            this.elapsedTime = 0; // Set the real elapsed time if exist
+        }  
         
         
         // Set MaskIntegration record to the timer and clicker
-        this.integrationBoxMaskTimer.setText('00\'01"');
         this.integrationBoxMaskClicker.setText('1x');
+        
+        this.stopTimer();
+        this.startTimer();
         
     },
     
-    startTimer: function(){},
-    
-    stopTimer: function(){},
+    startTimer: function(previousTime){
+        this.integrationInProgress = true;
+        this.integrationBoxMaskTimer.setIconCls('play');
+
+        this.updateTimer();
         
-    updateTimer: function(){},
+        var that = this;      
+        var start = new Date().getTime() - this.elapsedTime;
+        
+        this.updateInterval = setInterval(function(){
+                that.elapsedTime = (new Date().getTime() - start);  
+                that.updateTimer();
+        },100);
+    },
+    
+    stopTimer: function(){
+        this.integrationInProgress = false;
+        this.integrationBoxMaskTimer.setIconCls('pause');
+        clearInterval(this.updateInterval);
+    },
+    
+    switchTimer: function(){
+        // Can switch Timer only if a mask is selected
+        if(this.currentSelectedMaskRecord == null) {return}
+        
+        if(this.integrationInProgress){
+            this.stopTimer();
+        } else {
+            this.startTimer();
+        }
+    },
+    
+
+        
+    updateTimer: function(){
+        
+        // remove ms from elapsed time
+        var e = this.elapsedTime/1000;
+        var seconds = Math.round(e % 60);
+        
+        // remove seconds 
+        e /= Math.round(60);
+        var minutes = Math.round(e % 60);
+        
+        // remove minutes
+        e /= Math.round(60);
+        var hours = Math.round(e % 24);
+        
+        var timerString = 
+                (hours? hours + ":" : '') + 
+                ((minutes <= 9) ? '0'+ minutes : minutes) + ":" + 
+                ((seconds <= 9) ? '0'+ seconds : seconds) + "\"";
+        
+        this.integrationBoxMaskTimer.setText('Timer: ' + timerString);
+    },
+    
+    
     
     validateData: function(record) {
         var errors = record.validate();

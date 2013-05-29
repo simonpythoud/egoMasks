@@ -18,7 +18,7 @@ Ext.define("EgoMasks.view.integration.IntegrationBox", {
                     items: [{
                             xtype: 'button', 
                             flex: 3,
-                            html: 'Timer: 17\'28"' , 
+                            html: 'Timer: --:--"' , 
                             //tpl: new Ext.XTemplate('Timer: {time}', { }),
                             id: 'maskTimer', 
                             disabled: true
