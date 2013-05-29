@@ -43,8 +43,7 @@ Ext.define("EgoMasks.view.integration.Information", {
             xtype: 'button',
             ui: 'action',
             text: 'Start the integration',
-            id: 'startIntegration',
-            docked: 'bottom'
+            id: 'startIntegration'
         }]
     }
 });

@@ -19,8 +19,7 @@ Ext.define("EgoMasks.view.integration.Smile", {
             xtype: 'button',
             ui: 'action',
             text: 'I am happy. Go on the main screen',
-            id: 'completeIntegration',
-            docked: 'bottom'
+            id: 'completeIntegration'
         }]
     }
 });

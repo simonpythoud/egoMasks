@@ -1,9 +1,9 @@
-Ext.define('EgoMasks.model.MaskGroup', {
+Ext.define('EgoMasks.model.Mask', {
     extend: 'Ext.data.Model',
     
     config: {
         fields: [{
-            name: '_id', 
+            name: 'id', 
             type: 'int'
         },{
             name: 'group_id', 
@@ -14,6 +14,8 @@ Ext.define('EgoMasks.model.MaskGroup', {
         },{
             name: 'description', 
             type: 'string'
-        }]
+        }], 
+    
+        associations: { type: 'hasOne', model: 'EgoMasks.model.MaskGroup'}
     }
 });

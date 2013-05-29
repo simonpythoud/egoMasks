@@ -3,7 +3,7 @@ Ext.define('EgoMasks.model.MaskIntegration', {
     
     config: {
         fields: [{
-            name: '_id', 
+            name: 'id', 
             type: 'string'
         },{
             name: 'integration_id', 
@@ -12,11 +12,18 @@ Ext.define('EgoMasks.model.MaskIntegration', {
             name: 'mask_id', 
             type: 'int'
         },{
+            name: 'maskName', 
+            type: 'string'
+        },{
             name: 'comment', 
             type: 'string', 
             defaultValue: ''
         },{
             name: 'duration', //ms
+            type: 'int',
+            defaultValue: 0
+        },{
+            name: 'click', //x (1x, 2x, 3x, ...)
             type: 'int',
             defaultValue: 0
         }],

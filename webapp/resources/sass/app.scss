@@ -7,25 +7,39 @@
 // Examples of using the icon mixin:
 // @include icon('user');
 
+.x-body {
+    /*background-color: #000;*/
+}
 
-// CUSTOM EGOMASKS CSS START -----------------
-
-.x-button-normal {
-    margin: .3em 0 ;
+.x-button-normal, .x-button-action {
+    border-radius: 0;
 }
 
 .x-container.masksGroup {
-    padding: .5em;
-    
     .x-button-normal {
-        margin: .3em;
+        margin: 0 .1em .3em .1em;
+        height: 5em;
+        border: 2px solid #fff;
     }
-    
-    .x-container {
-        .x-button-normal {
-            margin: .3em;
-            height: 5em;
-        }
+}
+
+
+// Vertical text for the masks group name
+
+.verticalGroupName {
+    width: 10em;
+    line-height: 5em;
+    height: 5em;
+    background-color: #000;
+    border: 2px solid #fff;
+    color: #fff;
+    text-align: center;
+
+    .x-innerhtml {
+        text-transform: uppercase;
+
+        font-size: .8em;
+        font-weight: bold;
     }
 }
 
@@ -108,6 +122,20 @@ html, body {
     100% {
         opacity: 0.8
     }
+}
+
+
+// Hack to scroll with the mouse in the browser
+.browserScroll .x-scroll-container {
+    overflow: auto;
+}
+
+#integrationBox {
+    height: 15em
+}
+
+.masksList {
+    margin: 5px 2px;
 }
 
 // CUSTOM EGOMASKS CSS END -----------------

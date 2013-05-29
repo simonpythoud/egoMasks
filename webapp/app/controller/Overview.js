@@ -17,7 +17,7 @@ Ext.define('EgoMasks.controller.Overview', {
     launch: function(app) {
         this.list = this.getOverviewList();
         
-        this.store = Ext.create('EgoMasks.store.Integrations');
+        this.store = Ext.getStore('Integrations');
         
         this.list.setStore(this.store);
     }, 

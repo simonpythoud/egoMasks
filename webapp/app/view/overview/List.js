@@ -5,13 +5,14 @@ Ext.define('EgoMasks.view.overview.List', {
     ],
 
     config: {
-        cls: 'overview-list',
+        cls: 'overview-list ' + scrollCls,
+        scrollable: mobileScrollBool,
 
         store: null,
         
         emptyText: 'The list of your integration will be displayed here.',
         deferEmptyText: false,
-        
+
         itemTpl: [
         '<div class="integration_title ellipsis">{title}</div>',
         '<div class="integration_time">{elapsedTime}</div>',

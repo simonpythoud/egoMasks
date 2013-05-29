@@ -1,5 +1,8 @@
 Ext.define('EgoMasks.controller.Integration', {
     extend: 'Ext.app.Controller',
+    requires: [
+        'EgoMasks.store.Masks'
+    ],
     
     config: {
         refs: {
@@ -9,7 +12,13 @@ Ext.define('EgoMasks.controller.Integration', {
             smilePanel: 'integration smile',
             startIntegrationBtn: 'integration information button#startIntegration',
             enjoyIntegrationBtn: 'integration masks button#enjoyIntegration',
-            completeIntegrationBtn: 'integration smile button#completeIntegration'
+            completeIntegrationBtn: 'integration smile button#completeIntegration',
+            integrationBox: 'integrationBox',
+            integrationBoxMaskName: 'integrationBox #maskName',
+            integrationBoxMaskTimer: 'integrationBox #maskTimer',
+            integrationBoxMaskClicker: 'integrationBox #maskClicker',
+            masksList: 'masksList', 
+            masksListBtns: 'masksList button' // all buttons in the masks list
         },
         control: {
             integrationPanel: {
@@ -23,12 +32,18 @@ Ext.define('EgoMasks.controller.Integration', {
             }, 
             completeIntegrationBtn: {
                 tap: 'completeIntegration'
+            }, 
+            masksListBtns: {
+                tap: 'selectMask'
             }
         }
     },
     
     //called when the Application is launched, remove if not needed
     launch: function(app) {
+        this.currentIntegrationRecord = null;
+        this.currentSelectedMaskRecord = null;
+        
         this.mainCtrl = app.getController('Main');
         this.overviewCtrl = app.getController('Overview');
         this.integration = this.getIntegrationPanel();
@@ -36,6 +51,59 @@ Ext.define('EgoMasks.controller.Integration', {
         this.masks = this.getMasksPanel();
         this.smile = this.getSmilePanel();
         
+        this.integrationBoxMaskName = this.getIntegrationBoxMaskName();
+        this.integrationBoxMaskTimer = this.getIntegrationBoxMaskTimer();
+        this.integrationBoxMaskClicker = this.getIntegrationBoxMaskClicker();
+        
+        this.masksList = this.getMasksList();
+        
+        this.maskGroupsStore = Ext.getStore('MaskGroups');
+        this.masksStore = Ext.getStore('Masks');
+
+        
+        this.maskGroupsStore.on('load', this.createMasksList, this);
+        this.masksStore.on('load', this.createMasksList, this);
+    },
+    
+    createMasksList: function(){
+        // Control that both stores are loaded 
+        if(!this.maskGroupsStore.isLoaded() || !this.masksStore.isLoaded())return;
+        
+        var that = this;
+        this.maskGroupsStore.each(function (groupRecord, groupIndex, groupLength) {
+
+            // get all the masks in this group
+            var maskRecords = that.masksStore.getGroups(groupRecord.get('id')).children;
+
+            var groupPanel = Ext.create('Ext.Panel', {
+                cls: 'masksGroup',
+                layout: 'hbox',
+                items: [{ 
+                    xtype: 'label', 
+                    html: groupRecord.get('name'),
+                    cls: 'verticalGroupName', 
+                    record: groupRecord
+                },{
+                    layout: 'hbox',
+                    flex: 1,
+                    items: [
+                        that.createMask(maskRecords[0]), 
+                        that.createMask(maskRecords[1]), 
+                        that.createMask(maskRecords[2])
+                    ]
+                }]
+            });
+            
+            that.masksList.add(groupPanel);
+        });
+    },
+    
+    createMask: function(record){
+        return Ext.create('Ext.Button', {        
+            text: record.get('name'),
+            record: record, 
+            flex: 1
+        });
     },
     
     newIntegration: function(){
@@ -81,6 +149,28 @@ Ext.define('EgoMasks.controller.Integration', {
         this.mainCtrl.gotoOverview();
         this.integration.setActiveItem(this.information);
     },
+    
+    selectMask: function(btn, event, e){
+        this.currentSelectedMaskRecord = btn.getRecord();
+        
+        this.integrationBoxMaskName.setText(this.currentSelectedMaskRecord.get('name'));
+        //With tpl: this.integrationBoxMaskName.setRecord(maskRecord);
+        
+        if(true){} // If the maskIntegrationRecord exist (same mask id, same integration id), continue with it
+        else{} // Else, create a new one   
+        
+        
+        // Set MaskIntegration record to the timer and clicker
+        this.integrationBoxMaskTimer.setText('00\'01"');
+        this.integrationBoxMaskClicker.setText('1x');
+        
+    },
+    
+    startTimer: function(){},
+    
+    stopTimer: function(){},
+        
+    updateTimer: function(){},
     
     validateData: function(record) {
         var errors = record.validate();

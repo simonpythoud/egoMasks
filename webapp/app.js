@@ -24,7 +24,9 @@ Ext.application({
     ],
     
     stores: [
-        'Integrations'
+        'Integrations', 
+        'Masks', 
+        'MaskGroups'
     ],
        
     models: [
