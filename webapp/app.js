@@ -33,6 +33,7 @@ Ext.application({
         'Integration', 
         'MaskGroup', 
         'Mask', 
+        'MaskIntegration',
         'Document'
     ],
 

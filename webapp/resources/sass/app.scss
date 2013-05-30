@@ -132,7 +132,13 @@ html, body {
 }
 
 #integrationBox {
-    height: 15em
+    height: 15em;
+
+    #maskName {
+        .x-button-label  {
+            font-size: 2.2em;
+        }
+    }
 }
 
 .masksList {

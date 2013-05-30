@@ -63,7 +63,7 @@ app.enable("jsonp callback");
 
 // Get integrations
 app.get('/integrations', function(req, res){
-    console.log("Integration + user: " + user + " user id: " + user.id)
+    console.log("Integration + user id: " + user._id)
     db.collection('integrations').find({user_id: user._id}).toArray(function(errors, results){
         res.send({
             success: errors?false: true,
@@ -126,12 +126,11 @@ app.post('/integrations', function(req, res){
                 user_id: user._id
             },
             function(errors, result) {
-
                 res.send({
                     success: errors?false: true,
                     errors: errors,
-                    integration: {
-                        id: result._id
+                    integrations: {
+                        id: result[0]._id
                     }
                 });
             }
@@ -233,19 +232,19 @@ app.get('/masks/:id', function(req, res){
 });
 
 // Get all masks integration
-app.get('/maskIntegrations', function(req, res){
+app.get('/maskintegrations', function(req, res){
     db.collection('maskIntegrations').find({user_id: user._id}).toArray(function(errors, results){
         console.log(results);
         res.send({
             success: errors?false: true,
             errors: errors,
-            masks: results
+            maskintegrations: results
         });
     });
 });
 
 // Get all masks integration for a specific integration
-app.get('/maskIntegrations/:id', function(req, res){
+app.get('/maskintegrations/:id', function(req, res){
     db.collection('maskIntegrations').findOne(
         {_id:  db.bson_serializer.ObjectID.createFromHexString(req.params.id), user_id: user._id},
         function(errors, results){
@@ -253,17 +252,17 @@ app.get('/maskIntegrations/:id', function(req, res){
             res.send({
                 success: errors?false: true,
                 errors: errors,
-                masks: results
+                maskintegrations: results
             });
         }
     );
 });
 
 // Add a mask integrations
-app.post('/maskIntegrations', function(req, res){
+app.post('/maskintegrations', function(req, res){
 
-    var mask = req.body.mask; // mask is a maskintegration instance
-    if(mask && mask.mask_id && mask.integration_id){
+    var mask = req.body; 
+    if(mask.mask_id && mask.integration_id){
         db.collection('maskIntegrations').insert(
             {
                 integration_id: mask.integration_id,
@@ -276,8 +275,8 @@ app.post('/maskIntegrations', function(req, res){
                 res.send({
                     success: errors?false: true,
                     errors: errors,
-                    mask: {
-                        id: result._id
+                    maskintegrations: {
+                        id: result[0]._id
                     }
                 });
             }
@@ -294,25 +293,23 @@ app.post('/maskIntegrations', function(req, res){
 
 // Update a mask integration with mask integration id
 // Used to update the duration
-app.put('/maskIntegrations/:id', function(req, res){
-    var mask = req.body.mask; // mask is a maskintegration instance
-    if(mask && mask.duration){
+app.put('/maskintegrations/:id', function(req, res){
+    var mask = req.body;
+    if(mask.duration){
         db.collection('maskIntegrations').update(
             {
                 _id:   db.bson_serializer.ObjectID.createFromHexString(req.params.id) // mask_integration id
             },
             {
-                duration: mask.duration,
-                comment: mask.comment
+                $set: {
+                    duration: mask.duration,
+                    comment: mask.comment
+                }
             },
-            function(errors, result) {
-
+            function(errors) {
                 res.send({
                     success: errors?false: true,
-                    errors: errors,
-                    mask: {
-                        id: result._id
-                    }
+                    errors: errors
                 });
             }
         );

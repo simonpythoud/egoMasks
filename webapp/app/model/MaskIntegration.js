@@ -12,9 +12,6 @@ Ext.define('EgoMasks.model.MaskIntegration', {
             name: 'mask_id', 
             type: 'int'
         },{
-            name: 'maskName', 
-            type: 'string'
-        },{
             name: 'comment', 
             type: 'string', 
             defaultValue: ''

@@ -18,15 +18,32 @@ Ext.define("EgoMasks.view.integration.IntegrationBox", {
                     items: [{
                             xtype: 'button', 
                             flex: 3,
-                            html: 'Timer: --:--"' , 
-                            //tpl: new Ext.XTemplate('Timer: {time}', { }),
                             id: 'maskTimer', 
-                            disabled: true
+                            disabled: true,
+                            html: 'Timer: --:--"' , 
+                            tpl: new Ext.XTemplate('<span class="x-button-label">Timer: {[this.formatedDuration(values.duration)]}"</span>', {
+                                formatedDuration: function(duration){
+                                    var e = duration/1000; // remove ms from elapsed time
+                                    var seconds = Math.floor(e % 60);
+                                    
+                                    e /= 60; // remove seconds 
+                                    var minutes = Math.floor(e % 60);
+
+                                    e /= 60; // remove minutes
+                                    var hours = Math.floor(e % 24);
+
+                                    var timerString = 
+                                            (hours? hours + ":" : '') + 
+                                            ((minutes <= 9) ? '0'+ minutes : minutes) + ":" + 
+                                            ((seconds <= 9) ? '0'+ seconds : seconds);
+
+                                    return timerString;
+                               }
+                            })
                     },{
                             xtype: 'button', 
                             flex: 1,
-                            html: 'Clicked: 1x',
-                            //tpl: new Ext.XTemplate('Timer: {click}', { }),
+                            tpl: new Ext.XTemplate('Click: {click}x'),
                             id: 'maskClicker', 
                             disabled: true
                     }]

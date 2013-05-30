@@ -44,10 +44,6 @@ Ext.define('EgoMasks.controller.Integration', {
     
     //called when the Application is launched, remove if not needed
     launch: function(app) {
-        this.currentIntegrationRecord = null;
-        this.currentSelectedMaskRecord = null;
-        
-        this.integrationInProgress = false;
         
         this.mainCtrl = app.getController('Main');
         this.overviewCtrl = app.getController('Overview');
@@ -144,8 +140,9 @@ Ext.define('EgoMasks.controller.Integration', {
         var duration = (new Date()).valueOf() - this.currentIntegration.get('timestamp');
         this.currentIntegration.set('duration', duration);
         
-        // Save the model
+        // Save the integration and maskIntegration models
         this.currentIntegration.save();
+        this.miRecord.save();
         
         this.integration.setActiveItem(this.smile);
     },
@@ -157,40 +154,57 @@ Ext.define('EgoMasks.controller.Integration', {
     
     selectMask: function(btn, event, e){
         this.stopTimer();
-        this.currentSelectedMaskRecord = btn.getRecord();
         
-        this.integrationBoxMaskName.setText(this.currentSelectedMaskRecord.get('name'));
-        //With tpl: this.integrationBoxMaskName.setRecord(maskRecord);
+        // Save previous record if exist
+        if(this.miRecord){this.miRecord.save()}
         
-        if(true){ /// If the maskIntegrationRecord exist (same mask id, same integration id), continue with it
-            this.elapsedTime = 0; // Set the real elapsed time if exist
-        } 
-        else{
-            // Else, create a new one  
-            this.elapsedTime = 0; // Set the real elapsed time if exist
+        var maskRecord = btn.getRecord();
+        
+        var miStore = this.currentIntegration.maskIntegration();
+        
+        // Try to find a mask integration record. If not exist, create it
+        var existingMiRecordIndex = miStore.find('mask_id', maskRecord.get('id'));
+        
+        if(existingMiRecordIndex >= 0){
+            this.miRecord = miStore.getAt(existingMiRecordIndex);
+            // Set elapsed time from record
+            this.elapsedTime = this.miRecord.get('duration'); 
+            this.miRecord.set('click', this.miRecord.get('click')+1);
+        
+        } else{
+            // Create a mask integration record
+            this.miRecord = miStore.add({
+                mask_id: maskRecord.get('id'),
+                comment: '...',
+                duration: 0,
+                click: 1
+            })[0];
+            
+            this.elapsedTime = 0;
         }  
         
+        // Save the model
+        this.miRecord.save();
         
-        // Set MaskIntegration record to the timer and clicker
-        this.integrationBoxMaskClicker.setText('1x');
+        this.integrationBoxMaskName.setText(maskRecord.get('name'));
+
+        this.integrationBoxMaskClicker.setRecord(this.miRecord);
+        this.integrationBoxMaskTimer.setRecord(this.miRecord);
         
-        this.stopTimer();
+
         this.startTimer();
         
     },
     
-    startTimer: function(previousTime){
+    startTimer: function(){
         this.integrationInProgress = true;
         this.integrationBoxMaskTimer.setIconCls('play');
 
-        this.updateTimer();
-        
         var that = this;      
-        var start = new Date().getTime() - this.elapsedTime;
+        var start = new Date().getTime() - this.miRecord.get('duration');
         
         this.updateInterval = setInterval(function(){
-                that.elapsedTime = (new Date().getTime() - start);  
-                that.updateTimer();
+                that.miRecord.set('duration', (new Date().getTime() - start));
         },100);
     },
     
@@ -202,7 +216,7 @@ Ext.define('EgoMasks.controller.Integration', {
     
     switchTimer: function(){
         // Can switch Timer only if a mask is selected
-        if(this.currentSelectedMaskRecord == null) {return}
+        if(this.integrationInProgress == null) {return}
         
         if(this.integrationInProgress){
             this.stopTimer();
@@ -210,32 +224,6 @@ Ext.define('EgoMasks.controller.Integration', {
             this.startTimer();
         }
     },
-    
-
-        
-    updateTimer: function(){
-        
-        // remove ms from elapsed time
-        var e = this.elapsedTime/1000;
-        var seconds = Math.round(e % 60);
-        
-        // remove seconds 
-        e /= Math.round(60);
-        var minutes = Math.round(e % 60);
-        
-        // remove minutes
-        e /= Math.round(60);
-        var hours = Math.round(e % 24);
-        
-        var timerString = 
-                (hours? hours + ":" : '') + 
-                ((minutes <= 9) ? '0'+ minutes : minutes) + ":" + 
-                ((seconds <= 9) ? '0'+ seconds : seconds) + "\"";
-        
-        this.integrationBoxMaskTimer.setText('Timer: ' + timerString);
-    },
-    
-    
     
     validateData: function(record) {
         var errors = record.validate();

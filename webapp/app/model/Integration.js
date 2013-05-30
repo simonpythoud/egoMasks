@@ -26,6 +26,10 @@ Ext.define('EgoMasks.model.Integration', {
             type: 'int',
             defaultValue: 0
         }],
+        validations: [
+            {type: 'presence',  field: 'title'}
+        ],
+        hasMany: {model: 'EgoMasks.model.MaskIntegration', name: 'maskIntegration'},
         proxy: {
             type: 'rest',
             url: baseUrl + '/integrations',
