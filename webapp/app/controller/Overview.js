@@ -4,11 +4,19 @@ Ext.define('EgoMasks.controller.Overview', {
     config: {
         refs: {
             overviewList: 'overview list',
-            overviewDetailInner: 'overview detail #htmlArea'
+            historyList: 'history list',
+            overviewDetailInner: 'overview detail #htmlArea', 
+            loginButton: 'overview button#login'
         },
         control: {
             overviewList: {
                 itemtap: 'showIntegrationDetails'
+            }, 
+            historyList: {
+                itemtap: 'showIntegrationDetails'
+            }, 
+            loginButton: {
+                tap: 'showLoginPanel'
             }
         }
     },
@@ -16,10 +24,12 @@ Ext.define('EgoMasks.controller.Overview', {
     //called when the Application is launched, remove if not needed
     launch: function(app) {
         this.list = this.getOverviewList();
+        this.historyList = this.getHistoryList();
         
         this.store = Ext.getStore('Integrations');
         
         this.list.setStore(this.store);
+        this.historyList.setStore(this.store);
     }, 
 
     showIntegrationDetails: function(list, index, node, record){
@@ -37,5 +47,12 @@ Ext.define('EgoMasks.controller.Overview', {
         this.detail.down('#htmlArea').setHtml(integrationDetails);
         
         this.detail.showBy(node, "cc-c?");
+    }, 
+    
+    showLoginPanel: function(btn, e){
+        
+        if(!this.loginPanel)this.loginPanel = Ext.Viewport.add({xtype:'loginPanel'});
+        
+        this.loginPanel.show()
     }
 });

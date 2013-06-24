@@ -69,6 +69,27 @@
     "css": [
         {
             "path": "resources/css/app.css",
+            "platform": ["chrome", "safari", "ios", "android", "firefox"],
+            "update": "delta"
+        },{
+            "path": "resources/css/base.css",
+            "platform": ["base"],
+            "theme": "Base"
+        },{
+            "path": "resources/css/sencha-touch.css",
+            "platform": ["ios"],
+            "theme": "Apple"
+        },{
+            "path": "resources/css/android.css",
+            "platform": ["android"],
+            "theme": "Android"
+        },{
+            "path": "resources/css/wp.css",
+            "platform": ["ie10"],
+            "update": "delta"
+        },{
+            "path": "resources/css/bb10.css",
+            "platform": ["blackberry"],
             "update": "delta"
         }
     ],

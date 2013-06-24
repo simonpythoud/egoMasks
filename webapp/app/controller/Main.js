@@ -6,19 +6,25 @@ Ext.define('EgoMasks.controller.Main', {
             mainPanel: 'mainview',
             overviewPanel: 'overview',
             integrationPanel: 'integration',
+            historyPanel: 'history',
             documentationPanel: 'documentation',
             statisticsPanel: 'statistics',
             openNewIntegrationBtn: 'overview button#openNewIntegration',
+            openHistoryBtn: 'overview button#openHistory',
             openDocumentationBtn: 'overview button#openDocumentation',
             openStatisticsBtn: 'overview button#openStatistics',
-            backFromIntegrationBtn: 'integration button[ui=back]',
+            backFromIntegrationBtn: 'integration button#backHome',
             backFromDocumentationBtn: 'documentation button[ui=back]',
-            backFromStatisticsBtn: 'statistics button[ui=back]'
+            backFromStatisticsBtn: 'statistics button[ui=back]', 
+            backFromHistoryBtn: 'history button[ui=back]'
         },
         control: {
             openNewIntegrationBtn: {
                 tap: 'gotoIntegration'
             }, 
+            openHistoryBtn: {
+                tap: 'gotoHistory'
+            },
             openDocumentationBtn: {
                 tap: 'gotoDocumentation'
             }, 
@@ -28,6 +34,9 @@ Ext.define('EgoMasks.controller.Main', {
             backFromIntegrationBtn: {
                 tap: 'gotoOverview'
             }, 
+            backFromHistoryBtn: {
+                tap: 'gotoOverview'
+            },
             backFromDocumentationBtn: {
                 tap: 'gotoOverview'
             }, 
@@ -42,6 +51,7 @@ Ext.define('EgoMasks.controller.Main', {
         this.main = this.getMainPanel();
         this.overview = this.getOverviewPanel();
         this.integration = this.getIntegrationPanel();
+        this.history = this.getHistoryPanel();
         this.documentation = this.getDocumentationPanel();
         this.statistics = this.getStatisticsPanel();
     }, 
@@ -52,6 +62,10 @@ Ext.define('EgoMasks.controller.Main', {
     
     gotoIntegration: function(btn, event, e){
         this.main.setActiveItem(this.integration);
+    },
+    
+    gotoHistory: function(btn, event, e){
+        this.main.setActiveItem(this.history);
     },
     
     gotoDocumentation: function(btn, event, e){

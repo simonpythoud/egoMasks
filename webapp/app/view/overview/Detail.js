@@ -10,8 +10,8 @@ Ext.define('EgoMasks.view.overview.Detail', {
         centered: true,
 
         // Set the width and height of the panel
-        width: (Ext.os.deviceType == 'Phone') ? '95%' : 300,
-        height: (Ext.os.deviceType == 'Phone') ? '70%' : 200,
+        width: isPhone ? '95%' : 400,
+        height: isPhone ? '70%' : 300,
         
         scrollable: {
             direction: 'vertical',

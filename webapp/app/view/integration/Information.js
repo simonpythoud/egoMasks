@@ -13,13 +13,14 @@ Ext.define("EgoMasks.view.integration.Information", {
             title: 'New integration',
             items: [{
                 ui: 'back',
+                id: 'backHome',
                 text: 'Back',
                 align: 'left'
             }]
         },{
             xtype: 'fieldset', 
             title: 'Integration information',
-            instructions: 'Please enter the information above.',
+            instructions: 'Normal mode provide a list of the 21 mask that you can select. <br/>Guided mode provide a step by step integration of the mask per category.',
             items: [{
                 xtype: 'textfield',
                 name: 'title',
@@ -38,7 +39,18 @@ Ext.define("EgoMasks.view.integration.Information", {
                 name: 'timestamp',
                 label: 'Date',
                 value: new Date()
-            }]
+            },        {
+            xtype: 'radiofield',
+            name : 'mode',
+            value: 'normal',
+            label: 'Normal Integration',
+            checked: true
+        },        {
+            xtype: 'radiofield',
+            name : 'mode',
+            value: 'guided',
+            label: 'Guided Integration'
+        }]
         },{
             xtype: 'button',
             ui: 'action',

@@ -4,35 +4,72 @@ Ext.define("EgoMasks.view.Overview", {
     requires: [
     'EgoMasks.view.overview.List',
     'EgoMasks.view.overview.Detail',
+    'EgoMasks.view.LoginPanel',
     'Ext.TitleBar'
     ],
     config: {
         styleHtmlContent: true,
         scrollable: false,
         layout: 'vbox',
+        flex: 1,
         items: [{
-            docked: 'top',
-            xtype: 'titlebar',
-            title: 'Emotional Integration',
-            flex: 1
-        },{
-            xtype: 'button',
-            text: 'New Integration',
-            id: 'openNewIntegration',
-            flex: 1
-        },{
-            xtype: 'overviewlist', 
-            flex: 2
-        },{
-            xtype: 'button',
-            text: 'Statistics',
-            id: 'openStatistics',
-            flex: 1
-        },{
-            xtype: 'button',
-            text: 'Documentation',
-            id: 'openDocumentation',
-            flex: 1
+                docked: 'top',
+                xtype: 'titlebar',
+                title: 'Emotional Integration',
+                platformConfig: [{
+                    platform: ['blackberry'],
+                    title: 'Emotional Integration on BlackBerry',
+                    bottom: 0
+                }],
+                items: [{
+                    align: 'right',
+                    disabled: true,
+                    text: 'Not logged',
+                    id: 'userinfo'
+                }, {
+                    align: 'right',
+                    ui: 'action',
+                    text: 'Login',
+                    id: 'login'
+                }]
+            },{
+            defaults: {
+                layout: (isMobile?'vbox':'hbox')
+            },
+            layout: 'vbox',
+            flex: 1,
+            items: [{
+                    flex: isMobile?1:4,    
+                    items:  [{
+                        xtype: 'overviewlist', 
+                        flex: 2,
+                        hidden: isMobile?true:false
+                    },{
+                        xtype: 'button',
+                        text: 'New Integration',
+                        id: 'openNewIntegration',
+                        flex: 1
+                    },{
+                        xtype: 'button',
+                        text: 'History',
+                        id: 'openHistory',
+                        flex: 1,
+                        hidden: isMobile?false:true
+                    }]
+                },{
+                    flex: 1,
+                    items: [{
+                        xtype: 'button',
+                        text: 'Statistics',
+                        id: 'openStatistics',
+                        flex: 1
+                    },{
+                        xtype: 'button',
+                        text: 'Documentation',
+                        id: 'openDocumentation',
+                        flex: 1
+                    }]
+            }]
         }]
     }
 });

@@ -3,7 +3,8 @@ Ext.define("EgoMasks.view.Main", {
     xtype: 'mainview', 
     requires: [
     'EgoMasks.view.Overview',
-    'EgoMasks.view.Integration', 
+    'EgoMasks.view.Integration',
+    'EgoMasks.view.History',
     'EgoMasks.view.Documentation', 
     'EgoMasks.view.Statistics'
     ],
@@ -13,6 +14,8 @@ Ext.define("EgoMasks.view.Main", {
             xtype: 'overview' 
         },{
             xtype: 'integration'
+        },{
+            xtype: 'history'
         },{
             xtype: 'documentation'
         },{

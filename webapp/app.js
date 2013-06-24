@@ -8,6 +8,15 @@ Ext.Loader.setPath({
 });
 //</debug>
 
+
+//Add hacks variable used within the app
+urlParams = Ext.Object.fromQueryString(window.location.search.substring(1));
+baseUrl= 'http://localhost:3000'; //'http://egomasks.herokuapp.com/'; //
+isPhone = (urlParams.isPhone != null)?(urlParams.isPhone === '1'):(Ext.os.deviceType == 'Phone') // Define a variable used for sizing purpose
+isMobile= (urlParams.isMobile != null)?(urlParams.isMobile === '1'):('ontouchstart' in window); // For scroll purpose. true if mobile, false if browser
+scrollCls = isMobile? ' ': ' browserScroll';
+// Test if vertical or horizontal and then arrange the first page with it
+
 Ext.application({
     name: 'EgoMasks',
 
@@ -58,7 +67,7 @@ Ext.application({
         '1536x2008': 'resources/startup/1536x2008.png',
         '1496x2048': 'resources/startup/1496x2048.png'
     },
-
+    
     launch: function() {
         // Destroy the #appLoadingIndicator element
         Ext.fly('appLoadingIndicator').destroy();

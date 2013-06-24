@@ -16,9 +16,15 @@ Ext.define('EgoMasks.controller.Integration', {
             integrationBox: 'integrationBox',
             integrationBoxMaskName: 'integrationBox #maskName',
             integrationBoxMaskTimer: 'integrationBox #maskTimer',
+            integrationBoxGlobalTimer: 'integrationBox #globalTimer',
             integrationBoxMaskClicker: 'integrationBox #maskClicker',
             masksList: 'masksList', 
-            masksListBtns: 'masksList button' // all buttons in the masks list
+            masksListBtns: 'masksList button', // all buttons in the masks list
+            masksBackBtn: 'masks button[ui=back]',
+            masksCarousel: 'masks carousel', 
+            showHelpBtn: 'integrationBox #showHelpBtn', 
+            showAddNoteBtn: 'integrationBox #showAddNoteBtn'
+            
         },
         control: {
             integrationPanel: {
@@ -38,6 +44,15 @@ Ext.define('EgoMasks.controller.Integration', {
             },
             masksListBtns: {
                 tap: 'selectMask'
+            }, 
+            masksBackBtn: {
+                tap: 'backToMasksList'
+            }, 
+            showHelpBtn: {
+                tap: 'showMaskHelp'
+            },
+            showAddNoteBtn: {
+                tap: 'showAddNote'
             }
         }
     },
@@ -53,10 +68,12 @@ Ext.define('EgoMasks.controller.Integration', {
         this.smile = this.getSmilePanel();
         
         this.integrationBoxMaskName = this.getIntegrationBoxMaskName();
+        this.integrationBoxGlobalTimer = this.getIntegrationBoxGlobalTimer();
         this.integrationBoxMaskTimer = this.getIntegrationBoxMaskTimer();
         this.integrationBoxMaskClicker = this.getIntegrationBoxMaskClicker();
         
         this.masksList = this.getMasksList();
+        this.masksCarousel = this.getMasksCarousel();
         
         this.maskGroupsStore = Ext.getStore('MaskGroups');
         this.masksStore = Ext.getStore('Masks');
@@ -133,16 +150,25 @@ Ext.define('EgoMasks.controller.Integration', {
         
             this.integration.setActiveItem(this.masks);
         }
+        
+        this.integrationBoxGlobalTimer.setRecord(this.currentIntegration);
+        
+        this.integrationBoxMaskName.setText('>> Select a mask below <<');
+        this.integrationBoxMaskName.setIconCls('');
+
+        var emptyMiModel = Ext.create('EgoMasks.model.MaskIntegration');
+        this.integrationBoxMaskClicker.setRecord(emptyMiModel);
+        this.integrationBoxMaskTimer.setRecord(emptyMiModel);
     },
     
     enjoyIntegration: function(btn, event, e){
-        // Set the duration of the integration
-        var duration = (new Date()).valueOf() - this.currentIntegration.get('timestamp');
-        this.currentIntegration.set('duration', duration);
         
         // Save the integration and maskIntegration models
         this.currentIntegration.save();
-        this.miRecord.save();
+        if(this.miRecord){
+            this.miRecord.save();
+        }
+        this.stopTimer();
         
         this.integration.setActiveItem(this.smile);
     },
@@ -151,6 +177,23 @@ Ext.define('EgoMasks.controller.Integration', {
         this.mainCtrl.gotoOverview();
         this.integration.setActiveItem(this.information);
     },
+    
+    showBigChart: function(){
+        this.masksCarousel.setActiveItem(0);
+    },
+    
+    backToMasksList: function(){
+        this.masksCarousel.setActiveItem(1);
+    },
+    
+    showMaskHelp: function(){
+        this.masksCarousel.setActiveItem(2);
+    },
+    
+    showAddNote: function(){
+        this.masksCarousel.setActiveItem(3);
+    }, 
+    
     
     selectMask: function(btn, event, e){
         this.stopTimer();
@@ -198,19 +241,22 @@ Ext.define('EgoMasks.controller.Integration', {
     
     startTimer: function(){
         this.integrationInProgress = true;
-        this.integrationBoxMaskTimer.setIconCls('play');
+        this.integrationBoxMaskName.setIconCls('play');
 
-        var that = this;      
-        var start = new Date().getTime() - this.miRecord.get('duration');
+        var that = this;   
+        var start = new Date().getTime() - this.currentIntegration.get('duration');
+        var miStart = new Date().getTime() - this.miRecord.get('duration');
         
         this.updateInterval = setInterval(function(){
-                that.miRecord.set('duration', (new Date().getTime() - start));
+                var currentTime = (new Date().getTime());
+                that.currentIntegration.set('duration', currentTime - start);
+                that.miRecord.set('duration', currentTime - miStart);
         },100);
     },
     
     stopTimer: function(){
         this.integrationInProgress = false;
-        this.integrationBoxMaskTimer.setIconCls('pause');
+        this.integrationBoxMaskName.setIconCls('pause');
         clearInterval(this.updateInterval);
     },
     
