@@ -19,6 +19,7 @@ Ext.define("EgoMasks.view.integration.Masks", {
                 docked: 'top'
             },{
                 xtype: 'carousel', 
+                indicator: false,
                 activeItem: 1,
                 flex: 2,
                 items: [{
