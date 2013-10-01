@@ -7,7 +7,7 @@ Ext.define('EgoMasks.controller.Documentation', {
     
     config: {
         refs: {
-            documentationPanel: 'documentation',
+            documentationPanel: 'documentation'
         },
         control: {
             'documentation button#openIntroductionToEgo': {

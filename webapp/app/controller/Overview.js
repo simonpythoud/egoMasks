@@ -6,7 +6,8 @@ Ext.define('EgoMasks.controller.Overview', {
             overviewList: 'overview list',
             historyList: 'history list',
             overviewDetailInner: 'overview detail #htmlArea', 
-            loginButton: 'overview button#login'
+            loginButton: 'overview button#login',
+            optionsButton: 'overview button#options'
         },
         control: {
             overviewList: {
@@ -16,7 +17,10 @@ Ext.define('EgoMasks.controller.Overview', {
                 itemtap: 'showIntegrationDetails'
             }, 
             loginButton: {
-                tap: 'showLoginPanel'
+                tap: 'showLoginBox'
+            }, 
+            optionsButton: {
+                tap: 'showOptions'
             }
         }
     },
@@ -49,10 +53,30 @@ Ext.define('EgoMasks.controller.Overview', {
         this.detail.showBy(node, "cc-c?");
     }, 
     
+    showLoginBox: function(btn, e){
+        
+        if(!this.loginBox)this.loginBox = Ext.Viewport.add({xtype:'loginBox'});
+        
+        isPhone?
+            this.loginBox.show():
+            this.loginBox.showBy(btn);
+        
+    },
+    
     showLoginPanel: function(btn, e){
         
         if(!this.loginPanel)this.loginPanel = Ext.Viewport.add({xtype:'loginPanel'});
         
-        this.loginPanel.show()
-    }
+        this.loginPanel.show();
+    }, 
+
+    showOptions: function(btn, e){
+        
+        if(!this.optionsPanel)this.optionsPanel = Ext.Viewport.add({xtype:'options'});
+        
+        isPhone?
+            this.optionsPanel.show():
+            this.optionsPanel.showBy(btn);
+        
+    },
 });

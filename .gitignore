@@ -1,21 +1,27 @@
-lib-cov
-*.seed
-*.log
-*.csv
-*.dat
-*.out
-*.pid
-*.gz
-
-pids
-logs
-results
-
-node_modules
-npm-debug.log
-.DS_Store
-android-sdk
-
+# Project files
+.project
+nbproject/*
 .idea
 
-EgoMasks.iml
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# sass cache folder
+webapp/resources/sass/.sass-cache/
+
+# sencha config files
+webapp/.sencha/
+
+# Build and Release Folders
+archive/
+# build/
+
+# node folder
+node_modules

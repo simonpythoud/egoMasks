@@ -1,0 +1,20 @@
+{
+    "Login": {
+        "title": "Identification"
+    },
+    "Options": {
+        "defaultLanguage": "Langue par défaut",
+        "version": "Version 0.1"
+    },
+    "General": {
+        "emotionalIntegration": "Intégration émotionnelle",
+        "ok": "OK",
+        "cancel": "Annuler"
+    }, 
+    "Navigation": {
+        "back": "Retour",
+        "options": "Options",
+        "logout": "Logout", 
+        "login": "Connexion"
+    }
+}

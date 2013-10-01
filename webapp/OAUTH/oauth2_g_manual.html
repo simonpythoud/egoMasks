@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>OAuth 2.0 with Google Plus Sign In</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+        <script>
+            var access_token;
+            
+            function signinCallback(authResult) {
+                if (authResult['access_token']) {
+                    access_token = authResult['access_token'];
+                    // 
+                    // Successfully authorized
+                    // Hide the sign-in button now that the user is authorized, for example:
+                    document.getElementById('signinButton').setAttribute('style', 'display: none');
+                    document.getElementById('revokeButton').setAttribute('style', 'display: inline');
+                    // Could trigger the disconnect on a button click
+                    document.getElementById('revokeButton').onclick = disconnectUser;
+                  
+                    console.log('authResult: '+ authResult);
+                   
+                } else if (authResult['error']) {
+                    
+                  // There was an error.
+                  // Possible error codes:
+                  //   "access_denied" - User denied access to your app
+                  //   "immediate_failed" - Could not automatically log in the user
+                   console.log('There was an error: ' + authResult['error']);
+                   //window.alert("Error");
+                }
+              }
+              
+            function getUserInfo() {
+              var userInfoUrl = 
+                'https://accounts.google.com/o/oauth2/auth?'+
+                'scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&'+
+                'state=%2Fprofile&'+
+                'redirect_uri=https%3A%2F%2Foauth2-login-demo.appspot.com%2Foauthcallback&'+
+                'response_type=token&'+
+                'client_id=427738071811.apps.googleusercontent.com';
+                 
+                 // access_token;
+
+              // Perform an asynchronous GET request.
+              $.ajax({
+                type: 'GET',
+                url: userInfoUrl,
+                async: false,
+                contentType: "application/json",
+                dataType: 'jsonp',
+                success: function(nullResponse) {
+                  // Do something now that user is disconnected
+                  // The response is always undefined.
+                  console.log('response: ' + nullResponse)
+                },
+                error: function(e) {
+                  // Handle the error
+                  // console.log(e);
+                  // You could point users to manually disconnect if unsuccessful
+                  // https://plus.google.com/apps
+                }
+              });
+            }  
+              
+
+            function disconnectUser() {
+              var revokeUrl = 'https://accounts.google.com/o/oauth2/revoke?token=' +
+                  access_token;
+
+              // Perform an asynchronous GET request.
+              $.ajax({
+                type: 'GET',
+                url: revokeUrl,
+                async: false,
+                contentType: "application/json",
+                dataType: 'jsonp',
+                success: function(nullResponse) {
+                  // Do something now that user is disconnected
+                  // The response is always undefined.
+                  document.getElementById('signinButton').setAttribute('style', 'display: inline');
+                  document.getElementById('revokeButton').setAttribute('style', 'display: none');
+                },
+                error: function(e) {
+                  // Handle the error
+                  // console.log(e);
+                  // You could point users to manually disconnect if unsuccessful
+                  // https://plus.google.com/apps
+                }
+              });
+            }
+        </script>
+    </head>
+    <body>
+        <span id="signinButton">
+            <span
+              class="g-signin"
+              data-callback="signinCallback"
+              data-clientid="427738071811.apps.googleusercontent.com"
+              data-cookiepolicy="single_host_origin"
+              data-requestvisibleactions="http://schemas.google.com/AddActivity"
+              data-scope="https://www.googleapis.com/auth/plus.login">
+            </span>
+        </span>
+        
+        <span id="revokeButton" style="display: none;">
+            [Revoke]
+        </span>
+        
+        
+        <!-- Place this asynchronous JavaScript just before your </body> tag -->
+        <script type="text/javascript">
+          (function() {
+           var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+           po.src = 'https://apis.google.com/js/client:plusone.js';
+           var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+         })();
+        </script>
+    </body>
+</html>

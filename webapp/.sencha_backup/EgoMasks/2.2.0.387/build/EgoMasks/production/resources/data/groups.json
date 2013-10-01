@@ -1,0 +1,38 @@
+{
+    'success': true, 
+    'groups': [{
+          "id": "1",
+          "name": "Denials",
+          "icon": "denials.png"
+        },
+        {
+          "id": "2",
+          "name": "Emotions",
+          "icon": "emotions.png"
+        },
+        {
+          "id": "3",
+          "name": "Roles",
+          "icon": "roles.png"
+        },
+        {
+          "id": "4",
+          "name": "Tools",
+          "icon": "tools.png"
+        },
+        {
+          "id": "5",
+          "name": "Expectations",
+          "icon": "expectations.png"
+        },
+        {
+          "id": "6",
+          "name": "Needs",
+          "icon": "needs.png"
+        },
+        {
+          "id": "7",
+          "name": "Attachements",
+          "icon": "attachements.png"
+        }]
+}

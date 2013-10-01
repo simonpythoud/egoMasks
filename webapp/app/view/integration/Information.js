@@ -4,7 +4,8 @@ Ext.define("EgoMasks.view.integration.Information", {
     requires: [
     'Ext.TitleBar',
     'Ext.form.FieldSet', 
-    'Ext.field.DatePicker'
+    'Ext.field.DatePicker',
+    'Ext.field.Radio'
     ],
     config: {
         items: [{

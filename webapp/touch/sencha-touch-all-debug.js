@@ -16,7 +16,7 @@ requirements will be met: http://www.gnu.org/copyleft/gpl.html.
 If you are unsure which license is appropriate for your use, please contact the sales department
 at http://www.sencha.com/contact.
 
-Build date: 2013-04-11 12:51:10 (c47a7edc5889a0e78d6c752ebc21d8c668e120ac)
+Build date: 2013-09-11 14:24:30 (a15cd1b756c28fa262dc2454887be23d587c21c8)
 */
 //@tag foundation,core
 //@define Ext
@@ -4769,7 +4769,6 @@ var noArgs = [],
          * from the current method, for example: `this.callOverridden(arguments)`
          * @return {Object} Returns the result of calling the overridden method
          * @protected
-         * @deprecated Use callParent instead
          */
         callOverridden: function(args) {
             var method = this.callOverridden.caller;
@@ -7269,6 +7268,8 @@ var noArgs = [],
          *
          * @member Ext
          * @method widget
+         * @param {String} name
+         * @return {Object} instance
          */
         widget: function(name) {
             var args = arraySlice.call(arguments);
@@ -7281,6 +7282,9 @@ var noArgs = [],
          * Convenient shorthand, see {@link Ext.ClassManager#instantiateByAlias}.
          * @member Ext
          * @method createByAlias
+         * @param {String} alias
+         * @param {Mixed...} args Additional arguments after the alias will be passed to the class constructor.
+         * @return {Object} instance
          */
         createByAlias: alias(Manager, 'instantiateByAlias'),
 
@@ -7673,7 +7677,7 @@ var noArgs = [],
  * It has all the advantages combined from asynchronous and synchronous loading. The development flow is simple:
  *
  * ### Step 1: Start writing your application using synchronous approach. ###
- * Ext.Loader will automatically fetch all dependencies on demand as they're 
+ * Ext.Loader will automatically fetch all dependencies on demand as they're
  * needed during run-time. For example:
  *
  *     Ext.onReady(function(){
@@ -8044,7 +8048,7 @@ var noArgs = [],
 
         /**
          * Maintain the queue for all dependencies. Each item in the array is an object of the format:
-         * 
+         *
          *     {
          *         requires: [...], // The required classes for this queue item
          *         callback: function() { ... } // The function to execute when all classes specified in requires exist
@@ -8384,7 +8388,7 @@ var noArgs = [],
                         if (excluded[possibleClassName] !== true) {
                             references.push(possibleClassName);
 
-                            if (!Manager.isCreated(possibleClassName) && !included[possibleClassName]) {
+                            if (!Manager.isCreated(possibleClassName) && !included[possibleClassName]/* && !this.requiresMap.hasOwnProperty(possibleClassName)*/) {
                                 included[possibleClassName] = true;
                                 classNames.push(possibleClassName);
                             }
@@ -8860,7 +8864,7 @@ var noArgs = [],
         path = path + "../../../";
     }
     //</debug>
-    
+
 
     Loader.setConfig({
         enabled: true,
@@ -8869,7 +8873,7 @@ var noArgs = [],
             'Ext' : path + 'src'
         }
     });
-    
+
 })();
 
 //@tag dom,core
@@ -8922,7 +8926,7 @@ var noArgs = [],
  *
  * [getting_started]: #!/guide/getting_started
  */
-Ext.setVersion('touch', '2.2.0');
+Ext.setVersion('touch', '2.2.1');
 
 Ext.apply(Ext, {
     /**
@@ -8949,7 +8953,7 @@ Ext.apply(Ext, {
     },
 
     /**
-     * Generates unique ids. If the element already has an `id`, it is unchanged.
+     * Generates unique ids. If the element is passes and it already has an `id`, it is unchanged.
      * @param {Mixed} el (optional) The element to generate an id for.
      * @param {String} [prefix=ext-gen] (optional) The `id` prefix.
      * @return {String} The generated `id`.
@@ -8962,16 +8966,16 @@ Ext.apply(Ext, {
         el = Ext.getDom(el) || {};
 
         if (el === document || el === document.documentElement) {
-            el.id = 'ext-application';
+            el.id = 'ext-app';
         }
         else if (el === document.body) {
-            el.id = 'ext-viewport';
+            el.id = 'ext-body';
         }
         else if (el === window) {
             el.id = 'ext-window';
         }
 
-        el.id = el.id || ((prefix || 'ext-element-') + (++Ext.idSeed));
+        el.id = el.id || ((prefix || 'ext-') + (++Ext.idSeed));
 
         return el.id;
     },
@@ -10556,9 +10560,13 @@ Ext.define('Ext.env.Browser', {
 
         this.setFlag('Standalone', !!navigator.standalone);
 
+        this.setFlag('Ripple', !!document.getElementById("tinyhippos-injected") && !Ext.isEmpty(window.top.ripple));
+        this.setFlag('WebWorks', !!window.blackberry);
+
         if (typeof window.PhoneGap != 'undefined' || typeof window.Cordova != 'undefined' || typeof window.cordova != 'undefined') {
             isWebView = true;
             this.setFlag('PhoneGap');
+            this.setFlag('Cordova');
         }
         else if (!!window.isNK) {
             isWebView = true;
@@ -10796,12 +10804,7 @@ Ext.define('Ext.env.OS', {
                         version = new Ext.Version("2.3");
                     }
                     else if (match1 && match1 == "Silk/") {
-                        if (/Macintosh/i.test(userAgent)) {
-                            version = new Ext.Version("2.3");
-                        }
-                        else {
-                            version = new Ext.Version("4.0");
-                        }
+                        version = new Ext.Version("2.3");
                     }
                     else {
                         version = new Ext.Version(match[match.length - 1]);
@@ -10916,7 +10919,7 @@ Ext.define('Ext.env.OS', {
             // always set it to false when you are on a desktop
             Ext.browser.is.WebView = false;
         }
-        else if (osEnv.is.iPad || osEnv.is.RIMTablet || osEnv.is.Android3 || (osEnv.is.Android4 && userAgent.search(/mobile/i) == -1)) {
+        else if (osEnv.is.iPad || osEnv.is.RIMTablet || osEnv.is.Android3 || Ext.browser.is.Silk || (osEnv.is.Android4 && userAgent.search(/mobile/i) == -1)) {
             deviceType = 'Tablet';
         }
         else {
@@ -11025,6 +11028,16 @@ Ext.define('Ext.env.Feature', {
 
         if (typeof elementStyle[name] !== 'undefined'
             || typeof elementStyle[Ext.browser.getStylePrefix(name) + cName] !== 'undefined') {
+            return true;
+        }
+
+        return false;
+    },
+
+    isStyleSupportedWithoutPrefix: function(name, tag) {
+        var elementStyle = this.getTestElement(tag).style;
+
+        if (typeof elementStyle[name] !== 'undefined') {
             return true;
         }
 
@@ -11168,7 +11181,7 @@ Ext.define('Ext.env.Feature', {
         },
 
         Touch: function() {
-            return this.isEventSupported('touchstart') && !(Ext.os && Ext.os.name.match(/Windows|MacOS|Linux/) && !Ext.os.is.BlackBerry6);
+            return Ext.browser.is.Ripple || (this.isEventSupported('touchstart') && !(Ext.os && Ext.os.name.match(/Windows|MacOS|Linux/) && !Ext.os.is.BlackBerry6));
         },
 
         Pointer: function() {
@@ -11214,6 +11227,10 @@ Ext.define('Ext.env.Feature', {
 
         CssTransforms: function() {
             return this.isStyleSupported('transform');
+        },
+
+        CssTransformNoPrefix: function() {
+            return this.isStyleSupportedWithoutPrefix('transform');
         },
 
         Css3dTransforms: function() {
@@ -11267,7 +11284,9 @@ Ext.define('Ext.env.Feature', {
 
 /**
  * @class Ext.DomQuery
- * @alternateClassName Ext.dom.Query
+ * @alternateClassName Ext.core.DomQuery
+ * @extend Ext.dom.Query
+ * @singleton
  *
  * Provides functionality to select elements on the page based on a CSS selector. Delegates to
  * document.querySelectorAll. More information can be found at
@@ -11325,6 +11344,13 @@ Ext.define('Ext.env.Feature', {
  * * E{display*=none} CSS value "display" that contains the substring "none"
  * * E{display%=2} CSS value "display" that is evenly divisible by 2
  * * E{display!=none} CSS value "display" that does not equal "none"
+ */
+
+/**
+ * See {@link Ext.DomQuery} which is the singleton instance of this
+ * class.  You most likely don't need to instantiate Ext.dom.Query by
+ * yourself.
+ * @private
  */
 Ext.define('Ext.dom.Query', {
     /**
@@ -11417,6 +11443,12 @@ Ext.define('Ext.dom.Query', {
 }, function() {
     Ext.ns('Ext.core');
     Ext.core.DomQuery = Ext.DomQuery = new this();
+    /**
+     * Shorthand of {@link Ext.dom.Query#select}
+     * @member Ext
+     * @method query
+     * @inheritdoc Ext.dom.Query#select
+     */
     Ext.query = Ext.Function.alias(Ext.DomQuery, 'select');
 });
 
@@ -12442,8 +12474,8 @@ Ext.define('Ext.dom.Element', {
          * {@link Ext.dom.Element#fly}.
          *
          * Use this to make one-time references to DOM elements which are not going to be accessed again either by
-         * application code, or by Ext's classes. If accessing an element which will be processed regularly, then {@link
-         * Ext#get Ext.get} will be more appropriate to take advantage of the caching provided by the {@link Ext.dom.Element}
+         * application code, or by Ext's classes. If accessing an element which will be processed regularly, then {@link Ext#get Ext.get}
+         * will be more appropriate to take advantage of the caching provided by the {@link Ext.dom.Element}
          * class.
          *
          * @param {String/HTMLElement} element The DOM node or `id`.
@@ -14080,6 +14112,7 @@ Ext.dom.Element.addMembers({
                 this.setStyle(styles);
             }
         }
+        return this;
     },
 
     /**
@@ -14229,8 +14262,16 @@ Ext.dom.Element.addMembers({
         return this.findParentNode(simpleSelector, maxDepth, true);
     },
 
+    /**
+     * Selects elements based on the passed CSS selector to enable {@link Ext.Element Element} methods
+     * to be applied to many related elements in one statement through the returned. The element is the root of the search.
+     * {@link Ext.dom.CompositeElementLite CompositeElementLite} object.
+     * @param {String/HTMLElement[]} selector The CSS selector or an array of elements
+     * @param {Boolean} composite Return a CompositeElement as opposed to a CompositeElementLite. Defaults to false.
+     * @return {Ext.dom.CompositeElementLite/Ext.dom.CompositeElement}
+     */
     select: function(selector, composite) {
-        return Ext.dom.Element.select(selector, this.dom, composite);
+        return Ext.dom.Element.select(selector, composite, this.dom);
     },
 
     /**
@@ -14369,7 +14410,7 @@ Ext.define('Ext.dom.CompositeElementLite', {
     alternateClassName: ['Ext.CompositeElementLite', 'Ext.CompositeElement'],
 
                                   
-    
+
     // We use the @mixins tag above to document that CompositeElement has
     // all the same methods as Element, but the @mixins tag also pulls in
     // configs and properties which we don't want, so hide them explicitly:
@@ -14727,25 +14768,25 @@ Ext.define('Ext.dom.CompositeElementLite', {
 
     prototype.on = prototype.addListener;
 
-    if (Ext.DomQuery){
-        Element.selectorFunction = Ext.DomQuery.select;
-    }
+    Element.selectorFunction = Ext.DomQuery.select;
 
     /**
      * Selects elements based on the passed CSS selector to enable {@link Ext.Element Element} methods
      * to be applied to many related elements in one statement through the returned
      * {@link Ext.dom.CompositeElementLite CompositeElementLite} object.
      * @param {String/HTMLElement[]} selector The CSS selector or an array of elements
+     * @param {Boolean} composite Return a CompositeElement as opposed to a CompositeElementLite. Defaults to false.
      * @param {HTMLElement/String} [root] The root element of the query or id of the root
-     * @return {Ext.dom.CompositeElementLite}
+     * @return {Ext.dom.CompositeElementLite/Ext.dom.CompositeElement}
      * @member Ext.dom.Element
      * @method select
+     * @static
      */
-   Element.select = function(selector, root) {
+    Ext.dom.Element.select = function(selector, composite, root) {
         var elements;
 
         if (typeof selector == "string") {
-            elements = Element.selectorFunction(selector, root);
+            elements = Ext.dom.Element.selectorFunction(selector, root);
         }
         else if (selector.length !== undefined) {
             elements = selector;
@@ -14756,7 +14797,7 @@ Ext.define('Ext.dom.CompositeElementLite', {
             //</debug>
         }
 
-        return new Ext.CompositeElementLite(elements);
+        return (composite === true) ? new Ext.dom.CompositeElement(elements) : new Ext.dom.CompositeElementLite(elements);
     };
 
     /**
@@ -19113,6 +19154,9 @@ Ext.define('Ext.util.Format', {
 
     /**
      * Parse a value into a formatted date using the specified format pattern.
+     * Note that this uses the native Javascript Date.parse() method and is therefore subject to its idiosyncrasies.
+     * Most formats assume the local timezone unless specified. One notable exception is 'YYYY-MM-DD' (note the dashes)
+     * which is typically interpreted in UTC and can cause date shifting.
      * @param {String/Date} value The value to format. Strings must conform to the format expected by the JavaScript
      * Date object's [parse() method](http://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Date/parse).
      * @param {String} [format='m/d/Y'] (optional) Any valid date format string.
@@ -19877,7 +19921,7 @@ Ext.define('Ext.XTemplateCompiler', {
 
     doExpr: function (expr) {
         var out = this.body;
-        out.push('if ((v=' + expr + ')!==undefined && (v=' + expr + ')!==null) out');
+            out.push('v=' + expr + '; if (v !== undefined && v !== null) out');
 
         // Coerce value to string using concatenation of an empty string literal.
         // See http://jsperf.com/tostringvscoercion/5
@@ -20976,8 +21020,9 @@ Ext.define('Ext.util.translatable.CssTransform', {
     extend:  Ext.util.translatable.Dom ,
 
     doTranslate: function(x, y) {
-        if (!this.isDestroyed) {
-            this.getElement().translate(x, y);
+        var element = this.getElement();
+        if (!this.isDestroyed && !element.isDestroyed) {
+            element.translate(x, y);
         }
     },
 
@@ -21191,7 +21236,7 @@ Ext.define('Ext.behavior.Translatable', {
 });
 
 /**
- * A core util class to bring Draggable behavior to any DOM element
+ * A core util class to bring Draggable behavior to a Component
  */
 Ext.define('Ext.util.Draggable', {
     isDraggable: true,
@@ -25087,6 +25132,7 @@ Ext.define('Ext.layout.Box', {
          * - ** start ** : child items are packed together at left side of container
          * - ** center ** : child items are packed together at mid-width of container
          * - ** end ** : child items are packed together at right side of container
+         * - ** justify ** : child items are packed evenly across the container. Uses the 'justify-content: space-between' css property
          *
          * Please see the 'Pack and Align' section of the [Layout guide](#!/guide/layouts) for a detailed example and
          * explanation.
@@ -27550,7 +27596,7 @@ Ext.define('Ext.util.Filter', {
         /**
          * @cfg {RegExp/Mixed} [value=null]
          * The value you want to match against. Can be a regular expression which will be used as matcher or any other
-         * value.
+         * value. Mixed can be an object or an array of objects. 
          */
         value: null,
 
@@ -28595,7 +28641,7 @@ Ext.define('Ext.util.Sorter', {
             value1, value2,
             property = me._property;
 
-        if (root !== null) {
+        if (root !== null && root !== undefined) {
             item1 = item1[root];
             item2 = item2[root];
         }
@@ -30517,11 +30563,547 @@ Ext.define('Ext.scroll.Scroller', {
 }, function() {
 });
 
+(function() {
+    var lastTime = 0,
+        vendors = ['ms', 'moz', 'webkit', 'o'],
+        ln = vendors.length,
+        i, vendor, method;
+
+    for (i = 0; i < ln && !window.requestAnimationFrame; ++i) {
+        vendor = vendors[i];
+        window.requestAnimationFrame = window[vendor + 'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendor + 'CancelAnimationFrame'] || window[vendor + 'CancelRequestAnimationFrame'];
+    }
+
+    if (!window.Ext) {
+        window.Ext = {};
+    }
+    Ext.performance = {};
+
+    if (window.performance && window.performance.now) {
+        Ext.performance.now = function() {
+            return window.performance.now();
+        }
+    }
+    else {
+        Ext.performance.now = function() {
+            return Date.now();
+        }
+    }
+
+    if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = function(callback, element) {
+            var currTime = Ext.performance.now(),
+                timeToCall = Math.max(0, 16 - (currTime - lastTime)),
+                id = window.setTimeout(function() {
+                    callback(currTime + timeToCall);
+                }, timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+    }
+    else {
+        Ext.trueRequestAnimationFrames = true;
+    }
+
+    if (!window.cancelAnimationFrame) {
+        window.cancelAnimationFrame = function(id) {
+            clearTimeout(id);
+        };
+    }
+}());
+
+(function(global) {
+
+/**
+ * @private
+ */
+Ext.define('Ext.AnimationQueue', {
+    singleton: true,
+
+    constructor: function() {
+        var bind = Ext.Function.bind;
+
+        this.queue = [];
+        this.taskQueue = [];
+        this.runningQueue = [];
+        this.idleQueue = [];
+        this.isRunning = false;
+        this.isIdle = true;
+
+        this.run = bind(this.run, this);
+        this.whenIdle = bind(this.whenIdle, this);
+        this.processIdleQueueItem = bind(this.processIdleQueueItem, this);
+        this.processTaskQueueItem = bind(this.processTaskQueueItem, this);
+    },
+
+    /**
+     *
+     * @param fn
+     * @param [scope]
+     * @param [args]
+     */
+    start: function(fn, scope, args) {
+        this.queue.push(arguments);
+
+        if (!this.isRunning) {
+            if (this.hasOwnProperty('idleTimer')) {
+                clearTimeout(this.idleTimer);
+                delete this.idleTimer;
+            }
+
+            if (this.hasOwnProperty('idleQueueTimer')) {
+                clearTimeout(this.idleQueueTimer);
+                delete this.idleQueueTimer;
+            }
+
+            this.isIdle = false;
+            this.isRunning = true;
+            //<debug>
+            this.startCountTime = Ext.performance.now();
+            this.count = 0;
+            //</debug>
+            this.doStart();
+        }
+    },
+
+    run: function() {
+        if (!this.isRunning) {
+            return;
+        }
+
+        var queue = this.runningQueue,
+            i, ln;
+
+        this.frameStartTime = Ext.performance.now();
+
+        queue.push.apply(queue, this.queue);
+
+        for (i = 0, ln = queue.length; i < ln; i++) {
+            this.invoke(queue[i]);
+        }
+
+        queue.length = 0;
+
+        //<debug>
+        var now = this.frameStartTime,
+            startCountTime = this.startCountTime,
+            elapse = now - startCountTime,
+            count = ++this.count;
+
+        if (elapse >= 200) {
+            this.onFpsChanged(count * 1000 / elapse, count, elapse);
+            this.startCountTime = now;
+            this.count = 0;
+        }
+        //</debug>
+
+        this.doIterate();
+    },
+
+    //<debug>
+    onFpsChanged: Ext.emptyFn,
+
+    onStop: Ext.emptyFn,
+    //</debug>
+
+    doStart: function() {
+        this.animationFrameId = requestAnimationFrame(this.run);
+    },
+
+    doIterate: function() {
+        this.animationFrameId = requestAnimationFrame(this.run);
+    },
+
+    doStop: function() {
+        cancelAnimationFrame(this.animationFrameId);
+    },
+
+    /**
+     *
+     * @param fn
+     * @param [scope]
+     * @param [args]
+     */
+    stop: function(fn, scope, args) {
+        if (!this.isRunning) {
+            return;
+        }
+
+        var queue = this.queue,
+            ln = queue.length,
+            i, item;
+
+        for (i = 0; i < ln; i++) {
+            item = queue[i];
+            if (item[0] === fn && item[1] === scope && item[2] === args) {
+                queue.splice(i, 1);
+                i--;
+                ln--;
+            }
+        }
+
+        if (ln === 0) {
+            this.doStop();
+            //<debug>
+            this.onStop();
+            //</debug>
+            this.isRunning = false;
+
+            this.idleTimer = setTimeout(this.whenIdle, 100);
+        }
+    },
+
+    onIdle: function(fn, scope, args) {
+        var listeners = this.idleQueue,
+            i, ln, listener;
+
+        for (i = 0, ln = listeners.length; i < ln; i++) {
+            listener = listeners[i];
+            if (fn === listener[0] && scope === listener[1] && args === listener[2]) {
+                return;
+            }
+        }
+
+        listeners.push(arguments);
+
+        if (this.isIdle) {
+            this.processIdleQueue();
+        }
+    },
+
+    unIdle: function(fn, scope, args) {
+        var listeners = this.idleQueue,
+            i, ln, listener;
+
+        for (i = 0, ln = listeners.length; i < ln; i++) {
+            listener = listeners[i];
+            if (fn === listener[0] && scope === listener[1] && args === listener[2]) {
+                listeners.splice(i, 1);
+                return true;
+            }
+        }
+
+        return false;
+    },
+
+    queueTask: function(fn, scope, args) {
+        this.taskQueue.push(arguments);
+        this.processTaskQueue();
+    },
+
+    dequeueTask: function(fn, scope, args) {
+        var listeners = this.taskQueue,
+            i, ln, listener;
+
+        for (i = 0, ln = listeners.length; i < ln; i++) {
+            listener = listeners[i];
+            if (fn === listener[0] && scope === listener[1] && args === listener[2]) {
+                listeners.splice(i, 1);
+                i--;
+                ln--;
+            }
+        }
+    },
+
+    invoke: function(listener) {
+        var fn = listener[0],
+            scope = listener[1],
+            args = listener[2];
+
+        fn = (typeof fn == 'string' ? scope[fn] : fn);
+
+        if (Ext.isArray(args)) {
+            fn.apply(scope, args);
+        }
+        else {
+            fn.call(scope, args);
+        }
+    },
+
+    whenIdle: function() {
+        this.isIdle = true;
+        this.processIdleQueue();
+    },
+
+    processIdleQueue: function() {
+        if (!this.hasOwnProperty('idleQueueTimer')) {
+            this.idleQueueTimer = setTimeout(this.processIdleQueueItem, 1);
+        }
+    },
+
+    processIdleQueueItem: function() {
+        delete this.idleQueueTimer;
+
+        if (!this.isIdle) {
+            return;
+        }
+
+        var listeners = this.idleQueue,
+            listener;
+
+        if (listeners.length > 0) {
+            listener = listeners.shift();
+            this.invoke(listener);
+            this.processIdleQueue();
+        }
+    },
+
+    processTaskQueue: function() {
+        if (!this.hasOwnProperty('taskQueueTimer')) {
+            this.taskQueueTimer = setTimeout(this.processTaskQueueItem, 15);
+        }
+    },
+
+    processTaskQueueItem: function() {
+        delete this.taskQueueTimer;
+
+        var listeners = this.taskQueue,
+            listener;
+
+        if (listeners.length > 0) {
+            listener = listeners.shift();
+            this.invoke(listener);
+            this.processTaskQueue();
+        }
+    },
+
+    showFps: function() {
+        if (!Ext.trueRequestAnimationFrames) {
+            alert("This browser does not support requestAnimationFrame. The FPS listed will not be accurate");
+        }
+        Ext.onReady(function() {
+            Ext.Viewport.add([{
+                    xtype: 'component',
+                    bottom: 50,
+                    left: 0,
+                    width: 50,
+                    height: 20,
+                    html: 'Average',
+                    style: 'background-color: black; color: white; text-align: center; line-height: 20px; font-size: 8px;'
+                },
+                {
+                    id: '__averageFps',
+                    xtype: 'component',
+                    bottom: 0,
+                    left: 0,
+                    width: 50,
+                    height: 50,
+                    html: '0',
+                    style: 'background-color: red; color: white; text-align: center; line-height: 50px;'
+                },
+                {
+                    xtype: 'component',
+                    bottom: 50,
+                    left: 50,
+                    width: 50,
+                    height: 20,
+                    html: 'Min (Last 1k)',
+                    style: 'background-color: black; color: white; text-align: center; line-height: 20px; font-size: 8px;'
+                },
+                {
+                    id: '__minFps',
+                    xtype: 'component',
+                    bottom: 0,
+                    left: 50,
+                    width: 50,
+                    height: 50,
+                    html: '0',
+                    style: 'background-color: orange; color: white; text-align: center; line-height: 50px;'
+                },
+                {
+                    xtype: 'component',
+                    bottom: 50,
+                    left: 100,
+                    width: 50,
+                    height: 20,
+                    html: 'Max (Last 1k)',
+                    style: 'background-color: black; color: white; text-align: center; line-height: 20px; font-size: 8px;'
+                },
+                {
+                    id: '__maxFps',
+                    xtype: 'component',
+                    bottom: 0,
+                    left: 100,
+                    width: 50,
+                    height: 50,
+                    html: '0',
+                    style: 'background-color: yellow; color: black; text-align: center; line-height: 50px;'
+                },
+                {
+                    xtype: 'component',
+                    bottom: 50,
+                    left: 150,
+                    width: 50,
+                    height: 20,
+                    html: 'Current',
+                    style: 'background-color: black; color: white; text-align: center; line-height: 20px; font-size: 8px;'
+                },
+                {
+                    id: '__currentFps',
+                    xtype: 'component',
+                    bottom: 0,
+                    left: 150,
+                    width: 50,
+                    height: 50,
+                    html: '0',
+                    style: 'background-color: green; color: white; text-align: center; line-height: 50px;'
+                }
+            ]);
+            Ext.AnimationQueue.resetFps();
+        });
+
+    },
+
+    resetFps: function() {
+        var currentFps = Ext.getCmp('__currentFps'),
+            averageFps = Ext.getCmp('__averageFps'),
+            minFps = Ext.getCmp('__minFps'),
+            maxFps = Ext.getCmp('__maxFps'),
+            min = 1000,
+            max = 0,
+            count = 0,
+            sum = 0;
+
+        Ext.AnimationQueue.onFpsChanged = function(fps) {
+            count++;
+
+            if (!(count % 10)) {
+                min = 1000;
+                max = 0;
+            }
+
+            sum += fps;
+            min = Math.min(min, fps);
+            max = Math.max(max, fps);
+            currentFps.setHtml(Math.round(fps));
+            averageFps.setHtml(Math.round(sum / count));
+            minFps.setHtml(Math.round(min));
+            maxFps.setHtml(Math.round(max));
+        };
+    }
+}, function() {
+    /*
+        Global FPS indicator. Add ?showfps to use in any application. Note that this REQUIRES true requestAnimationFrame
+        to be accurate.
+     */
+    //<debug>
+    var paramsString = window.location.search.substr(1),
+        paramsArray = paramsString.split("&");
+
+    if (paramsArray.indexOf("showfps") !== -1) {
+        Ext.AnimationQueue.showFps();
+    }
+    //</debug>
+
+});
+
+})(this);
+
+/**
+ * @private
+ * Handle batch read / write of DOMs, currently used in SizeMonitor + PaintMonitor
+ */
+Ext.define('Ext.TaskQueue', {
+                                   
+
+    singleton: true,
+
+    pending: false,
+
+    mode: true,
+
+    constructor: function() {
+        this.readQueue = [];
+        this.writeQueue = [];
+
+        this.run = Ext.Function.bind(this.run, this);
+    },
+
+    requestRead: function(fn, scope, args) {
+        this.request(true);
+        this.readQueue.push(arguments);
+    },
+
+    requestWrite: function(fn, scope, args) {
+        this.request(false);
+        this.writeQueue.push(arguments);
+    },
+
+    request: function(mode) {
+        if (!this.pending) {
+            this.pending = true;
+            this.mode = mode;
+            if (mode) {
+                setTimeout(this.run, 1);
+            } else {
+                requestAnimationFrame(this.run);
+            }
+        }
+    },
+
+    run: function() {
+        this.pending = false;
+
+        var readQueue = this.readQueue,
+            writeQueue = this.writeQueue,
+            request = null,
+            queue;
+
+        if (this.mode) {
+            queue = readQueue;
+
+            if (writeQueue.length > 0) {
+                request = false;
+            }
+        }
+        else {
+            queue = writeQueue;
+
+            if (readQueue.length > 0) {
+                request = true;
+            }
+        }
+
+        var tasks = queue.slice(),
+            i, ln, task, fn, scope;
+
+        queue.length = 0;
+
+        for (i = 0, ln = tasks.length; i < ln; i++) {
+            task = tasks[i];
+            fn = task[0];
+            scope = task[1];
+
+            if (typeof fn == 'string') {
+                fn = scope[fn];
+            }
+
+            if (task.length > 2) {
+                fn.apply(scope, task[2]);
+            }
+            else {
+                fn.call(scope);
+            }
+        }
+
+        tasks.length = 0;
+
+        if (request !== null) {
+            this.request(request);
+        }
+    }
+});
+
 /**
  * @private
  */
 Ext.define('Ext.scroll.indicator.Abstract', {
     extend:  Ext.Component ,
+
+               
+                       
+      
 
     config: {
         baseCls: 'x-scroll-indicator',
@@ -31580,17 +32162,17 @@ Ext.define('Ext.Container', {
     /**
      * @event activate
      * Fires whenever item within the Container is activated.
-     * @param {Ext.Container} this The Container instance.
      * @param {Object} newActiveItem The new active item within the container.
+     * @param {Ext.Container} this The Container instance.
      * @param {Object} oldActiveItem The old active item within the container.
      */
 
     /**
      * @event deactivate
      * Fires whenever item within the Container is deactivated.
+     * @param {Object} oldActiveItem The old active item within the container.
      * @param {Ext.Container} this The Container instance.
      * @param {Object} newActiveItem The new active item within the container.
-     * @param {Object} oldActiveItem The old active item within the container.
      */
 
     eventedConfig: {
@@ -32699,11 +33281,13 @@ Ext.define('Ext.Container', {
             defaultAnimation = layout.getAnimation();
             if (defaultAnimation) {
                 defaultAnimation.disable();
-                animation.on('animationend', function() {
-                    defaultAnimation.enable();
-                    animation.destroy();
-                }, this);
             }
+            animation.on('animationend', function() {
+                if (defaultAnimation) {
+                    defaultAnimation.enable();
+                }
+                animation.destroy();
+            }, this);
         }
         return this.setActiveItem(activeItem);
     },
@@ -33457,49 +34041,8 @@ Ext.define('Ext.Panel', {
  *     });
  *     Ext.Viewport.add({ xtype: 'container', padding: 10, items: [button] });
  *
- * Here are the included icons available (if {@link Global_CSS#$include-default-icons $include-default-icons}
- * is set to `true`):
- * 
- * <table>
- * <tr>
- *   <td>{@img action.png action}</td>
- *   <td>{@img add.png add}</td>
- *   <td>{@img arrow_down.png arrow_down}</td>
- *   <td>{@img arrow_left.png arrow_left}</td>
- *   <td>{@img arrow_right.png arrow_right}</td>
- *   <td>{@img arrow_up.png arrow_up}</td>
- * </tr>
- * <tr>
- *   <td>{@img bookmarks.png bookmarks}</td>
- *   <td>{@img compose.png compose}</td>
- *   <td>{@img delete.png delete}</td>
- *   <td>{@img download.png download}</td>
- *   <td>{@img favorites.png favorites}</td>
- *   <td>{@img home.png home}</td>
- * </tr>
- * <tr>
- *   <td>{@img info.png info}</td>
- *   <td>{@img locate.png locate}</td>
- *   <td>{@img maps.png maps}</td>
- *   <td>{@img more.png more}</td>
- *   <td>{@img organize.png organize}</td>
- *   <td>{@img refresh.png refresh}</td>
- * </tr>
- * <tr>
- *   <td>{@img reply.png reply}</td>
- *   <td>{@img search.png search}</td>
- *   <td>{@img settings.png settings}</td>
- *   <td>{@img star.png star}</td>
- *   <td>{@img team.png team}</td>
- *   <td>{@img time.png time}</td>
- * </tr>
- * <tr>
- *   <td>{@img trash.png trash}</td>
- *   <td>{@img user.png user}</td>
- * </tr>
- * </table>
- *
- * You can also use other pictos icons by using the {@link Global_CSS#icon icon} mixin in your Sass.
+ * Sencha provides the "Font" and "PNG" icons packs from http://wwww.pictos.cc. 
+ * Use icons with the {@link Global_CSS#icon icon} mixin in your Sass.
  *
  * ## Badges
  *
@@ -34151,7 +34694,6 @@ Ext.define('Ext.Sheet', {
     extend:  Ext.Panel ,
 
     xtype: 'sheet',
-    alternateClassName: ['widget.crosscut'],
 
                                                  
 
@@ -36026,443 +36568,6 @@ Ext.define('Ext.Anim', {
         })
     };
 });
-
-(function() {
-    var lastTime = 0,
-        vendors = ['ms', 'moz', 'webkit', 'o'],
-        ln = vendors.length,
-        i, vendor, method;
-
-    for (i = 0; i < ln && !window.requestAnimationFrame; ++i) {
-        vendor = vendors[i];
-        window.requestAnimationFrame = window[vendor + 'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendor + 'CancelAnimationFrame'] || window[vendor + 'CancelRequestAnimationFrame'];
-    }
-
-    if (!window.Ext) {
-        window.Ext = {};
-    }
-    Ext.performance = {};
-
-    if (window.performance && window.performance.now) {
-        Ext.performance.now = function() {
-            return window.performance.now();
-        }
-    }
-    else {
-        Ext.performance.now = function() {
-            return Date.now();
-        }
-    }
-
-    if (!window.requestAnimationFrame) {
-        window.requestAnimationFrame = function(callback, element) {
-            var currTime = Ext.performance.now(),
-                timeToCall = Math.max(0, 16 - (currTime - lastTime)),
-                id = window.setTimeout(function() {
-                    callback(currTime + timeToCall);
-                }, timeToCall);
-            lastTime = currTime + timeToCall;
-            return id;
-        };
-    }
-    else {
-        Ext.trueRequestAnimationFrames = true;
-    }
-
-    if (!window.cancelAnimationFrame) {
-        window.cancelAnimationFrame = function(id) {
-            clearTimeout(id);
-        };
-    }
-}());
-
-(function(global) {
-
-/**
- * @private
- */
-Ext.define('Ext.AnimationQueue', {
-    singleton: true,
-
-    constructor: function() {
-        var bind = Ext.Function.bind;
-
-        this.queue = [];
-        this.taskQueue = [];
-        this.runningQueue = [];
-        this.idleQueue = [];
-        this.isRunning = false;
-        this.isIdle = true;
-
-        this.run = bind(this.run, this);
-        this.whenIdle = bind(this.whenIdle, this);
-        this.processIdleQueueItem = bind(this.processIdleQueueItem, this);
-        this.processTaskQueueItem = bind(this.processTaskQueueItem, this);
-    },
-
-    /**
-     *
-     * @param fn
-     * @param [scope]
-     * @param [args]
-     */
-    start: function(fn, scope, args) {
-        this.queue.push(arguments);
-
-        if (!this.isRunning) {
-            if (this.hasOwnProperty('idleTimer')) {
-                clearTimeout(this.idleTimer);
-                delete this.idleTimer;
-            }
-
-            if (this.hasOwnProperty('idleQueueTimer')) {
-                clearTimeout(this.idleQueueTimer);
-                delete this.idleQueueTimer;
-            }
-
-            this.isIdle = false;
-            this.isRunning = true;
-            //<debug>
-            this.startCountTime = Ext.performance.now();
-            this.count = 0;
-            //</debug>
-            this.doStart();
-        }
-    },
-
-    run: function() {
-        if (!this.isRunning) {
-            return;
-        }
-
-        var queue = this.runningQueue,
-            i, ln;
-
-        this.frameStartTime = Ext.performance.now();
-
-        queue.push.apply(queue, this.queue);
-
-        for (i = 0, ln = queue.length; i < ln; i++) {
-            this.invoke(queue[i]);
-        }
-
-        queue.length = 0;
-
-        //<debug>
-        var now = this.frameStartTime,
-            startCountTime = this.startCountTime,
-            elapse = now - startCountTime,
-            count = ++this.count;
-
-        if (elapse >= 200) {
-            this.onFpsChanged(count * 1000 / elapse, count, elapse);
-            this.startCountTime = now;
-            this.count = 0;
-        }
-        //</debug>
-
-        this.doIterate();
-    },
-
-    //<debug>
-    onFpsChanged: Ext.emptyFn,
-
-    onStop: Ext.emptyFn,
-    //</debug>
-
-    doStart: function() {
-        this.animationFrameId = requestAnimationFrame(this.run);
-    },
-
-    doIterate: function() {
-        this.animationFrameId = requestAnimationFrame(this.run);
-    },
-
-    doStop: function() {
-        cancelAnimationFrame(this.animationFrameId);
-    },
-
-    /**
-     *
-     * @param fn
-     * @param [scope]
-     * @param [args]
-     */
-    stop: function(fn, scope, args) {
-        if (!this.isRunning) {
-            return;
-        }
-
-        var queue = this.queue,
-            ln = queue.length,
-            i, item;
-
-        for (i = 0; i < ln; i++) {
-            item = queue[i];
-            if (item[0] === fn && item[1] === scope && item[2] === args) {
-                queue.splice(i, 1);
-                i--;
-                ln--;
-            }
-        }
-
-        if (ln === 0) {
-            this.doStop();
-            //<debug>
-            this.onStop();
-            //</debug>
-            this.isRunning = false;
-
-            this.idleTimer = setTimeout(this.whenIdle, 100);
-        }
-    },
-
-    onIdle: function(fn, scope, args) {
-        var listeners = this.idleQueue,
-            i, ln, listener;
-
-        for (i = 0, ln = listeners.length; i < ln; i++) {
-            listener = listeners[i];
-            if (fn === listener[0] && scope === listener[1] && args === listener[2]) {
-                return;
-            }
-        }
-
-        listeners.push(arguments);
-
-        if (this.isIdle) {
-            this.processIdleQueue();
-        }
-    },
-
-    unIdle: function(fn, scope, args) {
-        var listeners = this.idleQueue,
-            i, ln, listener;
-
-        for (i = 0, ln = listeners.length; i < ln; i++) {
-            listener = listeners[i];
-            if (fn === listener[0] && scope === listener[1] && args === listener[2]) {
-                listeners.splice(i, 1);
-                return true;
-            }
-        }
-
-        return false;
-    },
-
-    queueTask: function(fn, scope, args) {
-        this.taskQueue.push(arguments);
-        this.processTaskQueue();
-    },
-
-    dequeueTask: function(fn, scope, args) {
-        var listeners = this.taskQueue,
-            i, ln, listener;
-
-        for (i = 0, ln = listeners.length; i < ln; i++) {
-            listener = listeners[i];
-            if (fn === listener[0] && scope === listener[1] && args === listener[2]) {
-                listeners.splice(i, 1);
-                i--;
-                ln--;
-            }
-        }
-    },
-
-    invoke: function(listener) {
-        var fn = listener[0],
-            scope = listener[1],
-            args = listener[2];
-
-        fn = (typeof fn == 'string' ? scope[fn] : fn);
-
-        if (Ext.isArray(args)) {
-            fn.apply(scope, args);
-        }
-        else {
-            fn.call(scope, args);
-        }
-    },
-
-    whenIdle: function() {
-        this.isIdle = true;
-        this.processIdleQueue();
-    },
-
-    processIdleQueue: function() {
-        if (!this.hasOwnProperty('idleQueueTimer')) {
-            this.idleQueueTimer = setTimeout(this.processIdleQueueItem, 1);
-        }
-    },
-
-    processIdleQueueItem: function() {
-        delete this.idleQueueTimer;
-
-        if (!this.isIdle) {
-            return;
-        }
-
-        var listeners = this.idleQueue,
-            listener;
-
-        if (listeners.length > 0) {
-            listener = listeners.shift();
-            this.invoke(listener);
-            this.processIdleQueue();
-        }
-    },
-
-    processTaskQueue: function() {
-        if (!this.hasOwnProperty('taskQueueTimer')) {
-            this.taskQueueTimer = setTimeout(this.processTaskQueueItem, 15);
-        }
-    },
-
-    processTaskQueueItem: function() {
-        delete this.taskQueueTimer;
-
-        var listeners = this.taskQueue,
-            listener;
-
-        if (listeners.length > 0) {
-            listener = listeners.shift();
-            this.invoke(listener);
-            this.processTaskQueue();
-        }
-    },
-
-    showFps: function() {
-        if (!Ext.trueRequestAnimationFrames) {
-            alert("This browser does not support requestAnimationFrame. The FPS listed will not be accurate");
-        }
-        Ext.onReady(function() {
-            Ext.Viewport.add([{
-                    xtype: 'component',
-                    bottom: 50,
-                    left: 0,
-                    width: 50,
-                    height: 20,
-                    html: 'Average',
-                    style: 'background-color: black; color: white; text-align: center; line-height: 20px; font-size: 8px;'
-                },
-                {
-                    id: '__averageFps',
-                    xtype: 'component',
-                    bottom: 0,
-                    left: 0,
-                    width: 50,
-                    height: 50,
-                    html: '0',
-                    style: 'background-color: red; color: white; text-align: center; line-height: 50px;'
-                },
-                {
-                    xtype: 'component',
-                    bottom: 50,
-                    left: 50,
-                    width: 50,
-                    height: 20,
-                    html: 'Min (Last 1k)',
-                    style: 'background-color: black; color: white; text-align: center; line-height: 20px; font-size: 8px;'
-                },
-                {
-                    id: '__minFps',
-                    xtype: 'component',
-                    bottom: 0,
-                    left: 50,
-                    width: 50,
-                    height: 50,
-                    html: '0',
-                    style: 'background-color: orange; color: white; text-align: center; line-height: 50px;'
-                },
-                {
-                    xtype: 'component',
-                    bottom: 50,
-                    left: 100,
-                    width: 50,
-                    height: 20,
-                    html: 'Max (Last 1k)',
-                    style: 'background-color: black; color: white; text-align: center; line-height: 20px; font-size: 8px;'
-                },
-                {
-                    id: '__maxFps',
-                    xtype: 'component',
-                    bottom: 0,
-                    left: 100,
-                    width: 50,
-                    height: 50,
-                    html: '0',
-                    style: 'background-color: yellow; color: black; text-align: center; line-height: 50px;'
-                },
-                {
-                    xtype: 'component',
-                    bottom: 50,
-                    left: 150,
-                    width: 50,
-                    height: 20,
-                    html: 'Current',
-                    style: 'background-color: black; color: white; text-align: center; line-height: 20px; font-size: 8px;'
-                },
-                {
-                    id: '__currentFps',
-                    xtype: 'component',
-                    bottom: 0,
-                    left: 150,
-                    width: 50,
-                    height: 50,
-                    html: '0',
-                    style: 'background-color: green; color: white; text-align: center; line-height: 50px;'
-                }
-            ]);
-            Ext.AnimationQueue.resetFps();
-        });
-
-    },
-
-    resetFps: function() {
-        var currentFps = Ext.getCmp('__currentFps'),
-            averageFps = Ext.getCmp('__averageFps'),
-            minFps = Ext.getCmp('__minFps'),
-            maxFps = Ext.getCmp('__maxFps'),
-            min = 1000,
-            max = 0,
-            count = 0,
-            sum = 0;
-
-        Ext.AnimationQueue.onFpsChanged = function(fps) {
-            count++;
-
-            if (!(count % 10)) {
-                min = 1000;
-                max = 0;
-            }
-
-            sum += fps;
-            min = Math.min(min, fps);
-            max = Math.max(max, fps);
-            currentFps.setHtml(Math.round(fps));
-            averageFps.setHtml(Math.round(sum / count));
-            minFps.setHtml(Math.round(min));
-            maxFps.setHtml(Math.round(max));
-        };
-    }
-}, function() {
-    /*
-        Global FPS indicator. Add ?showfps to use in any application. Note that this REQUIRES true requestAnimationFrame
-        to be accurate.
-     */
-    //<debug>
-    var paramsString = window.location.search.substr(1),
-        paramsArray = paramsString.split("&");
-
-    if (paramsArray.indexOf("showfps") !== -1) {
-        Ext.AnimationQueue.showFps();
-    }
-    //</debug>
-
-});
-
-})(this);
 
 /**
  * Provides a base class for audio/visual controls. Should not be used directly.
@@ -38719,6 +38824,12 @@ Ext.define('Ext.Img', {
 
     onError : function(e) {
         this.detachListeners();
+
+        // Attempt to set the src even though the error event fired.
+        if (this.getMode() === 'background') {
+            this.element.dom.style.backgroundImage = 'url("' + this.imageObject.src + '")';
+        }
+
         this.fireEvent('error', this, e);
     },
 
@@ -39563,12 +39674,7 @@ Ext.define('Ext.field.Input', {
          * __This will be `undefined` until the Field has been visited.__ Compare {@link #originalValue}.
          * @accessor
          */
-        startValue: false,
-
-        /**
-         * True to hide sencha-styled clear button and set CSS native clear button (currently supports in IE10 only).
-         */
-        useNativeClearButton: false
+        startValue: false
     },
 
     /**
@@ -39609,16 +39715,16 @@ Ext.define('Ext.field.Input', {
             focus: 'onFocus',
             blur: 'onBlur',
             input: 'onInput',
-            paste: 'onPaste'
+            paste: 'onPaste',
+            tap: 'onInputTap'
         });
 
         me.mask.on({
-            tap: 'onMaskTap',
-            scope: me
+            scope: me,
+            tap: 'onMaskTap'
         });
 
         if (me.clearIcon) {
-            me.element.addCls((this.config.useNativeClearButton)?'native-clear-icon':'sencha-clear-icon');
             me.clearIcon.on({
                 tap: 'onClearIconTap',
                 touchstart: 'onClearIconPress',
@@ -39631,7 +39737,7 @@ Ext.define('Ext.field.Input', {
         if(Ext.browser.is.ie && Ext.browser.version.major >=10){
             me.input.on({
                 scope: me,
-                keypress    : 'onKeyPress'
+                keypress: 'onKeyPress'
             });
         }
     },
@@ -39957,6 +40063,20 @@ Ext.define('Ext.field.Input', {
     },
 
     // @private
+    onInputTap: function(e) {
+        this.fireAction('inputtap', [this, e], 'doInputTap');
+    },
+
+    // @private
+    doInputTap: function(me, e) {
+        if (me.getDisabled()) {
+            return false;
+        }
+
+        me.focus();
+    },
+
+    // @private
     onMaskTap: function(e) {
         this.fireAction('masktap', [this, e], 'doMaskTap');
     },
@@ -39967,20 +40087,19 @@ Ext.define('Ext.field.Input', {
             return false;
         }
 
-        me.maskCorrectionTimer = Ext.defer(me.showMask, 1000, me);
-        me.hideMask();
+        me.focus();
     },
 
     // @private
-    showMask: function(e) {
-        if (this.mask) {
+    showMask: function() {
+        if (this.getUseMask()) {
             this.mask.setStyle('display', 'block');
         }
     },
 
     // @private
-    hideMask: function(e) {
-        if (this.mask) {
+    hideMask: function() {
+        if (this.getUseMask()) {
             this.mask.setStyle('display', 'none');
         }
     },
@@ -40037,17 +40156,12 @@ Ext.define('Ext.field.Input', {
     doFocus: function(e) {
         var me = this;
 
-        if (me.mask) {
-            if (me.maskCorrectionTimer) {
-                clearTimeout(me.maskCorrectionTimer);
-            }
-            me.hideMask();
-        }
+        me.hideMask();
 
         if (!me.getIsFocused()) {
-            me.setIsFocused(true);
             me.setStartValue(me.getValue());
         }
+        me.setIsFocused(true);
     },
 
     onBlur: function(e) {
@@ -40056,9 +40170,11 @@ Ext.define('Ext.field.Input', {
 
     // @private
     doBlur: function(e) {
-        var me         = this,
-            value      = me.getValue(),
+        var me = this,
+            value = me.getValue(),
             startValue = me.getStartValue();
+
+        me.showMask();
 
         me.setIsFocused(false);
 
@@ -40066,7 +40182,6 @@ Ext.define('Ext.field.Input', {
             me.onChange(me, value, startValue);
         }
 
-        me.showMask();
     },
 
     // @private
@@ -40137,6 +40252,7 @@ Ext.define('Ext.field.Input', {
             }
         }, 10);
     },
+
     // Hack for IE10 mobile. Handle pressing 'enter' button and fire keyup event in this case.
     onKeyPress: function(e) {
         if(e.browserEvent.keyCode == 13){
@@ -40907,7 +41023,7 @@ Ext.define('Ext.field.Text', {
 
     // @private
     doClearIconTap: function(me, e) {
-        me.setValue(this.originalValue);
+        me.setValue('');
 
         //sync with the input
         me.getValue();
@@ -42518,101 +42634,6 @@ Ext.define('Ext.Sortable', {
 });
 
 /**
- * @private
- * Handle batch read / write of DOMs, currently used in SizeMonitor + PaintMonitor
- */
-Ext.define('Ext.TaskQueue', {
-                                   
-
-    singleton: true,
-
-    pending: false,
-
-    mode: true,
-
-    constructor: function() {
-        this.readQueue = [];
-        this.writeQueue = [];
-
-        this.run = Ext.Function.bind(this.run, this);
-    },
-
-    requestRead: function(fn, scope, args) {
-        this.request(true);
-        this.readQueue.push(arguments);
-    },
-
-    requestWrite: function(fn, scope, args) {
-        this.request(false);
-        this.writeQueue.push(arguments);
-    },
-
-    request: function(mode) {
-        if (!this.pending) {
-            this.pending = true;
-            this.mode = mode;
-            if (mode) {
-                setTimeout(this.run, 1);
-            } else {
-                requestAnimationFrame(this.run);
-            }
-        }
-    },
-
-    run: function() {
-        this.pending = false;
-
-        var readQueue = this.readQueue,
-            writeQueue = this.writeQueue,
-            request = null,
-            queue;
-
-        if (this.mode) {
-            queue = readQueue;
-
-            if (writeQueue.length > 0) {
-                request = false;
-            }
-        }
-        else {
-            queue = writeQueue;
-
-            if (readQueue.length > 0) {
-                request = true;
-            }
-        }
-
-        var tasks = queue.slice(),
-            i, ln, task, fn, scope;
-
-        queue.length = 0;
-
-        for (i = 0, ln = tasks.length; i < ln; i++) {
-            task = tasks[i];
-            fn = task[0];
-            scope = task[1];
-
-            if (typeof fn == 'string') {
-                fn = scope[fn];
-            }
-
-            if (task.length > 2) {
-                fn.apply(scope, task[2]);
-            }
-            else {
-                fn.call(scope);
-            }
-        }
-
-        tasks.length = 0;
-
-        if (request !== null) {
-            this.request(request);
-        }
-    }
-});
-
-/**
  * {@link Ext.TitleBar}'s are most commonly used as a docked item within an {@link Ext.Container}.
  *
  * The main difference between a {@link Ext.TitleBar} and an {@link Ext.Toolbar} is that
@@ -42850,21 +42871,21 @@ Ext.define('Ext.TitleBar', {
         }
     },
 
-    doBoxRemove: function(item) {
+    doBoxRemove: function(item, destroy) {
         if (item.config.align == 'right') {
-            this.rightBox.remove(item);
+            this.rightBox.remove(item, destroy);
         }
         else {
-            this.leftBox.remove(item);
+            this.leftBox.remove(item, destroy);
         }
     },
 
     doBoxInsert: function(index, item) {
         if (item.config.align == 'right') {
-            this.rightBox.add(item);
+            this.rightBox.insert(index, item);
         }
         else {
-            this.leftBox.add(item);
+            this.leftBox.insert(index, item);
         }
     },
 
@@ -42990,7 +43011,7 @@ Ext.define('Ext.Video', {
 
     config: {
         /**
-         * @cfg {String/Array} urls
+         * @cfg {String/Array} url
          * Location of the video to play. This should be in H.264 format and in a .mov file format.
          * @accessor
          */
@@ -44368,8 +44389,11 @@ Ext.define('Ext.app.Route', {
             return Ext.applyIf(matches, {
                 controller: this.getController(),
                 action    : this.getAction(),
-                historyUrl: url,
-                args      : args
+                url       : url,
+                args      : args,
+
+                // We keep the historyUrl in here for backwards compatibility
+                historyUrl: url
             });
         }
     },
@@ -50383,6 +50407,9 @@ Ext.define("Ext.draw.Path", {
      * @param height
      */
     rect: function (x, y, width, height) {
+        if (width == 0 || height == 0) {
+            return;
+        }
         var me = this;
         me.moveTo(x, y);
         me.lineTo(x + width, y);
@@ -54223,6 +54250,7 @@ Ext.define('Ext.draw.Surface', {
             component.element.dom.appendChild(this.element.dom);
         }
     },
+
     /**
      * Add a Sprite to the surface.
      * You can put any number of object as parameter.
@@ -54243,16 +54271,17 @@ Ext.define('Ext.draw.Surface', {
         var me = this,
             args = Array.prototype.slice.call(arguments),
             argIsArray = Ext.isArray(args[0]),
-            sprite, items, i, ln, results, group, groups;
+            results = [],
+            sprite, items, i, ln, group, groups;
 
         items = argIsArray ? args[0] : args;
-        results = [];
+
         for (i = 0, ln = items.length; i < ln; i++) {
             sprite = items[i];
-            if (!items[i]) {
+            if (!sprite) {
                 continue;
             }
-            sprite = me.prepareItems(args[0])[0];
+            sprite = me.prepareItems(args[0])[i];
             groups = sprite.group;
             if (groups.length) {
                 for (i = 0, ln = groups.length; i < ln; i++) {
@@ -54269,6 +54298,7 @@ Ext.define('Ext.draw.Surface', {
 
         me.dirtyZIndex = true;
         me.setDirty(true);
+
         if (!argIsArray && results.length === 1) {
             return results[0];
         } else {
@@ -54346,6 +54376,7 @@ Ext.define('Ext.draw.Surface', {
     prepareItems: function (items) {
         items = [].concat(items);
         // Make sure defaults are applied and item is initialized
+
         var me = this,
             item, i, ln, j,
             removeSprite = function (sprite) {
@@ -56753,7 +56784,7 @@ Ext.define("Ext.chart.label.Label", {
 
 /**
  * Series is the abstract class containing the common logic to all chart series. Series includes
- * methods from Labels, Highlights, Tips and Callouts mixins. This class implements the logic of
+ * methods from Labels, Highlights, and Callouts mixins. This class implements the logic of
  * animating, hiding, showing all elements and returning the color of the series to be used as a legend item.
  *
  * ## Listeners
@@ -57157,6 +57188,7 @@ Ext.define('Ext.chart.series.Series', {
     coordinate: function (direction, directionOffset, directionCount) {
         var me = this,
             store = me.getStore(),
+            hidden = me.getHidden(),
             items = store.getData().items,
             axis = me['get' + direction + 'Axis'](),
             range = {min: Infinity, max: -Infinity},
@@ -57165,11 +57197,13 @@ Ext.define('Ext.chart.series.Series', {
             i, field, data, style = {},
             sprites = me.getSprites();
         if (sprites.length > 0) {
-            for (i = 0; i < fieldCategory.length; i++) {
-                field = fields[i];
-                data = me.coordinateData(items, field, axis);
-                me.getRangeOfData(data, range);
-                style['data' + fieldCategory[i]] = data;
+            if (!Ext.isBoolean(hidden) || !hidden) {
+                for (i = 0; i < fieldCategory.length; i++) {
+                    field = fields[i];
+                    data = me.coordinateData(items, field, axis);
+                    me.getRangeOfData(data, range);
+                    style['data' + fieldCategory[i]] = data;
+                }
             }
             me.dataRange[directionOffset] = range.min;
             me.dataRange[directionOffset + directionCount] = range.max;
@@ -59392,6 +59426,10 @@ Ext.define('Ext.chart.axis.Axis', {
 
         /**
          * @cfg {Function} renderer Allows direct customisation of rendered axis sprites.
+         * @param {String} label The label.
+         * @param {Object|Ext.chart.axis.layout.Layout} layout The layout configuration used by the axis.
+         * @param {String} lastLabel The last label.
+         * @return {String} The label to display.
          */
         renderer: null,
 
@@ -61840,6 +61878,2801 @@ Ext.define('Ext.util.Collection', {
     destroy: function() {
         this.callSuper();
         this.clear();
+    }
+});
+
+/**
+ * @author Ed Spencer
+ *
+ * Simple wrapper class that represents a set of records returned by a Proxy.
+ */
+Ext.define('Ext.data.ResultSet', {
+    config: {
+        /**
+         * @cfg {Boolean} loaded
+         * True if the records have already been loaded. This is only meaningful when dealing with
+         * SQL-backed proxies.
+         */
+        loaded: true,
+
+        /**
+         * @cfg {Number} count
+         * The number of records in this ResultSet. Note that total may differ from this number.
+         */
+        count: null,
+
+        /**
+         * @cfg {Number} total
+         * The total number of records reported by the data source. This ResultSet may form a subset of
+         * those records (see {@link #count}).
+         */
+        total: null,
+
+        /**
+         * @cfg {Boolean} success
+         * True if the ResultSet loaded successfully, false if any errors were encountered.
+         */
+        success: false,
+
+        /**
+         * @cfg {Ext.data.Model[]} records (required)
+         * The array of record instances.
+         */
+        records: null,
+
+        /**
+         * @cfg {String} message
+         * The message that was read in from the data
+         */
+        message: null
+    },
+
+    /**
+     * Creates the resultSet
+     * @param {Object} [config] Config object.
+     */
+    constructor: function(config) {
+        this.initConfig(config);
+    },
+
+    applyCount: function(count) {
+        if (!count && count !== 0) {
+            return this.getRecords().length;
+        }
+        return count;
+    },
+    
+    /**
+     * @private
+     * Make sure we set the right count when new records have been sent in
+     */
+    updateRecords: function(records) {
+        this.setCount(records.length);
+    }
+});
+
+/**
+ * @author Ed Spencer
+ *
+ * Readers are used to interpret data to be loaded into a {@link Ext.data.Model Model} instance or a {@link
+ * Ext.data.Store Store} - often in response to an AJAX request. In general there is usually no need to create
+ * a Reader instance directly, since a Reader is almost always used together with a {@link Ext.data.proxy.Proxy Proxy},
+ * and is configured using the Proxy's {@link Ext.data.proxy.Proxy#cfg-reader reader} configuration property:
+ *
+ *     Ext.define("User", {
+ *         extend: "Ext.data.Model",
+ *         config: {
+ *             fields: [
+ *                 "id",
+ *                 "name"
+ *             ]
+ *         }
+ *     });
+ *
+ *     Ext.create("Ext.data.Store", {
+ *         model: "User",
+ *         autoLoad: true,
+ *         storeId: "usersStore",
+ *         proxy: {
+ *             type: "ajax",
+ *             url : "users.json",
+ *             reader: {
+ *                 type: "json",
+ *                 rootProperty: "users"
+ *             }
+ *         }
+ *     });
+ *
+ *     Ext.create("Ext.List", {
+ *         fullscreen: true,
+ *         itemTpl: "{name} (id: '{id}')",
+ *         store: "usersStore"
+ *     });
+ *
+ * The above reader is configured to consume a JSON string that looks something like this:
+ *
+ *     {
+ *         "success": true,
+ *         "users": [
+ *             { "name": "User 1" },
+ *             { "name": "User 2" }
+ *         ]
+ *     }
+ *
+ *
+ * # Loading Nested Data
+ *
+ * Readers have the ability to automatically load deeply-nested data objects based on the {@link Ext.data.association.Association
+ * associations} configured on each Model. Below is an example demonstrating the flexibility of these associations in a
+ * fictional CRM system which manages a User, their Orders, OrderItems and Products. First we'll define the models:
+ *
+ *     Ext.define("User", {
+ *         extend: "Ext.data.Model",
+ *         config: {
+ *             fields: [
+ *                 "id",
+ *                 "name"
+ *             ],
+ *             hasMany: {
+ *                 model: "Order",
+ *                 name: "orders"
+ *             },
+ *             proxy: {
+ *                 type: "rest",
+ *                 url : "users.json",
+ *                 reader: {
+ *                     type: "json",
+ *                     rootProperty: "users"
+ *                 }
+ *             }
+ *         }
+ *     });
+ *
+ *     Ext.define("Order", {
+ *         extend: "Ext.data.Model",
+ *         config: {
+ *             fields: [
+ *                 "id", "total"
+ *             ],
+ *             hasMany: {
+ *                 model: "OrderItem",
+ *                 name: "orderItems",
+ *                 associationKey: "order_items"
+ *             },
+ *             belongsTo: "User"
+ *         }
+ *     });
+ *
+ *     Ext.define("OrderItem", {
+ *         extend: "Ext.data.Model",
+ *         config: {
+ *             fields: [
+ *                 "id",
+ *                 "price",
+ *                 "quantity",
+ *                 "order_id",
+ *                 "product_id"
+ *             ],
+ *             belongsTo: [
+ *                 "Order", {
+ *                     model: "Product",
+ *                     associationKey: "product"
+ *                 }
+ *             ]
+ *         }
+ *     });
+ *
+ *     Ext.define("Product", {
+ *         extend: "Ext.data.Model",
+ *         config: {
+ *             fields: [
+ *                 "id",
+ *                 "name"
+ *             ]
+ *         },
+ *         hasMany: "OrderItem"
+ *     });
+ *
+ *     var store = Ext.create('Ext.data.Store', {
+ *         model: "User"
+ *     });
+ *
+ *     store.load({
+ *         callback: function() {
+ *             var output = [];
+ *
+ *             // the user that was loaded
+ *             var user = store.first();
+ *
+ *             output.push("Orders for " + user.get('name') + ":");
+ *
+ *             // iterate over the Orders for each User
+ *             user.orders().each(function(order) {
+ *                 output.push("Order ID: " + order.get('id') + ", which contains items:");
+ *
+ *                 // iterate over the OrderItems for each Order
+ *                 order.orderItems().each(function(orderItem) {
+ *                     // We know that the Product data is already loaded, so we can use the
+ *                     // synchronous getProduct() method. Usually, we would use the 
+ *                     // asynchronous version (see Ext.data.association.BelongsTo).
+ *                     var product = orderItem.getProduct();
+ *                     output.push(orderItem.get("quantity") + " orders of " + product.get("name"));
+ *                 });
+ *             });
+ *             Ext.Msg.alert('Output:', output.join("<br/>"));
+ *         }
+ *     });
+ *
+ * This may be a lot to take in - basically a User has many Orders, each of which is composed of several OrderItems.
+ * Finally, each OrderItem has a single Product. This allows us to consume data like this (_users.json_):
+ *
+ *     {
+ *         "users": [
+ *             {
+ *                 "id": 123,
+ *                 "name": "Ed",
+ *                 "orders": [
+ *                     {
+ *                         "id": 50,
+ *                         "total": 100,
+ *                         "order_items": [
+ *                             {
+ *                                 "id"      : 20,
+ *                                 "price"   : 40,
+ *                                 "quantity": 2,
+ *                                 "product" : {
+ *                                     "id": 1000,
+ *                                     "name": "MacBook Pro"
+ *                                 }
+ *                             },
+ *                             {
+ *                                 "id"      : 21,
+ *                                 "price"   : 20,
+ *                                 "quantity": 3,
+ *                                 "product" : {
+ *                                     "id": 1001,
+ *                                     "name": "iPhone"
+ *                                 }
+ *                             }
+ *                         ]
+ *                     }
+ *                 ]
+ *             }
+ *         ]
+ *     }
+ *
+ * The JSON response is deeply nested - it returns all Users (in this case just 1 for simplicity's sake), all of the
+ * Orders for each User (again just 1 in this case), all of the OrderItems for each Order (2 order items in this case),
+ * and finally the Product associated with each OrderItem.
+ *
+ * Running the code above results in the following:
+ *
+ *     Orders for Ed:
+ *     Order ID: 50, which contains items:
+ *     2 orders of MacBook Pro
+ *     3 orders of iPhone
+ */
+Ext.define('Ext.data.reader.Reader', {
+               
+                            
+      
+    alternateClassName: ['Ext.data.Reader', 'Ext.data.DataReader'],
+
+    mixins: [ Ext.mixin.Observable ],
+
+    // @private
+    isReader: true,
+
+    config: {
+        /**
+         * @cfg {String} idProperty
+         * Name of the property within a raw object that contains a record identifier value. Defaults to The id of the
+         * model. If an `idProperty` is explicitly specified it will override that of the one specified on the model
+         */
+        idProperty: undefined,
+
+        /**
+         * @cfg {String} clientIdProperty
+         * The name of the property with a response that contains the existing client side id for a record that we are reading.
+         */
+        clientIdProperty: 'clientId',
+
+        /**
+         * @cfg {String} totalProperty
+         * Name of the property from which to retrieve the total number of records in the dataset. This is only needed if
+         * the whole dataset is not passed in one go, but is being paged from the remote server.
+         */
+        totalProperty: 'total',
+
+        /**
+         * @cfg {String} successProperty
+         * Name of the property from which to retrieve the success attribute. See
+         * {@link Ext.data.proxy.Server}.{@link Ext.data.proxy.Server#exception exception} for additional information.
+         */
+        successProperty: 'success',
+
+        /**
+         * @cfg {String} messageProperty (optional)
+         * The name of the property which contains a response message. This property is optional.
+         */
+        messageProperty: null,
+
+        /**
+         * @cfg {String} rootProperty
+         * The name of the property which contains the Array of row objects.  For JSON reader it's dot-separated list
+         * of property names.  For XML reader it's a CSS selector.  For array reader it's not applicable.
+         *
+         * By default the natural root of the data will be used.  The root JSON array, the root XML element, or the array.
+         *
+         * The data packet value for this property should be an empty array to clear the data or show no data.
+         */
+        rootProperty: '',
+
+        /**
+         * @cfg {Boolean} implicitIncludes
+         * `true` to automatically parse models nested within other models in a response object. See the
+         * {@link Ext.data.reader.Reader} intro docs for full explanation.
+         */
+        implicitIncludes: true,
+
+        model: undefined
+    },
+
+    constructor: function(config) {
+        this.initConfig(config);
+    },
+
+    /**
+     * @property {Object} metaData
+     * The raw meta data that was most recently read, if any. Meta data can include existing
+     * Reader config options like {@link #idProperty}, {@link #totalProperty}, etc. that get
+     * automatically applied to the Reader, and those can still be accessed directly from the Reader
+     * if needed. However, meta data is also often used to pass other custom data to be processed
+     * by application code. For example, it is common when reconfiguring the data model of a grid to
+     * also pass a corresponding column model config to be applied to the grid. Any such data will
+     * not get applied to the Reader directly (it just gets passed through and is ignored by Ext).
+     * This `metaData` property gives you access to all meta data that was passed, including any such
+     * custom data ignored by the reader.
+     *
+     * This is a read-only property, and it will get replaced each time a new meta data object is
+     * passed to the reader.
+     * @readonly
+     */
+
+    fieldCount: 0,
+
+    applyModel: function(model) {
+        if (typeof model == 'string') {
+            model = Ext.data.ModelManager.getModel(model);
+
+            if (!model) {
+                Ext.Logger.error('Model with name ' + arguments[0] + ' doesnt exist.');
+            }
+        }
+
+        if (model && !model.prototype.isModel && Ext.isObject(model)) {
+            model = Ext.data.ModelManager.registerType(model.storeId || model.id || Ext.id(), model);
+        }
+
+        return model;
+    },
+
+    applyIdProperty: function(idProperty) {
+        if (!idProperty && this.getModel()) {
+            idProperty = this.getModel().getIdProperty();
+        }
+        return idProperty;
+    },
+
+    updateModel: function(model) {
+        if (model) {
+            if (!this.getIdProperty()) {
+                this.setIdProperty(model.getIdProperty());
+            }
+            this.buildExtractors();
+        }
+    },
+
+    createAccessor: Ext.emptyFn,
+
+    createFieldAccessExpression: function() {
+        return 'undefined';
+    },
+
+    /**
+     * @private
+     * This builds optimized functions for retrieving record data and meta data from an object.
+     * Subclasses may need to implement their own getRoot function.
+     */
+    buildExtractors: function() {
+        if (!this.getModel()) {
+            return;
+        }
+
+        var me = this,
+            totalProp = me.getTotalProperty(),
+            successProp = me.getSuccessProperty(),
+            messageProp = me.getMessageProperty();
+
+        //build the extractors for all the meta data
+        if (totalProp) {
+            me.getTotal = me.createAccessor(totalProp);
+        }
+
+        if (successProp) {
+            me.getSuccess = me.createAccessor(successProp);
+        }
+
+        if (messageProp) {
+            me.getMessage = me.createAccessor(messageProp);
+        }
+
+        me.extractRecordData = me.buildRecordDataExtractor();
+    },
+
+    /**
+     * @private
+     * Return a function which will read a raw row object in the format this Reader accepts, and populates
+     * a record's data object with converted data values.
+     *
+     * The returned function must be passed the following parameters:
+     *
+     * - `dest` - A record's empty data object into which the new field value properties are injected.
+     * - `source` - A raw row data object of whatever type this Reader consumes
+     * - `record - The record which is being populated.
+     */
+    buildRecordDataExtractor: function() {
+        var me = this,
+            model = me.getModel(),
+            fields = model.getFields(),
+            ln = fields.length,
+            fieldVarName = [],
+            clientIdProp = me.getModel().getClientIdProperty(),
+            prefix = '__field',
+            code = [
+                'var me = this,\n',
+                '    fields = me.getModel().getFields(),\n',
+                '    idProperty = me.getIdProperty(),\n',
+                '    idPropertyIsFn = (typeof idProperty == "function"),',
+                '    value,\n',
+                '    internalId'
+            ], i, field, varName, fieldName;
+
+        fields = fields.items;
+
+        for (i = 0; i < ln; i++) {
+            field = fields[i];
+            fieldName = field.getName();
+            if (fieldName === model.getIdProperty()) {
+                fieldVarName[i] = 'idField';
+            } else {
+                fieldVarName[i] = prefix + i;
+            }
+            code.push(',\n    ', fieldVarName[i], ' = fields.get("', field.getName(), '")');
+        }
+
+        code.push(';\n\n    return function(source) {\n        var dest = {};\n');
+
+        code.push('        if (idPropertyIsFn) {\n');
+        code.push('            idField.setMapping(idProperty);\n');
+        code.push('        }\n');
+
+        for (i = 0; i < ln; i++) {
+            field = fields[i];
+            varName = fieldVarName[i];
+            fieldName = field.getName();
+            if (fieldName === model.getIdProperty() && field.getMapping() === null && model.getIdProperty() !== this.getIdProperty()) {
+                field.setMapping(this.getIdProperty());
+            }
+            // createFieldAccessExpression must be implemented in subclasses to extract data from the source object in the correct way.
+            code.push('        try {\n');
+            code.push('            value = ', me.createFieldAccessExpression(field, varName, 'source'), ';\n');
+            code.push('            if (value !== undefined) {\n');
+            code.push('                dest["' + field.getName() + '"] = value;\n');
+            code.push('            }\n');
+            code.push('        } catch(e){}\n');
+        }
+
+        // set the client id as the internalId of the record.
+        // clientId handles the case where a client side record did not previously exist on the server,
+        // so the server is passing back a client id that can be used to pair the server side record up with the client record
+        if (clientIdProp) {
+            code.push('        internalId = ' + me.createFieldAccessExpression(Ext.create('Ext.data.Field', {name: clientIdProp}), null, 'source') + ';\n');
+            code.push('        if (internalId !== undefined) {\n');
+            code.push('            dest["_clientId"] = internalId;\n        }\n');
+        }
+
+        code.push('        return dest;\n');
+        code.push('    };');
+
+        // Here we are creating a new Function and invoking it immediately in the scope of this Reader
+        // It declares several vars capturing the configured context of this Reader, and returns a function
+        // which, when passed a record data object, a raw data row in the format this Reader is configured to read,
+        // and the record which is being created, will populate the record's data object from the raw row data.
+        return Ext.functionFactory(code.join('')).call(me);
+    },
+
+    getFields: function() {
+        return this.getModel().getFields().items;
+    },
+
+    /**
+     * @private
+     * By default this function just returns what is passed to it. It can be overridden in a subclass
+     * to return something else. See XmlReader for an example.
+     * @param {Object} data The data object
+     * @return {Object} The normalized data object
+     */
+    getData: function(data) {
+        return data;
+    },
+
+    /**
+     * Takes a raw response object (as passed to this.read) and returns the useful data segment of it.
+     * This must be implemented by each subclass
+     * @param {Object} response The response object
+     * @return {Object} The useful data from the response
+     */
+    getResponseData: function(response) {
+        return response;
+    },
+
+    /**
+     * @private
+     * This will usually need to be implemented in a subclass. Given a generic data object (the type depends on the type
+     * of data we are reading), this function should return the object as configured by the Reader's 'rootProperty' meta data config.
+     * See XmlReader's getRoot implementation for an example. By default the same data object will simply be returned.
+     * @param {Object} data The data object
+     * @return {Object} The same data object
+     */
+    getRoot: function(data) {
+        return data;
+    },
+
+    /**
+     * Reads the given response object. This method normalizes the different types of response object that may be passed
+     * to it, before handing off the reading of records to the {@link #readRecords} function.
+     * @param {Object} response The response object. This may be either an XMLHttpRequest object or a plain JS object
+     * @return {Ext.data.ResultSet} The parsed ResultSet object
+     */
+    read: function(response) {
+        var data = response,
+            Model = this.getModel(),
+            resultSet, records, i, ln, record;
+
+        if (response) {
+            data = this.getResponseData(response);
+        }
+
+        if (data) {
+            resultSet = this.readRecords(data);
+            records = resultSet.getRecords();
+            for (i = 0, ln = records.length; i < ln; i++) {
+                record = records[i];
+                records[i] = new Model(record.data, record.id, record.node);
+            }
+            return resultSet;
+        } else {
+            return this.nullResultSet;
+        }
+    },
+
+    process: function(response) {
+        var data = response;
+
+        if (response) {
+            data = this.getResponseData(response);
+        }
+
+        if (data) {
+            return this.readRecords(data);
+        } else {
+            return this.nullResultSet;
+        }
+    },
+
+    /**
+     * Abstracts common functionality used by all Reader subclasses. Each subclass is expected to call this function
+     * before running its own logic and returning the Ext.data.ResultSet instance. For most Readers additional
+     * processing should not be needed.
+     * @param {Object} data The raw data object
+     * @return {Ext.data.ResultSet} A ResultSet object
+     */
+    readRecords: function(data) {
+        var me  = this;
+
+        /**
+         * @property {Object} rawData
+         * The raw data object that was last passed to readRecords. Stored for further processing if needed
+         */
+        me.rawData = data;
+
+        data = me.getData(data);
+
+        if (data.metaData) {
+            me.onMetaChange(data.metaData);
+        }
+
+        // <debug>
+        if (!me.getModel()) {
+            Ext.Logger.warn('In order to read record data, a Reader needs to have a Model defined on it.');
+        }
+        // </debug>
+
+        // If we pass an array as the data, we don't use getRoot on the data.
+        // Instead the root equals to the data.
+        var isArray = Ext.isArray(data),
+            root = isArray ? data : me.getRoot(data),
+            success = true,
+            recordCount = 0,
+            total, value, records, message;
+
+        if (isArray && !data.length) {
+            return me.nullResultSet;
+        }
+
+        // buildExtractors should have put getTotal, getSuccess, or getMessage methods on the instance.
+        // So we can check them directly
+        if (me.getTotal) {
+            value = parseInt(me.getTotal(data), 10);
+            if (!isNaN(value)) {
+                total = value;
+            }
+        }
+
+        if (me.getSuccess) {
+            value = me.getSuccess(data);
+            if (value === false || value === 'false') {
+                success = false;
+            }
+        }
+
+        if (me.getMessage) {
+            message = me.getMessage(data);
+        }
+
+        if (root) {
+            records = me.extractData(root);
+            recordCount = records.length;
+        } else {
+            recordCount = 0;
+            records = [];
+        }
+
+        return new Ext.data.ResultSet({
+            total  : total,
+            count  : recordCount,
+            records: records,
+            success: success,
+            message: message
+        });
+    },
+
+    /**
+     * Returns extracted, type-cast rows of data.
+     * @param {Object[]/Object} root from server response
+     * @private
+     */
+    extractData : function(root) {
+        var me = this,
+            records = [],
+            length  = root.length,
+            model = me.getModel(),
+            idProperty = model.getIdProperty(),
+            fieldsCollection = model.getFields(),
+            node, i, data, id, clientId;
+
+        /*
+         * We check here whether the fields are dirty since the last read.
+         * This works around an issue when a Model is used for both a Tree and another
+         * source, because the tree decorates the model with extra fields and it causes
+         * issues because the readers aren't notified.
+         */
+        if (fieldsCollection.isDirty) {
+            me.buildExtractors(true);
+            delete fieldsCollection.isDirty;
+        }
+
+        if (!root.length && Ext.isObject(root)) {
+            root = [root];
+            length = 1;
+        }
+
+        for (i = 0; i < length; i++) {
+            clientId = null;
+            id = null;
+
+            node = root[i];
+
+            // When you use a Memory proxy, and you set data: [] to contain record instances
+            // this node will already be a record. In this case we should not try to extract
+            // the record data from the object, but just use the record data attribute.
+            if (node.isModel) {
+                data = node.data;
+            } else {
+                data = me.extractRecordData(node);
+            }
+
+            if (data._clientId !== undefined) {
+                clientId = data._clientId;
+                delete data._clientId;
+            }
+
+            if (data[idProperty] !== undefined) {
+                id = data[idProperty];
+            }
+
+            if (me.getImplicitIncludes()) {
+                 me.readAssociated(data, node);
+            }
+
+            records.push({
+                clientId: clientId,
+                id: id,
+                data: data,
+                node: node
+            });
+        }
+
+        return records;
+    },
+
+    /**
+     * @private
+     * Loads a record's associations from the data object. This pre-populates `hasMany` and `belongsTo` associations
+     * on the record provided.
+     * @param {Ext.data.Model} record The record to load associations for
+     * @param {Object} data The data object
+     */
+    readAssociated: function(record, data) {
+        var associations = this.getModel().associations.items,
+            length = associations.length,
+            i = 0,
+            association, associationData, associationKey;
+
+        for (; i < length; i++) {
+            association = associations[i];
+            associationKey = association.getAssociationKey();
+            associationData = this.getAssociatedDataRoot(data, associationKey);
+
+            if (associationData) {
+                record[associationKey] = associationData;
+            }
+        }
+    },
+
+    /**
+     * @private
+     * Used internally by `readAssociated`. Given a data object (which could be json, xml etc) for a specific
+     * record, this should return the relevant part of that data for the given association name. If a complex
+     * mapping, this will traverse arrays and objects to resolve the data.
+     * @param {Object} data The raw data object
+     * @param {String} associationName The name of the association to get data for (uses associationKey if present)
+     * @return {Object} The root
+     */
+    getAssociatedDataRoot: function(data, associationName) {
+        var re = /[\[\.]/,
+            i  = String(associationName).search(re);
+
+        if (i >= 0) {
+            return Ext.functionFactory('obj', 'return obj' + (i > 0 ? '.' : '') + associationName)(data);
+        }
+
+        return data[associationName];
+    },
+
+    /**
+     * @private
+     * Reconfigures the meta data tied to this Reader
+     */
+    onMetaChange : function(meta) {
+        var fields = meta.fields,
+            me = this,
+            newModel, config, idProperty;
+
+        // save off the raw meta data
+        me.metaData = meta;
+
+        // set any reader-specific configs from meta if available
+        if (meta.rootProperty !== undefined) {
+            me.setRootProperty(meta.rootProperty);
+        }
+        else if (meta.root !== undefined) {
+            me.setRootProperty(meta.root);
+        }
+
+        if (meta.idProperty !== undefined) {
+            me.setIdProperty(meta.idProperty);
+        }
+        if (meta.totalProperty !== undefined) {
+            me.setTotalProperty(meta.totalProperty);
+        }
+        if (meta.successProperty !== undefined) {
+            me.setSuccessProperty(meta.successProperty);
+        }
+        if (meta.messageProperty !== undefined) {
+            me.setMessageProperty(meta.messageProperty);
+        }
+
+        if (fields) {
+            if (me.getModel()) {
+                me.getModel().setFields(fields);
+                me.buildExtractors();
+            }
+            else {
+                idProperty = me.getIdProperty();
+                config = {fields: fields};
+
+                if (idProperty) {
+                    config.idProperty = idProperty;
+                }
+
+                newModel = Ext.define("Ext.data.reader.MetaModel" + Ext.id(), {
+                    extend: 'Ext.data.Model',
+                    config: config
+                });
+
+                me.setModel(newModel);
+            }
+        }
+        else {
+            me.buildExtractors();
+        }
+    }
+
+
+    // Convert old properties in data into a config object
+}, function() {
+    Ext.apply(this.prototype, {
+        // @private
+        // Empty ResultSet to return when response is falsy (null|undefined|empty string)
+        nullResultSet: new Ext.data.ResultSet({
+            total  : 0,
+            count  : 0,
+            records: [],
+            success: false
+        })
+    });
+
+});
+
+/**
+ * The JSON Reader is used by a Proxy to read a server response that is sent back in JSON format. This usually happens
+ * as a result of loading a Store - for example we might create something like this:
+ *
+ *     Ext.define('User', {
+ *         extend: 'Ext.data.Model',
+ *         config: {
+ *             fields: ['id', 'name', 'email']
+ *         }
+ *     });
+ *
+ *     var store = Ext.create('Ext.data.Store', {
+ *         model: 'User',
+ *         proxy: {
+ *             type: 'ajax',
+ *             url : 'users.json',
+ *             reader: {
+ *                 type: 'json'
+ *             }
+ *         }
+ *     });
+ *
+ * The example above creates a 'User' model. Models are explained in the {@link Ext.data.Model Model} docs if you're not
+ * already familiar with them.
+ *
+ * We created the simplest type of JSON Reader possible by simply telling our {@link Ext.data.Store Store}'s {@link
+ * Ext.data.proxy.Proxy Proxy} that we want a JSON Reader. The Store automatically passes the configured model to the
+ * Store, so it is as if we passed this instead:
+ *
+ *     reader: {
+ *         type : 'json',
+ *         model: 'User'
+ *     }
+ *
+ * The reader we set up is ready to read data from our server - at the moment it will accept a response like this:
+ *
+ *     [
+ *         {
+ *             "id": 1,
+ *             "name": "Ed Spencer",
+ *             "email": "ed@sencha.com"
+ *         },
+ *         {
+ *             "id": 2,
+ *             "name": "Abe Elias",
+ *             "email": "abe@sencha.com"
+ *         }
+ *     ]
+ *
+ * ## Reading other JSON formats
+ *
+ * If you already have your JSON format defined and it doesn't look quite like what we have above, you can usually pass
+ * JsonReader a couple of configuration options to make it parse your format. For example, we can use the
+ * {@link #rootProperty} configuration to parse data that comes back like this:
+ *
+ *     {
+ *         "users": [
+ *            {
+ *                "id": 1,
+ *                "name": "Ed Spencer",
+ *                "email": "ed@sencha.com"
+ *            },
+ *            {
+ *                "id": 2,
+ *                "name": "Abe Elias",
+ *                "email": "abe@sencha.com"
+ *            }
+ *         ]
+ *     }
+ *
+ * To parse this we just pass in a {@link #rootProperty} configuration that matches the 'users' above:
+ *
+ *     reader: {
+ *         type: 'json',
+ *         rootProperty: 'users'
+ *     }
+ *
+ * Sometimes the JSON structure is even more complicated. Document databases like CouchDB often provide metadata around
+ * each record inside a nested structure like this:
+ *
+ *     {
+ *         "total": 122,
+ *         "offset": 0,
+ *         "users": [
+ *             {
+ *                 "id": "ed-spencer-1",
+ *                 "value": 1,
+ *                 "user": {
+ *                     "id": 1,
+ *                     "name": "Ed Spencer",
+ *                     "email": "ed@sencha.com"
+ *                 }
+ *             }
+ *         ]
+ *     }
+ *
+ * In the case above the record data is nested an additional level inside the "users" array as each "user" item has
+ * additional metadata surrounding it ('id' and 'value' in this case). To parse data out of each "user" item in the JSON
+ * above we need to specify the {@link #record} configuration like this:
+ *
+ *     reader: {
+ *         type: 'json',
+ *         record: 'user',
+ *         rootProperty: 'users'
+ *     }
+ *
+ * ## Response MetaData
+ *
+ * The server can return metadata in its response, in addition to the record data, that describe attributes
+ * of the data set itself or are used to reconfigure the Reader. To pass metadata in the response you simply
+ * add a `metaData` attribute to the root of the response data. The metaData attribute can contain anything,
+ * but supports a specific set of properties that are handled by the Reader if they are present:
+ *
+ * - {@link #idProperty}: property name for the primary key field of the data
+ * - {@link #rootProperty}: the property name of the root response node containing the record data
+ * - {@link #totalProperty}: property name for the total number of records in the data
+ * - {@link #successProperty}: property name for the success status of the response
+ * - {@link #messageProperty}: property name for an optional response message
+ * - {@link Ext.data.Model#cfg-fields fields}: Config used to reconfigure the Model's fields before converting the
+ *   response data into records
+ *
+ * An initial Reader configuration containing all of these properties might look like this ("fields" would be
+ * included in the Model definition, not shown):
+ *
+ *     reader: {
+ *         type: 'json',
+ *         idProperty: 'id',
+ *         rootProperty: 'root',
+ *         totalProperty: 'total',
+ *         successProperty: 'success',
+ *         messageProperty: 'message'
+ *     }
+ *
+ * If you were to pass a response object containing attributes different from those initially defined above, you could
+ * use the `metaData` attribute to reconfigure the Reader on the fly. For example:
+ *
+ *     {
+ *         "count": 1,
+ *         "ok": true,
+ *         "msg": "Users found",
+ *         "users": [{
+ *             "userId": 123,
+ *             "name": "Ed Spencer",
+ *             "email": "ed@sencha.com"
+ *         }],
+ *         "metaData": {
+ *             "idProperty": 'userId',
+ *             "rootProperty": "users",
+ *             "totalProperty": 'count',
+ *             "successProperty": 'ok',
+ *             "messageProperty": 'msg'
+ *         }
+ *     }
+ *
+ * You can also place any other arbitrary data you need into the `metaData` attribute which will be ignored by the Reader,
+ * but will be accessible via the Reader's {@link #metaData} property. Application code can then process the passed
+ * metadata in any way it chooses.
+ *
+ * A simple example for how this can be used would be customizing the fields for a Model that is bound to a grid. By passing
+ * the `fields` property the Model will be automatically updated by the Reader internally, but that change will not be
+ * reflected automatically in the grid unless you also update the column configuration. You could do this manually, or you
+ * could simply pass a standard grid column config object as part of the `metaData` attribute
+ * and then pass that along to the grid. Here's a very simple example for how that could be accomplished:
+ *
+ *     // response format:
+ *     {
+ *         ...
+ *         "metaData": {
+ *             "fields": [
+ *                 { "name": "userId", "type": "int" },
+ *                 { "name": "name", "type": "string" },
+ *                 { "name": "birthday", "type": "date", "dateFormat": "Y-j-m" },
+ *             ],
+ *             "columns": [
+ *                 { "text": "User ID", "dataIndex": "userId", "width": 40 },
+ *                 { "text": "User Name", "dataIndex": "name", "flex": 1 },
+ *                 { "text": "Birthday", "dataIndex": "birthday", "flex": 1, "format": 'Y-j-m', "xtype": "datecolumn" }
+ *             ]
+ *         }
+ *     }
+ */
+Ext.define('Ext.data.reader.Json', {
+    extend:  Ext.data.reader.Reader ,
+    alternateClassName: 'Ext.data.JsonReader',
+    alias : 'reader.json',
+
+    config: {
+        /**
+         * @cfg {String} [record=null]
+         * The optional location within the JSON response that the record data itself can be found at. See the
+         * JsonReader intro docs for more details. This is not often needed.
+         */
+        record: null,
+
+        /**
+         * @cfg {Boolean} [useSimpleAccessors=false]
+         * `true` to ensure that field names/mappings are treated as literals when reading values. For
+         * example, by default, using the mapping "foo.bar.baz" will try and read a property foo from the root, then a
+         * property bar from foo, then a property baz from bar. Setting the simple accessors to `true` will read the
+         * property with the name "foo.bar.baz" direct from the root object.
+         */
+        useSimpleAccessors: false
+    },
+
+    objectRe: /[\[\.]/,
+
+    // @inheritdoc
+    getResponseData: function(response) {
+        var responseText = response;
+
+        // Handle an XMLHttpRequest object
+        if (response && response.responseText) {
+            responseText = response.responseText;
+        }
+
+        // Handle the case where data has already been decoded
+        if (typeof responseText !== 'string') {
+            return responseText;
+        }
+
+        var data;
+        try {
+            data = Ext.decode(responseText);
+        }
+        catch (ex) {
+            /**
+             * @event exception Fires whenever the reader is unable to parse a response.
+             * @param {Ext.data.reader.Xml} reader A reference to this reader.
+             * @param {XMLHttpRequest} response The XMLHttpRequest response object.
+             * @param {String} error The error message.
+             */
+            this.fireEvent('exception', this, response, 'Unable to parse the JSON returned by the server: ' + ex.toString());
+            Ext.Logger.warn('Unable to parse the JSON returned by the server: ' + ex.toString());
+        }
+        //<debug>
+        if (!data) {
+            this.fireEvent('exception', this, response, 'JSON object not found');
+
+            Ext.Logger.warn('JSON object not found');
+        }
+        //</debug>
+
+        return data;
+    },
+
+    // @inheritdoc
+    buildExtractors: function() {
+        var me = this,
+            root = me.getRootProperty();
+
+        me.callParent(arguments);
+
+        if (root) {
+            me.rootAccessor = me.createAccessor(root);
+        } else {
+            delete me.rootAccessor;
+        }
+    },
+
+    /**
+     * We create this method because `root` is now a config so `getRoot` is already defined, but in the old
+     * data package `getRoot` was passed a data argument and it would return the data inside of the `root`
+     * property. This method handles both cases.
+     * @param data (Optional)
+     * @return {String/Object} Returns the config root value if this method was called without passing
+     * data. Else it returns the object in the data bound to the root.
+     * @private
+     */
+    getRoot: function(data) {
+        var fieldsCollection = this.getModel().getFields();
+
+        /*
+         * We check here whether the fields are dirty since the last read.
+         * This works around an issue when a Model is used for both a Tree and another
+         * source, because the tree decorates the model with extra fields and it causes
+         * issues because the readers aren't notified.
+         */
+        if (fieldsCollection.isDirty) {
+            this.buildExtractors(true);
+            delete fieldsCollection.isDirty;
+        }
+
+        if (this.rootAccessor) {
+            return this.rootAccessor.call(this, data);
+        } else {
+            return data;
+        }
+    },
+
+    /**
+     * @private
+     * We're just preparing the data for the superclass by pulling out the record objects we want. If a {@link #record}
+     * was specified we have to pull those out of the larger JSON object, which is most of what this function is doing
+     * @param {Object} root The JSON root node
+     * @return {Ext.data.Model[]} The records
+     */
+    extractData: function(root) {
+        var recordName = this.getRecord(),
+            data = [],
+            length, i;
+
+        if (recordName) {
+            length = root.length;
+
+            if (!length && Ext.isObject(root)) {
+                length = 1;
+                root = [root];
+            }
+
+            for (i = 0; i < length; i++) {
+                data[i] = root[i][recordName];
+            }
+        } else {
+            data = root;
+        }
+        return this.callParent([data]);
+    },
+
+    /**
+     * @private
+     * Returns an accessor function for the given property string. Gives support for properties such as the following:
+     * 'someProperty'
+     * 'some.property'
+     * 'some["property"]'
+     * This is used by buildExtractors to create optimized extractor functions when casting raw data into model instances.
+     */
+    createAccessor: function() {
+        var re = /[\[\.]/;
+
+        return function(expr) {
+            if (Ext.isEmpty(expr)) {
+                return Ext.emptyFn;
+            }
+            if (Ext.isFunction(expr)) {
+                return expr;
+            }
+            if (this.getUseSimpleAccessors() !== true) {
+                var i = String(expr).search(re);
+                if (i >= 0) {
+                    return Ext.functionFactory('obj', 'var value; try {value = obj' + (i > 0 ? '.' : '') + expr + '} catch(e) {}; return value;');
+                }
+            }
+            return function(obj) {
+                return obj[expr];
+            };
+        };
+    }(),
+
+    /**
+     * @private
+     * Returns an accessor expression for the passed Field. Gives support for properties such as the following:
+     * 'someProperty'
+     * 'some.property'
+     * 'some["property"]'
+     * This is used by buildExtractors to create optimized on extractor function which converts raw data into model instances.
+     */
+    createFieldAccessExpression: function(field, fieldVarName, dataName) {
+        var me     = this,
+            re     = me.objectRe,
+            hasMap = (field.getMapping() !== null),
+            map    = hasMap ? field.getMapping() : field.getName(),
+            result, operatorSearch;
+
+        if (typeof map === 'function') {
+            result = fieldVarName + '.getMapping()(' + dataName + ', this)';
+        }
+        else if (me.getUseSimpleAccessors() === true || ((operatorSearch = String(map).search(re)) < 0)) {
+            if (!hasMap || isNaN(map)) {
+                // If we don't provide a mapping, we may have a field name that is numeric
+                map = '"' + map + '"';
+            }
+            result = dataName + "[" + map + "]";
+        }
+        else {
+            result = dataName + (operatorSearch > 0 ? '.' : '') + map;
+        }
+
+        return result;
+    }
+});
+
+/**
+ * @author Ed Spencer
+ *
+ * Base Writer class used by most subclasses of {@link Ext.data.proxy.Server}. This class is
+ * responsible for taking a set of {@link Ext.data.Operation} objects and a {@link Ext.data.Request}
+ * object and modifying that request based on the Operations.
+ *
+ * For example a Ext.data.writer.Json would format the Operations and their {@link Ext.data.Model}
+ * instances based on the config options passed to the JsonWriter's constructor.
+ *
+ * Writers are not needed for any kind of local storage - whether via a
+ * {@link Ext.data.proxy.WebStorage Web Storage proxy} (see {@link Ext.data.proxy.LocalStorage localStorage})
+ * or just in memory via a {@link Ext.data.proxy.Memory MemoryProxy}.
+ */
+Ext.define('Ext.data.writer.Writer', {
+    alias: 'writer.base',
+    alternateClassName: ['Ext.data.DataWriter', 'Ext.data.Writer'],
+
+    config: {
+        /**
+         * @cfg {Boolean} writeAllFields `true` to write all fields from the record to the server. If set to `false` it
+         * will only send the fields that were modified. Note that any fields that have
+         * {@link Ext.data.Field#persist} set to false will still be ignored.
+         */
+        writeAllFields: true,
+
+        /**
+         * @cfg {String} nameProperty This property is used to read the key for each value that will be sent to the server.
+         * For example:
+         *
+         *     Ext.define('Person', {
+         *         extend: 'Ext.data.Model',
+         *         fields: [{
+         *             name: 'first',
+         *             mapping: 'firstName'
+         *         }, {
+         *             name: 'last',
+         *             mapping: 'lastName'
+         *         }, {
+         *             name: 'age'
+         *         }]
+         *     });
+         *
+         *     new Ext.data.writer.Writer({
+         *         writeAllFields: true,
+         *         nameProperty: 'mapping'
+         *     });
+         *
+         * The following data will be sent to the server:
+         *
+         *     {
+         *         firstName: 'first name value',
+         *         lastName: 'last name value',
+         *         age: 1
+         *     }
+         *
+         * If the value is not present, the field name will always be used.
+         */
+        nameProperty: 'name'
+    },
+
+    /**
+     * Creates new Writer.
+     * @param {Object} config (optional) Config object.
+     */
+    constructor: function(config) {
+        this.initConfig(config);
+    },
+
+    /**
+     * Prepares a Proxy's Ext.data.Request object.
+     * @param {Ext.data.Request} request The request object.
+     * @return {Ext.data.Request} The modified request object.
+     */
+    write: function(request) {
+        var operation = request.getOperation(),
+            records   = operation.getRecords() || [],
+            len       = records.length,
+            i         = 0,
+            data      = [];
+
+        for (; i < len; i++) {
+            data.push(this.getRecordData(records[i]));
+        }
+        return this.writeRecords(request, data);
+    },
+
+    writeDate: function(field, date) {
+        if (!date) {
+            return null;
+        }
+
+        var dateFormat = field.getDateFormat() || 'timestamp';
+        switch (dateFormat) {
+            case 'timestamp':
+                return date.getTime()/1000;
+            case 'time':
+                return date.getTime();
+            default:
+                return Ext.Date.format(date, dateFormat);
+        }
+    },
+
+    /**
+     * Formats the data for each record before sending it to the server. This
+     * method should be overridden to format the data in a way that differs from the default.
+     * @param {Object} record The record that we are writing to the server.
+     * @return {Object} An object literal of name/value keys to be written to the server.
+     * By default this method returns the data property on the record.
+     */
+    getRecordData: function(record) {
+        var isPhantom = record.phantom === true,
+            writeAll = this.getWriteAllFields() || isPhantom,
+            nameProperty = this.getNameProperty(),
+            fields = record.getFields(),
+            data = {},
+            changes, name, field, key, value;
+
+        if (writeAll) {
+            fields.each(function(field) {
+                if (field.getPersist()) {
+                    name = field.config[nameProperty] || field.getName();
+                    value = record.get(field.getName());
+                    if (field.getType().type == 'date') {
+                        value = this.writeDate(field, value);
+                    }
+                    data[name] = value;
+                }
+            }, this);
+        } else {
+            // Only write the changes
+            changes = record.getChanges();
+            for (key in changes) {
+                if (changes.hasOwnProperty(key)) {
+                    field = fields.get(key);
+                    if (field.getPersist()) {
+                        name = field.config[nameProperty] || field.getName();
+                        value = changes[key];
+                        if (field.getType().type == 'date') {
+                            value = this.writeDate(field, value);
+                        }
+                        data[name] = value;
+                    }
+                }
+            }
+            if (!isPhantom) {
+                // always include the id for non phantoms
+                data[record.getIdProperty()] = record.getId();
+            }
+        }
+        return data;
+    }
+
+    // Convert old properties in data into a config object
+});
+
+/**
+ * This class is used to write {@link Ext.data.Model} data to the server in a JSON format.
+ * The {@link #allowSingle} configuration can be set to false to force the records to always be
+ * encoded in an array, even if there is only a single record being sent.
+ */
+Ext.define('Ext.data.writer.Json', {
+    extend:  Ext.data.writer.Writer ,
+    alternateClassName: 'Ext.data.JsonWriter',
+    alias: 'writer.json',
+
+    config: {
+        /**
+         * @cfg {String} rootProperty
+         * The key under which the records in this Writer will be placed. If you specify {@link #encode} to be true,
+         * we default this to 'records'.
+         *
+         * Example generated request, using root: 'records':
+         *
+         *     {'records': [{name: 'my record'}, {name: 'another record'}]}
+         *
+         */
+        rootProperty: undefined,
+
+        /**
+         * @cfg {Boolean} encode
+         * True to use Ext.encode() on the data before sending. The encode option should only be set to true when a
+         * {@link #root} is defined, because the values will be sent as part of the request parameters as opposed to
+         * a raw post. The root will be the name of the parameter sent to the server.
+         */
+        encode: false,
+
+        /**
+         * @cfg {Boolean} allowSingle
+         * False to ensure that records are always wrapped in an array, even if there is only one record being sent.
+         * When there is more than one record, they will always be encoded into an array.
+         *
+         * Example:
+         *
+         *     // with allowSingle: true
+         *     "root": {
+         *         "first": "Mark",
+         *         "last": "Corrigan"
+         *     }
+         *
+         *     // with allowSingle: false
+         *     "root": [{
+         *         "first": "Mark",
+         *         "last": "Corrigan"
+         *     }]
+         */
+        allowSingle: true,
+
+        encodeRequest: false
+    },
+
+    applyRootProperty: function(root) {
+        if (!root && (this.getEncode() || this.getEncodeRequest())) {
+            root = 'data';
+        }
+        return root;
+    },
+
+    //inherit docs
+    writeRecords: function(request, data) {
+        var root = this.getRootProperty(),
+            params = request.getParams(),
+            allowSingle = this.getAllowSingle(),
+            jsonData;
+
+        if (this.getAllowSingle() && data && data.length == 1) {
+            // convert to single object format
+            data = data[0];
+        }
+
+        if (this.getEncodeRequest()) {
+            jsonData = request.getJsonData() || {};
+            if (data && (data.length || (allowSingle && Ext.isObject(data)))) {
+                jsonData[root] = data;
+            }
+            request.setJsonData(Ext.apply(jsonData, params || {}));
+            request.setParams(null);
+            request.setMethod('POST');
+            return request;
+        }
+
+        if (!data || !(data.length || (allowSingle && Ext.isObject(data)))) {
+            return request;
+        }
+
+        if (this.getEncode()) {
+            if (root) {
+                // sending as a param, need to encode
+                params[root] = Ext.encode(data);
+            } else {
+                //<debug>
+                Ext.Logger.error('Must specify a root when using encode');
+                //</debug>
+            }
+        } else {
+            // send as jsonData
+            jsonData = request.getJsonData() || {};
+            if (root) {
+                jsonData[root] = data;
+            } else {
+                jsonData = data;
+            }
+            request.setJsonData(jsonData);
+        }
+        return request;
+    }
+
+});
+
+
+/*
+ * @allowSingle: true
+ * @encodeRequest: false
+ * Url: update.json?param1=test
+ * {'field1': 'test': 'field2': 'test'}
+ *
+ * @allowSingle: false
+ * @encodeRequest: false
+ * Url: update.json?param1=test
+ * [{'field1': 'test', 'field2': 'test'}]
+ *
+ * @allowSingle: true
+ * @root: 'data'
+ * @encodeRequest: true
+ * Url: update.json
+ * {
+ *    'param1': 'test',
+ *    'data': {'field1': 'test', 'field2': 'test'}
+ * }
+ *
+ * @allowSingle: false
+ * @root: 'data'
+ * @encodeRequest: true
+ * Url: update.json
+ * {
+ *     'param1': 'test',
+ *     'data': [{'field1': 'test', 'field2': 'test'}]
+ * }
+ *
+ * @allowSingle: true
+ * @root: data
+ * @encodeRequest: false
+ * Url: update.json
+ * param1=test&data={'field1': 'test', 'field2': 'test'}
+ *
+ * @allowSingle: false
+ * @root: data
+ * @encodeRequest: false
+ * @ncode: true
+ * Url: update.json
+ * param1=test&data=[{'field1': 'test', 'field2': 'test'}]
+ *
+ * @allowSingle: true
+ * @root: data
+ * @encodeRequest: false
+ * Url: update.json?param1=test&data={'field1': 'test', 'field2': 'test'}
+ *
+ * @allowSingle: false
+ * @root: data
+ * @encodeRequest: false
+ * Url: update.json?param1=test&data=[{'field1': 'test', 'field2': 'test'}]
+ */
+
+/**
+ * @author Ed Spencer
+ * @class Ext.data.Batch
+ *
+ * Provides a mechanism to run one or more {@link Ext.data.Operation operations} in a given order. Fires the `operationcomplete` event
+ * after the completion of each Operation, and the `complete` event when all Operations have been successfully executed. Fires an `exception`
+ * event if any of the Operations encounter an exception.
+ *
+ * Usually these are only used internally by {@link Ext.data.proxy.Proxy} classes.
+ */
+Ext.define('Ext.data.Batch', {
+    mixins: {
+        observable:  Ext.mixin.Observable 
+    },
+
+    config: {
+        /**
+         * @cfg {Boolean} autoStart `true` to immediately start processing the batch as soon as it is constructed.
+         */
+        autoStart: false,
+
+        /**
+         * @cfg {Boolean} pauseOnException `true` to automatically pause the execution of the batch if any operation encounters an exception.
+         */
+        pauseOnException: true,
+
+        /**
+         * @cfg {Ext.data.Proxy} proxy The proxy this Batch belongs to. Used to make the requests for each operation in the Batch.
+         */
+        proxy: null
+    },
+
+    /**
+     * The index of the current operation being executed.
+     * @property current
+     * @type Number
+     */
+    current: -1,
+
+    /**
+     * The total number of operations in this batch.
+     * @property total
+     * @type Number
+     * @readonly
+     */
+    total: 0,
+
+    /**
+     * `true` if the batch is currently running.
+     * @property isRunning
+     * @type Boolean
+     */
+    isRunning: false,
+
+    /**
+     * `true` if this batch has been executed completely.
+     * @property isComplete
+     * @type Boolean
+     */
+    isComplete: false,
+
+    /**
+     * `true` if this batch has encountered an exception. This is cleared at the start of each operation.
+     * @property hasException
+     * @type Boolean
+     */
+    hasException: false,
+
+    /**
+     * @event complete
+     * Fired when all operations of this batch have been completed.
+     * @param {Ext.data.Batch} batch The batch object.
+     * @param {Object} operation The last operation that was executed.
+     */
+
+    /**
+     * @event exception
+     * Fired when a operation encountered an exception.
+     * @param {Ext.data.Batch} batch The batch object.
+     * @param {Object} operation The operation that encountered the exception.
+     */
+
+    /**
+     * @event operationcomplete
+     * Fired when each operation of the batch completes.
+     * @param {Ext.data.Batch} batch The batch object.
+     * @param {Object} operation The operation that just completed.
+     */
+
+    /**
+     * Creates new Batch object.
+     * @param {Object} config (optional) Config object.
+     */
+    constructor: function(config) {
+        var me = this;
+
+        me.initConfig(config);
+
+        /**
+         * Ordered array of operations that will be executed by this batch
+         * @property {Ext.data.Operation[]} operations
+         */
+        me.operations = [];
+    },
+
+    /**
+     * Adds a new operation to this batch.
+     * @param {Object} operation The {@link Ext.data.Operation Operation} object.
+     */
+    add: function(operation) {
+        this.total++;
+
+        operation.setBatch(this);
+
+        this.operations.push(operation);
+    },
+
+    /**
+     * Kicks off the execution of the batch, continuing from the next operation if the previous
+     * operation encountered an exception, or if execution was paused.
+     */
+    start: function() {
+        this.hasException = false;
+        this.isRunning = true;
+
+        this.runNextOperation();
+    },
+
+    /**
+     * @private
+     * Runs the next operation, relative to `this.current`.
+     */
+    runNextOperation: function() {
+        this.runOperation(this.current + 1);
+    },
+
+    /**
+     * Pauses execution of the batch, but does not cancel the current operation.
+     */
+    pause: function() {
+        this.isRunning = false;
+    },
+
+    /**
+     * Executes a operation by its numeric index.
+     * @param {Number} index The operation index to run.
+     */
+    runOperation: function(index) {
+        var me = this,
+            operations = me.operations,
+            operation = operations[index],
+            onProxyReturn;
+
+        if (operation === undefined) {
+            me.isRunning = false;
+            me.isComplete = true;
+            me.fireEvent('complete', me, operations[operations.length - 1]);
+        } else {
+            me.current = index;
+
+            onProxyReturn = function(operation) {
+                var hasException = operation.hasException();
+
+                if (hasException) {
+                    me.hasException = true;
+                    me.fireEvent('exception', me, operation);
+                } else {
+                    me.fireEvent('operationcomplete', me, operation);
+                }
+
+                if (hasException && me.getPauseOnException()) {
+                    me.pause();
+                } else {
+                    operation.setCompleted();
+                    me.runNextOperation();
+                }
+            };
+
+            operation.setStarted();
+
+
+            me.getProxy()[operation.getAction()](operation, onProxyReturn, me);
+        }
+    }
+});
+
+/**
+ * @author Ed Spencer
+ *
+ * Represents a single read or write operation performed by a {@link Ext.data.proxy.Proxy Proxy}. Operation objects are
+ * used to enable communication between Stores and Proxies. Application developers should rarely need to interact with
+ * Operation objects directly.
+ *
+ * Note that when you define an Operation directly, you need to specify at least the {@link #model} configuration.
+ *
+ * Several Operations can be batched together in a {@link Ext.data.Batch batch}.
+ */
+Ext.define('Ext.data.Operation', {
+    config: {
+        /**
+         * @cfg {Boolean} synchronous
+         * True if this Operation is to be executed synchronously. This property is inspected by a
+         * {@link Ext.data.Batch Batch} to see if a series of Operations can be executed in parallel or not.
+         * @accessor
+         */
+        synchronous: true,
+
+        /**
+         * @cfg {String} action
+         * The action being performed by this Operation. Should be one of 'create', 'read', 'update' or 'destroy'.
+         * @accessor
+         */
+        action: null,
+
+        /**
+         * @cfg {Ext.util.Filter[]} filters
+         * Optional array of filter objects. Only applies to 'read' actions.
+         * @accessor
+         */
+        filters: null,
+
+        /**
+         * @cfg {Ext.util.Sorter[]} sorters
+         * Optional array of sorter objects. Only applies to 'read' actions.
+         * @accessor
+         */
+        sorters: null,
+
+        /**
+         * @cfg {Ext.util.Grouper} grouper
+         * Optional grouping configuration. Only applies to 'read' actions where grouping is desired.
+         * @accessor
+         */
+        grouper: null,
+
+        /**
+         * @cfg {Number} start
+         * The start index (offset), used in paging when running a 'read' action.
+         * @accessor
+         */
+        start: null,
+
+        /**
+         * @cfg {Number} limit
+         * The number of records to load. Used on 'read' actions when paging is being used.
+         * @accessor
+         */
+        limit: null,
+
+        /**
+         * @cfg {Ext.data.Batch} batch
+         * The batch that this Operation is a part of.
+         * @accessor
+         */
+        batch: null,
+
+        /**
+         * @cfg {Function} callback
+         * Function to execute when operation completed.
+         * @cfg {Ext.data.Model[]} callback.records Array of records.
+         * @cfg {Ext.data.Operation} callback.operation The Operation itself.
+         * @accessor
+         */
+        callback: null,
+
+        /**
+         * @cfg {Object} scope
+         * Scope for the {@link #callback} function.
+         * @accessor
+         */
+        scope: null,
+
+        /**
+         * @cfg {Ext.data.ResultSet} resultSet
+         * The ResultSet for this operation.
+         * @accessor
+         */
+        resultSet: null,
+
+        /**
+         * @cfg {Array} records
+         * The records associated to this operation. Before an operation starts, these
+         * are the records you are updating, creating, or destroying. After an operation
+         * is completed, a Proxy usually sets these records on the Operation to become
+         * the processed records. If you don't set these records on your operation in
+         * your proxy, then the getter will return the ones defined on the {@link #resultSet}
+         * @accessor
+         */
+        records: null,
+
+        /**
+         * @cfg {Ext.data.Request} request
+         * The request used for this Operation. Operations don't usually care about Request and Response data, but in the
+         * ServerProxy and any of its subclasses they may be useful for further processing.
+         * @accessor
+         */
+        request: null,
+
+        /**
+         * @cfg {Object} response
+         * The response that was gotten from the server if there was one.
+         * @accessor
+         */
+        response: null,
+
+        /**
+         * @cfg {Boolean} withCredentials
+         * This field is necessary when using cross-origin resource sharing.
+         * @accessor
+         */
+        withCredentials: null,
+
+        /**
+         * @cfg {Object} params
+         * The params send along with this operation. These usually apply to a Server proxy if you are
+         * creating your own custom proxy,
+         * @accessor
+         */
+        params: null,
+        url: null,
+        page: null,
+        node: null,
+
+        /**
+         * @cfg {Ext.data.Model} model
+         * The Model that this Operation will be dealing with. This configuration is required when defining any Operation.
+         * Since Operations take care of creating, updating, destroying and reading records, it needs access to the Model.
+         * @accessor
+         */
+        model: undefined,
+
+        addRecords: false
+    },
+
+    /**
+     * @property {Boolean} started
+     * Property tracking the start status of this Operation. Use {@link #isStarted}.
+     * @private
+     * @readonly
+     */
+    started: false,
+
+    /**
+     * @property {Boolean} running
+     * Property tracking the run status of this Operation. Use {@link #isRunning}.
+     * @private
+     * @readonly
+     */
+    running: false,
+
+    /**
+     * @property {Boolean} complete
+     * Property tracking the completion status of this Operation. Use {@link #isComplete}.
+     * @private
+     * @readonly
+     */
+    complete: false,
+
+    /**
+     * @property {Boolean} success
+     * Property tracking whether the Operation was successful or not. This starts as undefined and is set to `true`
+     * or `false` by the Proxy that is executing the Operation. It is also set to false by {@link #setException}. Use
+     * {@link #wasSuccessful} to query success status.
+     * @private
+     * @readonly
+     */
+    success: undefined,
+
+    /**
+     * @property {Boolean} exception
+     * Property tracking the exception status of this Operation. Use {@link #hasException} and see {@link #getError}.
+     * @private
+     * @readonly
+     */
+    exception: false,
+
+    /**
+     * @property {String/Object} error
+     * The error object passed when {@link #setException} was called. This could be any object or primitive.
+     * @private
+     */
+    error: undefined,
+
+    /**
+     * Creates new Operation object.
+     * @param {Object} config (optional) Config object.
+     */
+    constructor: function(config) {
+        this.initConfig(config);
+    },
+
+    applyModel: function(model) {
+        if (typeof model == 'string') {
+            model = Ext.data.ModelManager.getModel(model);
+
+            if (!model) {
+                Ext.Logger.error('Model with name ' + arguments[0] + ' doesnt exist.');
+            }
+        }
+
+        if (model && !model.prototype.isModel && Ext.isObject(model)) {
+            model = Ext.data.ModelManager.registerType(model.storeId || model.id || Ext.id(), model);
+        }
+
+        // <debug>
+        if (!model) {
+            Ext.Logger.warn('Unless you define your model using metadata, an Operation needs to have a model defined.');
+        }
+        // </debug>
+
+        return model;
+    },
+
+    getRecords: function() {
+        var resultSet = this.getResultSet();
+        return this._records || (resultSet ? resultSet.getRecords() : []);
+    },
+
+    /**
+     * Marks the Operation as started.
+     */
+    setStarted: function() {
+        this.started = true;
+        this.running = true;
+    },
+
+    /**
+     * Marks the Operation as completed.
+     */
+    setCompleted: function() {
+        this.complete = true;
+        this.running  = false;
+    },
+
+    /**
+     * Marks the Operation as successful.
+     */
+    setSuccessful: function() {
+        this.success = true;
+    },
+
+    /**
+     * Marks the Operation as having experienced an exception. Can be supplied with an option error message/object.
+     * @param {String/Object} error (optional) error string/object
+     */
+    setException: function(error) {
+        this.exception = true;
+        this.success = false;
+        this.running = false;
+        this.error = error;
+    },
+
+    /**
+     * Returns `true` if this Operation encountered an exception (see also {@link #getError}).
+     * @return {Boolean} `true` if there was an exception.
+     */
+    hasException: function() {
+        return this.exception === true;
+    },
+
+    /**
+     * Returns the error string or object that was set using {@link #setException}.
+     * @return {String/Object} The error object.
+     */
+    getError: function() {
+        return this.error;
+    },
+
+    /**
+     * Returns `true` if the Operation has been started. Note that the Operation may have started AND completed, see
+     * {@link #isRunning} to test if the Operation is currently running.
+     * @return {Boolean} `true` if the Operation has started
+     */
+    isStarted: function() {
+        return this.started === true;
+    },
+
+    /**
+     * Returns `true` if the Operation has been started but has not yet completed.
+     * @return {Boolean} `true` if the Operation is currently running
+     */
+    isRunning: function() {
+        return this.running === true;
+    },
+
+    /**
+     * Returns `true` if the Operation has been completed
+     * @return {Boolean} `true` if the Operation is complete
+     */
+    isComplete: function() {
+        return this.complete === true;
+    },
+
+    /**
+     * Returns `true` if the Operation has completed and was successful
+     * @return {Boolean} `true` if successful
+     */
+    wasSuccessful: function() {
+        return this.isComplete() && this.success === true;
+    },
+
+    /**
+     * Checks whether this operation should cause writing to occur.
+     * @return {Boolean} Whether the operation should cause a write to occur.
+     */
+    allowWrite: function() {
+        return this.getAction() != 'read';
+    },
+
+    process: function(action, resultSet, request, response) {
+        if (resultSet.getSuccess() !== false) {
+            this.setResponse(response);
+            this.setResultSet(resultSet);
+            this.setCompleted();
+            this.setSuccessful();
+        } else {
+            return false;
+        }
+
+        return this['process' + Ext.String.capitalize(action)].call(this, resultSet, request, response);
+    },
+
+    processRead: function(resultSet) {
+        var records = resultSet.getRecords(),
+            processedRecords = [],
+            Model = this.getModel(),
+            ln = records.length,
+            i, record;
+
+        for (i = 0; i < ln; i++) {
+            record = records[i];
+            processedRecords.push(new Model(record.data, record.id, record.node));
+        }
+
+        this.setRecords(processedRecords);
+        resultSet.setRecords(processedRecords);
+        return true;
+    },
+
+    processCreate: function(resultSet) {
+        var updatedRecords = resultSet.getRecords(),
+            currentRecords = this.getRecords(),
+            ln = updatedRecords.length,
+            i, currentRecord, updatedRecord;
+
+        for (i = 0; i < ln; i++) {
+            updatedRecord = updatedRecords[i];
+
+            if (updatedRecord.clientId === null && currentRecords.length == 1 && updatedRecords.length == 1) {
+                currentRecord = currentRecords[i];
+            } else {
+                currentRecord = this.findCurrentRecord(updatedRecord.clientId);
+            }
+
+            if (currentRecord) {
+                this.updateRecord(currentRecord, updatedRecord);
+            }
+            // <debug>
+            else {
+                Ext.Logger.warn('Unable to match the record that came back from the server.');
+            }
+            // </debug>
+        }
+
+        return true;
+    },
+
+    processUpdate: function(resultSet) {
+        var updatedRecords = resultSet.getRecords(),
+            currentRecords = this.getRecords(),
+            ln = updatedRecords.length,
+            i, currentRecord, updatedRecord;
+
+        for (i = 0; i < ln; i++) {
+            updatedRecord = updatedRecords[i];
+            currentRecord = currentRecords[i];
+
+            if (currentRecord) {
+                this.updateRecord(currentRecord, updatedRecord);
+            }
+            // <debug>
+            else {
+                Ext.Logger.warn('Unable to match the updated record that came back from the server.');
+            }
+            // </debug>
+        }
+
+        return true;
+    },
+
+    processDestroy: function(resultSet) {
+        var updatedRecords = resultSet.getRecords(),
+            ln = updatedRecords.length,
+            i, currentRecord, updatedRecord;
+
+        for (i = 0; i < ln; i++) {
+            updatedRecord = updatedRecords[i];
+            currentRecord = this.findCurrentRecord(updatedRecord.id);
+
+            if (currentRecord) {
+                currentRecord.setIsErased(true);
+                currentRecord.notifyStores('afterErase', currentRecord);
+            }
+            // <debug>
+            else {
+                Ext.Logger.warn('Unable to match the destroyed record that came back from the server.');
+            }
+            // </debug>
+        }
+    },
+
+    findCurrentRecord: function(clientId) {
+        var currentRecords = this.getRecords(),
+            ln = currentRecords.length,
+            i, currentRecord;
+
+        for (i = 0; i < ln; i++) {
+            currentRecord = currentRecords[i];
+            if (currentRecord.getId() === clientId) {
+                return currentRecord;
+            }
+        }
+    },
+
+    updateRecord: function(currentRecord, updatedRecord) {
+        var recordData = updatedRecord.data,
+            recordId = updatedRecord.id;
+
+        currentRecord.beginEdit();
+
+        currentRecord.set(recordData);
+        if (recordId !== null) {
+            currentRecord.setId(recordId);
+        }
+
+        // We call endEdit with silent: true because the commit below already makes
+        // sure any store is notified of the record being updated.
+        currentRecord.endEdit(true);
+
+        currentRecord.commit();
+    }
+});
+
+/**
+ * @author Ed Spencer
+ * @aside guide proxies
+ *
+ * Proxies are used by {@link Ext.data.Store Stores} to handle the loading and saving of {@link Ext.data.Model Model}
+ * data. Usually developers will not need to create or interact with proxies directly.
+ *
+ * # Types of Proxy
+ *
+ * There are two main types of Proxy - {@link Ext.data.proxy.Client Client} and {@link Ext.data.proxy.Server Server}.
+ * The Client proxies save their data locally and include the following subclasses:
+ *
+ * - {@link Ext.data.proxy.LocalStorage LocalStorageProxy} - saves its data to localStorage if the browser supports it
+ * - {@link Ext.data.proxy.Memory MemoryProxy} - holds data in memory only, any data is lost when the page is refreshed
+ *
+ * The Server proxies save their data by sending requests to some remote server. These proxies include:
+ *
+ * - {@link Ext.data.proxy.Ajax Ajax} - sends requests to a server on the same domain
+ * - {@link Ext.data.proxy.JsonP JsonP} - uses JSON-P to send requests to a server on a different domain
+ *
+ * Proxies operate on the principle that all operations performed are either Create, Read, Update or Delete. These four
+ * operations are mapped to the methods {@link #create}, {@link #read}, {@link #update} and {@link #destroy}
+ * respectively. Each Proxy subclass implements these functions.
+ *
+ * The CRUD methods each expect an {@link Ext.data.Operation Operation} object as the sole argument. The Operation
+ * encapsulates information about the action the Store wishes to perform, the {@link Ext.data.Model model} instances
+ * that are to be modified, etc. See the {@link Ext.data.Operation Operation} documentation for more details. Each CRUD
+ * method also accepts a callback function to be called asynchronously on completion.
+ *
+ * Proxies also support batching of Operations via a {@link Ext.data.Batch batch} object, invoked by the {@link #batch}
+ * method.
+ */
+Ext.define('Ext.data.proxy.Proxy', {
+    extend:  Ext.Evented ,
+
+    alias: 'proxy.proxy',
+
+    alternateClassName: ['Ext.data.DataProxy', 'Ext.data.Proxy'],
+
+               
+                               
+                               
+                         
+                            
+      
+
+    config: {
+        /**
+         * @cfg {String} batchOrder
+         * Comma-separated ordering 'create', 'update' and 'destroy' actions when batching. Override this to set a different
+         * order for the batched CRUD actions to be executed in.
+         * @accessor
+         */
+        batchOrder: 'create,update,destroy',
+
+        /**
+         * @cfg {Boolean} batchActions
+         * True to batch actions of a particular type when synchronizing the store.
+         * @accessor
+         */
+        batchActions: true,
+
+        /**
+         * @cfg {String/Ext.data.Model} model (required)
+         * The name of the Model to tie to this Proxy. Can be either the string name of the Model, or a reference to the
+         * Model constructor.
+         * @accessor
+         */
+        model: null,
+
+        /**
+         * @cfg {Object/String/Ext.data.reader.Reader} reader
+         * The Ext.data.reader.Reader to use to decode the server's response or data read from client. This can either be a
+         * Reader instance, a config object or just a valid Reader type name (e.g. 'json', 'xml').
+         * @accessor
+         */
+        reader: {
+            type: 'json'
+        },
+
+        /**
+         * @cfg {Object/String/Ext.data.writer.Writer} writer
+         * The Ext.data.writer.Writer to use to encode any request sent to the server or saved to client. This can either be
+         * a Writer instance, a config object or just a valid Writer type name (e.g. 'json', 'xml').
+         * @accessor
+         */
+        writer: {
+            type: 'json'
+        }
+    },
+
+    isProxy: true,
+
+    applyModel: function(model) {
+        if (typeof model == 'string') {
+            model = Ext.data.ModelManager.getModel(model);
+
+            if (!model) {
+                Ext.Logger.error('Model with name ' + arguments[0] + ' doesnt exist.');
+            }
+        }
+
+        if (model && !model.prototype.isModel && Ext.isObject(model)) {
+            model = Ext.data.ModelManager.registerType(model.storeId || model.id || Ext.id(), model);
+        }
+
+        return model;
+    },
+
+    updateModel: function(model) {
+        if (model) {
+            var reader = this.getReader();
+            if (reader && !reader.getModel()) {
+                reader.setModel(model);
+            }
+        }
+    },
+
+    applyReader: function(reader, currentReader) {
+        return Ext.factory(reader, Ext.data.Reader, currentReader, 'reader');
+    },
+
+    updateReader: function(reader) {
+        if (reader) {
+            var model = this.getModel();
+            if (!model) {
+                model = reader.getModel();
+                if (model) {
+                    this.setModel(model);
+                }
+            } else {
+                reader.setModel(model);
+            }
+
+            if (reader.onMetaChange) {
+                 reader.onMetaChange = Ext.Function.createSequence(reader.onMetaChange, this.onMetaChange, this);
+            }
+        }
+    },
+
+    onMetaChange: function(data) {
+        var model = this.getReader().getModel();
+        if (!this.getModel() && model) {
+            this.setModel(model);
+        }
+
+        /**
+         * @event metachange
+         * Fires whenever the server has sent back new metadata to reconfigure the Reader.
+         * @param {Ext.data.Proxy} this
+         * @param {Object} data The metadata sent back from the server
+         */
+        this.fireEvent('metachange', this, data);
+    },
+
+    applyWriter: function(writer, currentWriter) {
+        return Ext.factory(writer, Ext.data.Writer, currentWriter, 'writer');
+    },
+
+    /**
+     * Performs the given create operation. If you override this method in a custom Proxy, remember to always call the provided
+     * callback method when you are done with your operation.
+     * @param {Ext.data.Operation} operation The Operation to perform
+     * @param {Function} callback Callback function to be called when the Operation has completed (whether successful or not)
+     * @param {Object} scope Scope to execute the callback function in
+     * @method
+     */
+    create: Ext.emptyFn,
+
+    /**
+     * Performs the given read operation. If you override this method in a custom Proxy, remember to always call the provided
+     * callback method when you are done with your operation.
+     * @param {Ext.data.Operation} operation The Operation to perform
+     * @param {Function} callback Callback function to be called when the Operation has completed (whether successful or not)
+     * @param {Object} scope Scope to execute the callback function in
+     * @method
+     */
+    read: Ext.emptyFn,
+
+    /**
+     * Performs the given update operation. If you override this method in a custom Proxy, remember to always call the provided
+     * callback method when you are done with your operation.
+     * @param {Ext.data.Operation} operation The Operation to perform
+     * @param {Function} callback Callback function to be called when the Operation has completed (whether successful or not)
+     * @param {Object} scope Scope to execute the callback function in
+     * @method
+     */
+    update: Ext.emptyFn,
+
+    /**
+     * Performs the given destroy operation. If you override this method in a custom Proxy, remember to always call the provided
+     * callback method when you are done with your operation.
+     * @param {Ext.data.Operation} operation The Operation to perform
+     * @param {Function} callback Callback function to be called when the Operation has completed (whether successful or not)
+     * @param {Object} scope Scope to execute the callback function in
+     * @method
+     */
+    destroy: Ext.emptyFn,
+
+    onDestroy: function() {
+        Ext.destroy(this.getReader(), this.getWriter());
+        Ext.Evented.prototype.destroy.apply(this, arguments);
+    },
+
+    /**
+     * Performs a batch of {@link Ext.data.Operation Operations}, in the order specified by {@link #batchOrder}. Used
+     * internally by {@link Ext.data.Store}'s {@link Ext.data.Store#sync sync} method. Example usage:
+     *
+     *     myProxy.batch({
+     *         create : [myModel1, myModel2],
+     *         update : [myModel3],
+     *         destroy: [myModel4, myModel5]
+     *     });
+     *
+     * Where the myModel* above are {@link Ext.data.Model Model} instances - in this case 1 and 2 are new instances and
+     * have not been saved before, 3 has been saved previously but needs to be updated, and 4 and 5 have already been
+     * saved but should now be destroyed.
+     *
+     * @param {Object} options Object containing one or more properties supported by the batch method:
+     *
+     * @param {Object} options.operations Object containing the Model instances to act upon, keyed by action name
+     *
+     * @param {Object} [options.listeners] Event listeners object passed straight through to the Batch -
+     * see {@link Ext.data.Batch} for details
+     *
+     * @param {Ext.data.Batch/Object} [options.batch] A {@link Ext.data.Batch} object (or batch config to apply
+     * to the created batch). If unspecified a default batch will be auto-created.
+     *
+     * @param {Function} [options.callback] The function to be called upon completion of processing the batch.
+     * The callback is called regardless of success or failure and is passed the following parameters:
+     * @param {Ext.data.Batch} options.callback.batch The {@link Ext.data.Batch batch} that was processed,
+     * containing all operations in their current state after processing
+     * @param {Object} options.callback.options The options argument that was originally passed into batch
+     *
+     * @param {Function} [options.success] The function to be called upon successful completion of the batch. The
+     * success function is called only if no exceptions were reported in any operations. If one or more exceptions
+     * occurred then the `failure` function will be called instead. The success function is called
+     * with the following parameters:
+     * @param {Ext.data.Batch} options.success.batch The {@link Ext.data.Batch batch} that was processed,
+     * containing all operations in their current state after processing
+     * @param {Object} options.success.options The options argument that was originally passed into batch
+     *
+     * @param {Function} [options.failure] The function to be called upon unsuccessful completion of the batch. The
+     * failure function is called when one or more operations returns an exception during processing (even if some
+     * operations were also successful). The failure function is called with the following parameters:
+     * @param {Ext.data.Batch} options.failure.batch The {@link Ext.data.Batch batch} that was processed,
+     * containing all operations in their current state after processing
+     * @param {Object} options.failure.options The options argument that was originally passed into batch
+     *
+     * @param {Object} [options.scope] The scope in which to execute any callbacks (i.e. the `this` object inside
+     * the callback, success and/or failure functions). Defaults to the proxy.
+     *
+     * @return {Ext.data.Batch} The newly created Batch
+     */
+    batch: function(options, /* deprecated */listeners) {
+        var me = this,
+            useBatch = me.getBatchActions(),
+            model = me.getModel(),
+            batch,
+            records;
+
+        if (options.operations === undefined) {
+            // the old-style (operations, listeners) signature was called
+            // so convert to the single options argument syntax
+            options = {
+                operations: options,
+                listeners: listeners
+            };
+
+            // <debug warn>
+            Ext.Logger.deprecate('Passes old-style signature to Proxy.batch (operations, listeners). Please convert to single options argument syntax.');
+            // </debug>
+        }
+
+        if (options.batch && options.batch.isBatch) {
+            batch = options.batch;
+        } else {
+            batch = new Ext.data.Batch(options.batch || {});
+        }
+
+        batch.setProxy(me);
+
+        batch.on('complete', Ext.bind(me.onBatchComplete, me, [options], 0));
+        if (options.listeners) {
+            batch.on(options.listeners);
+        }
+
+        Ext.each(me.getBatchOrder().split(','), function(action) {
+             records = options.operations[action];
+             if (records) {
+                 if (useBatch) {
+                     batch.add(new Ext.data.Operation({
+                         action: action,
+                         records: records,
+                         model: model
+                     }));
+                 } else {
+                     Ext.each(records, function(record) {
+                         batch.add(new Ext.data.Operation({
+                             action : action,
+                             records: [record],
+                             model: model
+                         }));
+                     });
+                 }
+             }
+        }, me);
+
+        batch.start();
+        return batch;
+    },
+
+    /**
+      * @private
+      * The internal callback that the proxy uses to call any specified user callbacks after completion of a batch
+      */
+    onBatchComplete: function(batchOptions, batch) {
+         var scope = batchOptions.scope || this;
+
+         if (batch.hasException) {
+             if (Ext.isFunction(batchOptions.failure)) {
+                 Ext.callback(batchOptions.failure, scope, [batch, batchOptions]);
+             }
+         } else if (Ext.isFunction(batchOptions.success)) {
+             Ext.callback(batchOptions.success, scope, [batch, batchOptions]);
+         }
+
+         if (Ext.isFunction(batchOptions.callback)) {
+             Ext.callback(batchOptions.callback, scope, [batch, batchOptions]);
+         }
+
+         Ext.destroy(batch);
+    }
+
+}, function() {
+    // Ext.data2.proxy.ProxyMgr.registerType('proxy', this);
+
+    //backwards compatibility
+    // Ext.data.DataProxy = this;
+    // Ext.deprecate('platform', '2.0', function() {
+    //     Ext.data2.DataProxy = this;
+    // }, this);
+});
+
+/**
+ * @author Ed Spencer
+ *
+ * Base class for any client-side storage. Used as a superclass for {@link Ext.data.proxy.Memory Memory} and
+ * {@link Ext.data.proxy.WebStorage Web Storage} proxies. Do not use directly, use one of the subclasses instead.
+ * @private
+ */
+Ext.define('Ext.data.proxy.Client', {
+    extend:  Ext.data.proxy.Proxy ,
+    alternateClassName: 'Ext.proxy.ClientProxy',
+
+    /**
+     * Abstract function that must be implemented by each ClientProxy subclass. This should purge all record data
+     * from the client side storage, as well as removing any supporting data (such as lists of record IDs)
+     */
+    clear: function() {
+        //<debug>
+        Ext.Logger.error("The Ext.data.proxy.Client subclass that you are using has not defined a 'clear' function. See src/data/ClientProxy.js for details.");
+        //</debug>
+    }
+});
+
+/**
+ * @author Ed Spencer
+ * @aside guide proxies
+ *
+ * In-memory proxy. This proxy simply uses a local variable for data storage/retrieval, so its contents are lost on
+ * every page refresh.
+ *
+ * Usually this Proxy isn't used directly, serving instead as a helper to a {@link Ext.data.Store Store} where a reader
+ * is required to load data. For example, say we have a Store for a User model and have some inline data we want to
+ * load, but this data isn't in quite the right format: we can use a MemoryProxy with a JsonReader to read it into our
+ * Store:
+ *
+ *     //this is the model we will be using in the store
+ *     Ext.define('User', {
+ *         extend: 'Ext.data.Model',
+ *         config: {
+ *             fields: [
+ *                 {name: 'id',    type: 'int'},
+ *                 {name: 'name',  type: 'string'},
+ *                 {name: 'phone', type: 'string', mapping: 'phoneNumber'}
+ *             ]
+ *         }
+ *     });
+ *
+ *     //this data does not line up to our model fields - the phone field is called phoneNumber
+ *     var data = {
+ *         users: [
+ *             {
+ *                 id: 1,
+ *                 name: 'Ed Spencer',
+ *                 phoneNumber: '555 1234'
+ *             },
+ *             {
+ *                 id: 2,
+ *                 name: 'Abe Elias',
+ *                 phoneNumber: '666 1234'
+ *             }
+ *         ]
+ *     };
+ *
+ *     //note how we set the 'root' in the reader to match the data structure above
+ *     var store = Ext.create('Ext.data.Store', {
+ *         autoLoad: true,
+ *         model: 'User',
+ *         data : data,
+ *         proxy: {
+ *             type: 'memory',
+ *             reader: {
+ *                 type: 'json',
+ *                 root: 'users'
+ *             }
+ *         }
+ *     });
+ */
+Ext.define('Ext.data.proxy.Memory', {
+    extend:  Ext.data.proxy.Client ,
+    alias: 'proxy.memory',
+    alternateClassName: 'Ext.data.MemoryProxy',
+
+    isMemoryProxy: true,
+
+    config: {
+        /**
+         * @cfg {Object} data
+         * Optional data to pass to configured Reader.
+         */
+        data: []
+    },
+
+    /**
+     * @private
+     * Fake processing function to commit the records, set the current operation
+     * to successful and call the callback if provided. This function is shared
+     * by the create, update and destroy methods to perform the bare minimum
+     * processing required for the proxy to register a result from the action.
+     */
+    finishOperation: function(operation, callback, scope) {
+        if (operation) {
+            var i = 0,
+                recs = operation.getRecords(),
+                len = recs.length;
+
+            for (i; i < len; i++) {
+                recs[i].commit();
+            }
+
+            operation.setCompleted();
+            operation.setSuccessful();
+
+            Ext.callback(callback, scope || this, [operation]);
+        }
+    },
+
+    /**
+     * Currently this is a hard-coded method that simply commits any records and sets the operation to successful,
+     * then calls the callback function, if provided. It is essentially mocking a server call in memory, but since
+     * there is no real back end in this case there's not much else to do. This method can be easily overridden to
+     * implement more complex logic if needed.
+     * @param {Ext.data.Operation} operation The Operation to perform
+     * @param {Function} callback Callback function to be called when the Operation has completed (whether
+     * successful or not)
+     * @param {Object} scope Scope to execute the callback function in
+     * @method
+     */
+    create: function() {
+        this.finishOperation.apply(this, arguments);
+    },
+
+    /**
+     * Currently this is a hard-coded method that simply commits any records and sets the operation to successful,
+     * then calls the callback function, if provided. It is essentially mocking a server call in memory, but since
+     * there is no real back end in this case there's not much else to do. This method can be easily overridden to
+     * implement more complex logic if needed.
+     * @param {Ext.data.Operation} operation The Operation to perform
+     * @param {Function} callback Callback function to be called when the Operation has completed (whether
+     * successful or not)
+     * @param {Object} scope Scope to execute the callback function in
+     * @method
+     */
+    update: function() {
+        this.finishOperation.apply(this, arguments);
+    },
+
+    /**
+     * Currently this is a hard-coded method that simply commits any records and sets the operation to successful,
+     * then calls the callback function, if provided. It is essentially mocking a server call in memory, but since
+     * there is no real back end in this case there's not much else to do. This method can be easily overridden to
+     * implement more complex logic if needed.
+     * @param {Ext.data.Operation} operation The Operation to perform
+     * @param {Function} callback Callback function to be called when the Operation has completed (whether
+     * successful or not)
+     * @param {Object} scope Scope to execute the callback function in
+     * @method
+     */
+    destroy: function() {
+        this.finishOperation.apply(this, arguments);
+    },
+
+    /**
+     * Reads data from the configured {@link #data} object. Uses the Proxy's {@link #reader}, if present.
+     * @param {Ext.data.Operation} operation The read Operation
+     * @param {Function} callback The callback to call when reading has completed
+     * @param {Object} scope The scope to call the callback function in
+     */
+    read: function(operation, callback, scope) {
+        var me     = this,
+            reader = me.getReader();
+
+        if (operation.process('read', reader.process(me.getData())) === false) {
+            this.fireEvent('exception', this, null, operation);
+        }
+
+        Ext.callback(callback, scope || me, [operation]);
+    },
+
+    clear: Ext.emptyFn
+});
+
+/**
+ * @author Ed Spencer
+ * @class Ext.data.reader.Array
+ *
+ * Data reader class to create an Array of {@link Ext.data.Model} objects from an Array.
+ * Each element of that Array represents a row of data fields. The
+ * fields are pulled into a Record object using as a subscript, the `mapping` property
+ * of the field definition if it exists, or the field's ordinal position in the definition.
+ *
+ * Example code:
+ *
+ *     Employee = Ext.define('Employee', {
+ *         extend: 'Ext.data.Model',
+ *         config: {
+ *             fields: [
+ *                 'id',
+ *                 {name: 'name', mapping: 1}, // "mapping" only needed if an "id" field is present which
+ *                 {name: 'occupation', mapping: 2} // precludes using the ordinal position as the index.
+ *             ]
+ *         }
+ *     });
+ *
+ *     var myReader = new Ext.data.reader.Array({
+ *         model: 'Employee'
+ *     }, Employee);
+ *
+ * This would consume an Array like this:
+ *
+ *     [ [1, 'Bill', 'Gardener'], [2, 'Ben', 'Horticulturalist'] ]
+ *
+ * @constructor
+ * Create a new ArrayReader
+ * @param {Object} meta Metadata configuration options.
+ */
+Ext.define('Ext.data.reader.Array', {
+    extend:  Ext.data.reader.Json ,
+    alternateClassName: 'Ext.data.ArrayReader',
+    alias : 'reader.array',
+
+    // For Array Reader, methods in the base which use these properties must not see the defaults
+    config: {
+        totalProperty: undefined,
+        successProperty: undefined
+    },
+
+    /**
+     * @private
+     * Returns an accessor expression for the passed Field from an Array using either the Field's mapping, or
+     * its ordinal position in the fields collection as the index.
+     * This is used by buildExtractors to create optimized on extractor function which converts raw data into model instances.
+     */
+    createFieldAccessExpression: function(field, fieldVarName, dataName) {
+        var me     = this,
+            mapping = field.getMapping(),
+            index  = (mapping == null) ? me.getModel().getFields().indexOf(field) : mapping,
+            result;
+
+        if (typeof index === 'function') {
+            result = fieldVarName + '.getMapping()(' + dataName + ', this)';
+        } else {
+            if (isNaN(index)) {
+                index = '"' + index + '"';
+            }
+            result = dataName + "[" + index + "]";
+        }
+        return result;
     }
 });
 
@@ -64372,7 +67205,8 @@ Ext.define('Ext.dataview.DataView', {
      */
     onStoreUpdate: function(store, record, newIndex, oldIndex) {
         var me = this,
-            container = me.container;
+            container = me.container,
+            item;
 
         oldIndex = (typeof oldIndex === 'undefined') ? newIndex : oldIndex;
 
@@ -64383,8 +67217,11 @@ Ext.define('Ext.dataview.DataView', {
             }
         }
         else {
-            // Bypassing setter because sometimes we pass the same record (different data)
-            container.updateListItem(record, me.getViewItems()[newIndex]);
+            item = me.getViewItems()[newIndex];
+            if (item) {
+                // Bypassing setter because sometimes we pass the same record (different data)
+                container.updateListItem(record, item);
+            }
         }
     }
 });
@@ -64535,2729 +67372,6 @@ Ext.define("Ext.chart.Legend", {
             record.commit();
         }
     }
-});
-
-/**
- * @author Ed Spencer
- *
- * Represents a single read or write operation performed by a {@link Ext.data.proxy.Proxy Proxy}. Operation objects are
- * used to enable communication between Stores and Proxies. Application developers should rarely need to interact with
- * Operation objects directly.
- *
- * Note that when you define an Operation directly, you need to specify at least the {@link #model} configuration.
- *
- * Several Operations can be batched together in a {@link Ext.data.Batch batch}.
- */
-Ext.define('Ext.data.Operation', {
-    config: {
-        /**
-         * @cfg {Boolean} synchronous
-         * True if this Operation is to be executed synchronously. This property is inspected by a
-         * {@link Ext.data.Batch Batch} to see if a series of Operations can be executed in parallel or not.
-         * @accessor
-         */
-        synchronous: true,
-
-        /**
-         * @cfg {String} action
-         * The action being performed by this Operation. Should be one of 'create', 'read', 'update' or 'destroy'.
-         * @accessor
-         */
-        action: null,
-
-        /**
-         * @cfg {Ext.util.Filter[]} filters
-         * Optional array of filter objects. Only applies to 'read' actions.
-         * @accessor
-         */
-        filters: null,
-
-        /**
-         * @cfg {Ext.util.Sorter[]} sorters
-         * Optional array of sorter objects. Only applies to 'read' actions.
-         * @accessor
-         */
-        sorters: null,
-
-        /**
-         * @cfg {Ext.util.Grouper} grouper
-         * Optional grouping configuration. Only applies to 'read' actions where grouping is desired.
-         * @accessor
-         */
-        grouper: null,
-
-        /**
-         * @cfg {Number} start
-         * The start index (offset), used in paging when running a 'read' action.
-         * @accessor
-         */
-        start: null,
-
-        /**
-         * @cfg {Number} limit
-         * The number of records to load. Used on 'read' actions when paging is being used.
-         * @accessor
-         */
-        limit: null,
-
-        /**
-         * @cfg {Ext.data.Batch} batch
-         * The batch that this Operation is a part of.
-         * @accessor
-         */
-        batch: null,
-
-        /**
-         * @cfg {Function} callback
-         * Function to execute when operation completed.
-         * @cfg {Ext.data.Model[]} callback.records Array of records.
-         * @cfg {Ext.data.Operation} callback.operation The Operation itself.
-         * @accessor
-         */
-        callback: null,
-
-        /**
-         * @cfg {Object} scope
-         * Scope for the {@link #callback} function.
-         * @accessor
-         */
-        scope: null,
-
-        /**
-         * @cfg {Ext.data.ResultSet} resultSet
-         * The ResultSet for this operation.
-         * @accessor
-         */
-        resultSet: null,
-
-        /**
-         * @cfg {Array} records
-         * The records associated to this operation. Before an operation starts, these
-         * are the records you are updating, creating, or destroying. After an operation
-         * is completed, a Proxy usually sets these records on the Operation to become
-         * the processed records. If you don't set these records on your operation in
-         * your proxy, then the getter will return the ones defined on the {@link #resultSet}
-         * @accessor
-         */
-        records: null,
-
-        /**
-         * @cfg {Ext.data.Request} request
-         * The request used for this Operation. Operations don't usually care about Request and Response data, but in the
-         * ServerProxy and any of its subclasses they may be useful for further processing.
-         * @accessor
-         */
-        request: null,
-
-        /**
-         * @cfg {Object} response
-         * The response that was gotten from the server if there was one.
-         * @accessor
-         */
-        response: null,
-
-        /**
-         * @cfg {Boolean} withCredentials
-         * This field is necessary when using cross-origin resource sharing.
-         * @accessor
-         */
-        withCredentials: null,
-
-        /**
-         * @cfg {Object} params
-         * The params send along with this operation. These usually apply to a Server proxy if you are
-         * creating your own custom proxy,
-         * @accessor
-         */
-        params: null,
-        url: null,
-        page: null,
-        node: null,
-
-        /**
-         * @cfg {Ext.data.Model} model
-         * The Model that this Operation will be dealing with. This configuration is required when defining any Operation.
-         * Since Operations take care of creating, updating, destroying and reading records, it needs access to the Model.
-         * @accessor
-         */
-        model: undefined,
-
-        addRecords: false
-    },
-
-    /**
-     * @property {Boolean} started
-     * Property tracking the start status of this Operation. Use {@link #isStarted}.
-     * @private
-     * @readonly
-     */
-    started: false,
-
-    /**
-     * @property {Boolean} running
-     * Property tracking the run status of this Operation. Use {@link #isRunning}.
-     * @private
-     * @readonly
-     */
-    running: false,
-
-    /**
-     * @property {Boolean} complete
-     * Property tracking the completion status of this Operation. Use {@link #isComplete}.
-     * @private
-     * @readonly
-     */
-    complete: false,
-
-    /**
-     * @property {Boolean} success
-     * Property tracking whether the Operation was successful or not. This starts as undefined and is set to `true`
-     * or `false` by the Proxy that is executing the Operation. It is also set to false by {@link #setException}. Use
-     * {@link #wasSuccessful} to query success status.
-     * @private
-     * @readonly
-     */
-    success: undefined,
-
-    /**
-     * @property {Boolean} exception
-     * Property tracking the exception status of this Operation. Use {@link #hasException} and see {@link #getError}.
-     * @private
-     * @readonly
-     */
-    exception: false,
-
-    /**
-     * @property {String/Object} error
-     * The error object passed when {@link #setException} was called. This could be any object or primitive.
-     * @private
-     */
-    error: undefined,
-
-    /**
-     * Creates new Operation object.
-     * @param {Object} config (optional) Config object.
-     */
-    constructor: function(config) {
-        this.initConfig(config);
-    },
-
-    applyModel: function(model) {
-        if (typeof model == 'string') {
-            model = Ext.data.ModelManager.getModel(model);
-
-            if (!model) {
-                Ext.Logger.error('Model with name ' + arguments[0] + ' doesnt exist.');
-            }
-        }
-
-        if (model && !model.prototype.isModel && Ext.isObject(model)) {
-            model = Ext.data.ModelManager.registerType(model.storeId || model.id || Ext.id(), model);
-        }
-
-        // <debug>
-        if (!model) {
-            Ext.Logger.warn('Unless you define your model using metadata, an Operation needs to have a model defined.');
-        }
-        // </debug>
-
-        return model;
-    },
-
-    getRecords: function() {
-        var resultSet = this.getResultSet();
-        return this._records || (resultSet ? resultSet.getRecords() : []);
-    },
-
-    /**
-     * Marks the Operation as started.
-     */
-    setStarted: function() {
-        this.started = true;
-        this.running = true;
-    },
-
-    /**
-     * Marks the Operation as completed.
-     */
-    setCompleted: function() {
-        this.complete = true;
-        this.running  = false;
-    },
-
-    /**
-     * Marks the Operation as successful.
-     */
-    setSuccessful: function() {
-        this.success = true;
-    },
-
-    /**
-     * Marks the Operation as having experienced an exception. Can be supplied with an option error message/object.
-     * @param {String/Object} error (optional) error string/object
-     */
-    setException: function(error) {
-        this.exception = true;
-        this.success = false;
-        this.running = false;
-        this.error = error;
-    },
-
-    /**
-     * Returns `true` if this Operation encountered an exception (see also {@link #getError}).
-     * @return {Boolean} `true` if there was an exception.
-     */
-    hasException: function() {
-        return this.exception === true;
-    },
-
-    /**
-     * Returns the error string or object that was set using {@link #setException}.
-     * @return {String/Object} The error object.
-     */
-    getError: function() {
-        return this.error;
-    },
-
-    /**
-     * Returns `true` if the Operation has been started. Note that the Operation may have started AND completed, see
-     * {@link #isRunning} to test if the Operation is currently running.
-     * @return {Boolean} `true` if the Operation has started
-     */
-    isStarted: function() {
-        return this.started === true;
-    },
-
-    /**
-     * Returns `true` if the Operation has been started but has not yet completed.
-     * @return {Boolean} `true` if the Operation is currently running
-     */
-    isRunning: function() {
-        return this.running === true;
-    },
-
-    /**
-     * Returns `true` if the Operation has been completed
-     * @return {Boolean} `true` if the Operation is complete
-     */
-    isComplete: function() {
-        return this.complete === true;
-    },
-
-    /**
-     * Returns `true` if the Operation has completed and was successful
-     * @return {Boolean} `true` if successful
-     */
-    wasSuccessful: function() {
-        return this.isComplete() && this.success === true;
-    },
-
-    /**
-     * Checks whether this operation should cause writing to occur.
-     * @return {Boolean} Whether the operation should cause a write to occur.
-     */
-    allowWrite: function() {
-        return this.getAction() != 'read';
-    },
-
-    process: function(action, resultSet, request, response) {
-        if (resultSet.getSuccess() !== false) {
-            this.setResponse(response);
-            this.setResultSet(resultSet);
-            this.setCompleted();
-            this.setSuccessful();
-        } else {
-            return false;
-        }
-
-        return this['process' + Ext.String.capitalize(action)].call(this, resultSet, request, response);
-    },
-
-    processRead: function(resultSet) {
-        var records = resultSet.getRecords(),
-            processedRecords = [],
-            Model = this.getModel(),
-            ln = records.length,
-            i, record;
-
-        for (i = 0; i < ln; i++) {
-            record = records[i];
-            processedRecords.push(new Model(record.data, record.id, record.node));
-        }
-
-        this.setRecords(processedRecords);
-        resultSet.setRecords(processedRecords);
-        return true;
-    },
-
-    processCreate: function(resultSet) {
-        var updatedRecords = resultSet.getRecords(),
-            currentRecords = this.getRecords(),
-            ln = updatedRecords.length,
-            i, currentRecord, updatedRecord;
-
-        for (i = 0; i < ln; i++) {
-            updatedRecord = updatedRecords[i];
-
-            if (updatedRecord.clientId === null && currentRecords.length == 1 && updatedRecords.length == 1) {
-                currentRecord = currentRecords[i];
-            } else {
-                currentRecord = this.findCurrentRecord(updatedRecord.clientId);
-            }
-
-            if (currentRecord) {
-                this.updateRecord(currentRecord, updatedRecord);
-            }
-            // <debug>
-            else {
-                Ext.Logger.warn('Unable to match the record that came back from the server.');
-            }
-            // </debug>
-        }
-
-        return true;
-    },
-
-    processUpdate: function(resultSet) {
-        var updatedRecords = resultSet.getRecords(),
-            currentRecords = this.getRecords(),
-            ln = updatedRecords.length,
-            i, currentRecord, updatedRecord;
-
-        for (i = 0; i < ln; i++) {
-            updatedRecord = updatedRecords[i];
-            currentRecord = currentRecords[i];
-
-            if (currentRecord) {
-                this.updateRecord(currentRecord, updatedRecord);
-            }
-            // <debug>
-            else {
-                Ext.Logger.warn('Unable to match the updated record that came back from the server.');
-            }
-            // </debug>
-        }
-
-        return true;
-    },
-
-    processDestroy: function(resultSet) {
-        var updatedRecords = resultSet.getRecords(),
-            ln = updatedRecords.length,
-            i, currentRecord, updatedRecord;
-
-        for (i = 0; i < ln; i++) {
-            updatedRecord = updatedRecords[i];
-            currentRecord = this.findCurrentRecord(updatedRecord.id);
-
-            if (currentRecord) {
-                currentRecord.setIsErased(true);
-                currentRecord.notifyStores('afterErase', currentRecord);
-            }
-            // <debug>
-            else {
-                Ext.Logger.warn('Unable to match the destroyed record that came back from the server.');
-            }
-            // </debug>
-        }
-    },
-
-    findCurrentRecord: function(clientId) {
-        var currentRecords = this.getRecords(),
-            ln = currentRecords.length,
-            i, currentRecord;
-
-        for (i = 0; i < ln; i++) {
-            currentRecord = currentRecords[i];
-            if (currentRecord.getId() === clientId) {
-                return currentRecord;
-            }
-        }
-    },
-
-    updateRecord: function(currentRecord, updatedRecord) {
-        var recordData = updatedRecord.data,
-            recordId = updatedRecord.id;
-
-        currentRecord.beginEdit();
-
-        currentRecord.set(recordData);
-        if (recordId !== null) {
-            currentRecord.setId(recordId);
-        }
-
-        // We call endEdit with silent: true because the commit below already makes
-        // sure any store is notified of the record being updated.
-        currentRecord.endEdit(true);
-
-        currentRecord.commit();
-    }
-});
-
-/**
- * @author Ed Spencer
- *
- * Simple wrapper class that represents a set of records returned by a Proxy.
- */
-Ext.define('Ext.data.ResultSet', {
-    config: {
-        /**
-         * @cfg {Boolean} loaded
-         * True if the records have already been loaded. This is only meaningful when dealing with
-         * SQL-backed proxies.
-         */
-        loaded: true,
-
-        /**
-         * @cfg {Number} count
-         * The number of records in this ResultSet. Note that total may differ from this number.
-         */
-        count: null,
-
-        /**
-         * @cfg {Number} total
-         * The total number of records reported by the data source. This ResultSet may form a subset of
-         * those records (see {@link #count}).
-         */
-        total: null,
-
-        /**
-         * @cfg {Boolean} success
-         * True if the ResultSet loaded successfully, false if any errors were encountered.
-         */
-        success: false,
-
-        /**
-         * @cfg {Ext.data.Model[]} records (required)
-         * The array of record instances.
-         */
-        records: null,
-
-        /**
-         * @cfg {String} message
-         * The message that was read in from the data
-         */
-        message: null
-    },
-
-    /**
-     * Creates the resultSet
-     * @param {Object} [config] Config object.
-     */
-    constructor: function(config) {
-        this.initConfig(config);
-    },
-
-    applyCount: function(count) {
-        if (!count && count !== 0) {
-            return this.getRecords().length;
-        }
-        return count;
-    },
-    
-    /**
-     * @private
-     * Make sure we set the right count when new records have been sent in
-     */
-    updateRecords: function(records) {
-        this.setCount(records.length);
-    }
-});
-
-/**
- * @author Ed Spencer
- *
- * Readers are used to interpret data to be loaded into a {@link Ext.data.Model Model} instance or a {@link
- * Ext.data.Store Store} - often in response to an AJAX request. In general there is usually no need to create
- * a Reader instance directly, since a Reader is almost always used together with a {@link Ext.data.proxy.Proxy Proxy},
- * and is configured using the Proxy's {@link Ext.data.proxy.Proxy#cfg-reader reader} configuration property:
- *
- *     Ext.define("User", {
- *         extend: "Ext.data.Model",
- *         config: {
- *             fields: [
- *                 "id",
- *                 "name"
- *             ]
- *         }
- *     });
- *
- *     Ext.create("Ext.data.Store", {
- *         model: "User",
- *         autoLoad: true,
- *         storeId: "usersStore",
- *         proxy: {
- *             type: "ajax",
- *             url : "users.json",
- *             reader: {
- *                 type: "json",
- *                 rootProperty: "users"
- *             }
- *         }
- *     });
- *
- *     Ext.create("Ext.List", {
- *         fullscreen: true,
- *         itemTpl: "{name} (id: '{id}')",
- *         store: "usersStore"
- *     });
- *
- * The above reader is configured to consume a JSON string that looks something like this:
- *
- *     {
- *         "success": true,
- *         "users": [
- *             { "name": "User 1" },
- *             { "name": "User 2" }
- *         ]
- *     }
- *
- *
- * # Loading Nested Data
- *
- * Readers have the ability to automatically load deeply-nested data objects based on the {@link Ext.data.association.Association
- * associations} configured on each Model. Below is an example demonstrating the flexibility of these associations in a
- * fictional CRM system which manages a User, their Orders, OrderItems and Products. First we'll define the models:
- *
- *     Ext.define("User", {
- *         extend: "Ext.data.Model",
- *         config: {
- *             fields: [
- *                 "id",
- *                 "name"
- *             ],
- *             hasMany: {
- *                 model: "Order",
- *                 name: "orders"
- *             },
- *             proxy: {
- *                 type: "rest",
- *                 url : "users.json",
- *                 reader: {
- *                     type: "json",
- *                     rootProperty: "users"
- *                 }
- *             }
- *         }
- *     });
- *
- *     Ext.define("Order", {
- *         extend: "Ext.data.Model",
- *         config: {
- *             fields: [
- *                 "id", "total"
- *             ],
- *             hasMany: {
- *                 model: "OrderItem",
- *                 name: "orderItems",
- *                 associationKey: "order_items"
- *             },
- *             belongsTo: "User"
- *         }
- *     });
- *
- *     Ext.define("OrderItem", {
- *         extend: "Ext.data.Model",
- *         config: {
- *             fields: [
- *                 "id",
- *                 "price",
- *                 "quantity",
- *                 "order_id",
- *                 "product_id"
- *             ],
- *             belongsTo: [
- *                 "Order", {
- *                     model: "Product",
- *                     associationKey: "product"
- *                 }
- *             ]
- *         }
- *     });
- *
- *     Ext.define("Product", {
- *         extend: "Ext.data.Model",
- *         config: {
- *             fields: [
- *                 "id",
- *                 "name"
- *             ]
- *         },
- *         hasMany: "OrderItem"
- *     });
- *
- *     var store = Ext.create('Ext.data.Store', {
- *         model: "User"
- *     });
- *
- *     store.load({
- *         callback: function() {
- *             var output = [];
- *
- *             // the user that was loaded
- *             var user = store.first();
- *
- *             output.push("Orders for " + user.get('name') + ":");
- *
- *             // iterate over the Orders for each User
- *             user.orders().each(function(order) {
- *                 output.push("Order ID: " + order.get('id') + ", which contains items:");
- *
- *                 // iterate over the OrderItems for each Order
- *                 order.orderItems().each(function(orderItem) {
- *                     // We know that the Product data is already loaded, so we can use the
- *                     // synchronous getProduct() method. Usually, we would use the 
- *                     // asynchronous version (see Ext.data.association.BelongsTo).
- *                     var product = orderItem.getProduct();
- *                     output.push(orderItem.get("quantity") + " orders of " + product.get("name"));
- *                 });
- *             });
- *             Ext.Msg.alert('Output:', output.join("<br/>"));
- *         }
- *     });
- *
- * This may be a lot to take in - basically a User has many Orders, each of which is composed of several OrderItems.
- * Finally, each OrderItem has a single Product. This allows us to consume data like this (_users.json_):
- *
- *     {
- *         "users": [
- *             {
- *                 "id": 123,
- *                 "name": "Ed",
- *                 "orders": [
- *                     {
- *                         "id": 50,
- *                         "total": 100,
- *                         "order_items": [
- *                             {
- *                                 "id"      : 20,
- *                                 "price"   : 40,
- *                                 "quantity": 2,
- *                                 "product" : {
- *                                     "id": 1000,
- *                                     "name": "MacBook Pro"
- *                                 }
- *                             },
- *                             {
- *                                 "id"      : 21,
- *                                 "price"   : 20,
- *                                 "quantity": 3,
- *                                 "product" : {
- *                                     "id": 1001,
- *                                     "name": "iPhone"
- *                                 }
- *                             }
- *                         ]
- *                     }
- *                 ]
- *             }
- *         ]
- *     }
- *
- * The JSON response is deeply nested - it returns all Users (in this case just 1 for simplicity's sake), all of the
- * Orders for each User (again just 1 in this case), all of the OrderItems for each Order (2 order items in this case),
- * and finally the Product associated with each OrderItem.
- *
- * Running the code above results in the following:
- *
- *     Orders for Ed:
- *     Order ID: 50, which contains items:
- *     2 orders of MacBook Pro
- *     3 orders of iPhone
- */
-Ext.define('Ext.data.reader.Reader', {
-               
-                            
-      
-    alternateClassName: ['Ext.data.Reader', 'Ext.data.DataReader'],
-
-    mixins: [ Ext.mixin.Observable ],
-
-    // @private
-    isReader: true,
-
-    config: {
-        /**
-         * @cfg {String} idProperty
-         * Name of the property within a raw object that contains a record identifier value. Defaults to The id of the
-         * model. If an `idProperty` is explicitly specified it will override that of the one specified on the model
-         */
-        idProperty: undefined,
-
-        /**
-         * @cfg {String} clientIdProperty
-         * The name of the property with a response that contains the existing client side id for a record that we are reading.
-         */
-        clientIdProperty: 'clientId',
-
-        /**
-         * @cfg {String} totalProperty
-         * Name of the property from which to retrieve the total number of records in the dataset. This is only needed if
-         * the whole dataset is not passed in one go, but is being paged from the remote server.
-         */
-        totalProperty: 'total',
-
-        /**
-         * @cfg {String} successProperty
-         * Name of the property from which to retrieve the success attribute. See
-         * {@link Ext.data.proxy.Server}.{@link Ext.data.proxy.Server#exception exception} for additional information.
-         */
-        successProperty: 'success',
-
-        /**
-         * @cfg {String} messageProperty (optional)
-         * The name of the property which contains a response message. This property is optional.
-         */
-        messageProperty: null,
-
-        /**
-         * @cfg {String} rootProperty
-         * The name of the property which contains the Array of row objects.  For JSON reader it's dot-separated list
-         * of property names.  For XML reader it's a CSS selector.  For array reader it's not applicable.
-         *
-         * By default the natural root of the data will be used.  The root JSON array, the root XML element, or the array.
-         *
-         * The data packet value for this property should be an empty array to clear the data or show no data.
-         */
-        rootProperty: '',
-
-        /**
-         * @cfg {Boolean} implicitIncludes
-         * `true` to automatically parse models nested within other models in a response object. See the
-         * {@link Ext.data.reader.Reader} intro docs for full explanation.
-         */
-        implicitIncludes: true,
-
-        model: undefined
-    },
-
-    constructor: function(config) {
-        this.initConfig(config);
-    },
-
-    /**
-     * @property {Object} metaData
-     * The raw meta data that was most recently read, if any. Meta data can include existing
-     * Reader config options like {@link #idProperty}, {@link #totalProperty}, etc. that get
-     * automatically applied to the Reader, and those can still be accessed directly from the Reader
-     * if needed. However, meta data is also often used to pass other custom data to be processed
-     * by application code. For example, it is common when reconfiguring the data model of a grid to
-     * also pass a corresponding column model config to be applied to the grid. Any such data will
-     * not get applied to the Reader directly (it just gets passed through and is ignored by Ext).
-     * This `metaData` property gives you access to all meta data that was passed, including any such
-     * custom data ignored by the reader.
-     *
-     * This is a read-only property, and it will get replaced each time a new meta data object is
-     * passed to the reader.
-     * @readonly
-     */
-
-    fieldCount: 0,
-
-    applyModel: function(model) {
-        if (typeof model == 'string') {
-            model = Ext.data.ModelManager.getModel(model);
-
-            if (!model) {
-                Ext.Logger.error('Model with name ' + arguments[0] + ' doesnt exist.');
-            }
-        }
-
-        if (model && !model.prototype.isModel && Ext.isObject(model)) {
-            model = Ext.data.ModelManager.registerType(model.storeId || model.id || Ext.id(), model);
-        }
-
-        return model;
-    },
-
-    applyIdProperty: function(idProperty) {
-        if (!idProperty && this.getModel()) {
-            idProperty = this.getModel().getIdProperty();
-        }
-        return idProperty;
-    },
-
-    updateModel: function(model) {
-        if (model) {
-            if (!this.getIdProperty()) {
-                this.setIdProperty(model.getIdProperty());
-            }
-            this.buildExtractors();
-        }
-    },
-
-    createAccessor: Ext.emptyFn,
-
-    createFieldAccessExpression: function() {
-        return 'undefined';
-    },
-
-    /**
-     * @private
-     * This builds optimized functions for retrieving record data and meta data from an object.
-     * Subclasses may need to implement their own getRoot function.
-     */
-    buildExtractors: function() {
-        if (!this.getModel()) {
-            return;
-        }
-
-        var me = this,
-            totalProp = me.getTotalProperty(),
-            successProp = me.getSuccessProperty(),
-            messageProp = me.getMessageProperty();
-
-        //build the extractors for all the meta data
-        if (totalProp) {
-            me.getTotal = me.createAccessor(totalProp);
-        }
-
-        if (successProp) {
-            me.getSuccess = me.createAccessor(successProp);
-        }
-
-        if (messageProp) {
-            me.getMessage = me.createAccessor(messageProp);
-        }
-
-        me.extractRecordData = me.buildRecordDataExtractor();
-    },
-
-    /**
-     * @private
-     * Return a function which will read a raw row object in the format this Reader accepts, and populates
-     * a record's data object with converted data values.
-     *
-     * The returned function must be passed the following parameters:
-     *
-     * - `dest` - A record's empty data object into which the new field value properties are injected.
-     * - `source` - A raw row data object of whatever type this Reader consumes
-     * - `record - The record which is being populated.
-     */
-    buildRecordDataExtractor: function() {
-        var me = this,
-            model = me.getModel(),
-            fields = model.getFields(),
-            ln = fields.length,
-            fieldVarName = [],
-            clientIdProp = me.getModel().getClientIdProperty(),
-            prefix = '__field',
-            code = [
-                'var me = this,\n',
-                '    fields = me.getModel().getFields(),\n',
-                '    idProperty = me.getIdProperty(),\n',
-                '    idPropertyIsFn = (typeof idProperty == "function"),',
-                '    value,\n',
-                '    internalId'
-            ], i, field, varName, fieldName;
-
-        fields = fields.items;
-
-        for (i = 0; i < ln; i++) {
-            field = fields[i];
-            fieldName = field.getName();
-            if (fieldName === model.getIdProperty()) {
-                fieldVarName[i] = 'idField';
-            } else {
-                fieldVarName[i] = prefix + i;
-            }
-            code.push(',\n    ', fieldVarName[i], ' = fields.get("', field.getName(), '")');
-        }
-
-        code.push(';\n\n    return function(source) {\n        var dest = {};\n');
-
-        code.push('        if (idPropertyIsFn) {\n');
-        code.push('            idField.setMapping(idProperty);\n');
-        code.push('        }\n');
-
-        for (i = 0; i < ln; i++) {
-            field = fields[i];
-            varName = fieldVarName[i];
-            fieldName = field.getName();
-            if (fieldName === model.getIdProperty() && field.getMapping() === null && model.getIdProperty() !== this.getIdProperty()) {
-                field.setMapping(this.getIdProperty());
-            }
-            // createFieldAccessExpression must be implemented in subclasses to extract data from the source object in the correct way.
-            code.push('        try {\n');
-            code.push('            value = ', me.createFieldAccessExpression(field, varName, 'source'), ';\n');
-            code.push('            if (value !== undefined) {\n');
-            code.push('                dest["' + field.getName() + '"] = value;\n');
-            code.push('            }\n');
-            code.push('        } catch(e){}\n');
-        }
-
-        // set the client id as the internalId of the record.
-        // clientId handles the case where a client side record did not previously exist on the server,
-        // so the server is passing back a client id that can be used to pair the server side record up with the client record
-        if (clientIdProp) {
-            code.push('        internalId = ' + me.createFieldAccessExpression(Ext.create('Ext.data.Field', {name: clientIdProp}), null, 'source') + ';\n');
-            code.push('        if (internalId !== undefined) {\n');
-            code.push('            dest["_clientId"] = internalId;\n        }\n');
-        }
-
-        code.push('        return dest;\n');
-        code.push('    };');
-
-        // Here we are creating a new Function and invoking it immediately in the scope of this Reader
-        // It declares several vars capturing the configured context of this Reader, and returns a function
-        // which, when passed a record data object, a raw data row in the format this Reader is configured to read,
-        // and the record which is being created, will populate the record's data object from the raw row data.
-        return Ext.functionFactory(code.join('')).call(me);
-    },
-
-    getFields: function() {
-        return this.getModel().getFields().items;
-    },
-
-    /**
-     * @private
-     * By default this function just returns what is passed to it. It can be overridden in a subclass
-     * to return something else. See XmlReader for an example.
-     * @param {Object} data The data object
-     * @return {Object} The normalized data object
-     */
-    getData: function(data) {
-        return data;
-    },
-
-    /**
-     * Takes a raw response object (as passed to this.read) and returns the useful data segment of it.
-     * This must be implemented by each subclass
-     * @param {Object} response The response object
-     * @return {Object} The useful data from the response
-     */
-    getResponseData: function(response) {
-        return response;
-    },
-
-    /**
-     * @private
-     * This will usually need to be implemented in a subclass. Given a generic data object (the type depends on the type
-     * of data we are reading), this function should return the object as configured by the Reader's 'rootProperty' meta data config.
-     * See XmlReader's getRoot implementation for an example. By default the same data object will simply be returned.
-     * @param {Object} data The data object
-     * @return {Object} The same data object
-     */
-    getRoot: function(data) {
-        return data;
-    },
-
-    /**
-     * Reads the given response object. This method normalizes the different types of response object that may be passed
-     * to it, before handing off the reading of records to the {@link #readRecords} function.
-     * @param {Object} response The response object. This may be either an XMLHttpRequest object or a plain JS object
-     * @return {Ext.data.ResultSet} The parsed ResultSet object
-     */
-    read: function(response) {
-        var data = response,
-            Model = this.getModel(),
-            resultSet, records, i, ln, record;
-
-        if (response) {
-            data = this.getResponseData(response);
-        }
-
-        if (data) {
-            resultSet = this.readRecords(data);
-            records = resultSet.getRecords();
-            for (i = 0, ln = records.length; i < ln; i++) {
-                record = records[i];
-                records[i] = new Model(record.data, record.id, record.node);
-            }
-            return resultSet;
-        } else {
-            return this.nullResultSet;
-        }
-    },
-
-    process: function(response) {
-        var data = response;
-
-        if (response) {
-            data = this.getResponseData(response);
-        }
-
-        if (data) {
-            return this.readRecords(data);
-        } else {
-            return this.nullResultSet;
-        }
-    },
-
-    /**
-     * Abstracts common functionality used by all Reader subclasses. Each subclass is expected to call this function
-     * before running its own logic and returning the Ext.data.ResultSet instance. For most Readers additional
-     * processing should not be needed.
-     * @param {Object} data The raw data object
-     * @return {Ext.data.ResultSet} A ResultSet object
-     */
-    readRecords: function(data) {
-        var me  = this;
-
-        /**
-         * @property {Object} rawData
-         * The raw data object that was last passed to readRecords. Stored for further processing if needed
-         */
-        me.rawData = data;
-
-        data = me.getData(data);
-
-        if (data.metaData) {
-            me.onMetaChange(data.metaData);
-        }
-
-        // <debug>
-        if (!me.getModel()) {
-            Ext.Logger.warn('In order to read record data, a Reader needs to have a Model defined on it.');
-        }
-        // </debug>
-
-        // If we pass an array as the data, we don't use getRoot on the data.
-        // Instead the root equals to the data.
-        var isArray = Ext.isArray(data),
-            root = isArray ? data : me.getRoot(data),
-            success = true,
-            recordCount = 0,
-            total, value, records, message;
-
-        if (isArray && !data.length) {
-            return me.nullResultSet;
-        }
-
-        // buildExtractors should have put getTotal, getSuccess, or getMessage methods on the instance.
-        // So we can check them directly
-        if (me.getTotal) {
-            value = parseInt(me.getTotal(data), 10);
-            if (!isNaN(value)) {
-                total = value;
-            }
-        }
-
-        if (me.getSuccess) {
-            value = me.getSuccess(data);
-            if (value === false || value === 'false') {
-                success = false;
-            }
-        }
-
-        if (me.getMessage) {
-            message = me.getMessage(data);
-        }
-
-        if (root) {
-            records = me.extractData(root);
-            recordCount = records.length;
-        } else {
-            recordCount = 0;
-            records = [];
-        }
-
-        return new Ext.data.ResultSet({
-            total  : total,
-            count  : recordCount,
-            records: records,
-            success: success,
-            message: message
-        });
-    },
-
-    /**
-     * Returns extracted, type-cast rows of data.
-     * @param {Object[]/Object} root from server response
-     * @private
-     */
-    extractData : function(root) {
-        var me = this,
-            records = [],
-            length  = root.length,
-            model = me.getModel(),
-            idProperty = model.getIdProperty(),
-            fieldsCollection = model.getFields(),
-            node, i, data, id, clientId;
-
-        /*
-         * We check here whether the fields are dirty since the last read.
-         * This works around an issue when a Model is used for both a Tree and another
-         * source, because the tree decorates the model with extra fields and it causes
-         * issues because the readers aren't notified.
-         */
-        if (fieldsCollection.isDirty) {
-            me.buildExtractors(true);
-            delete fieldsCollection.isDirty;
-        }
-
-        if (!root.length && Ext.isObject(root)) {
-            root = [root];
-            length = 1;
-        }
-
-        for (i = 0; i < length; i++) {
-            clientId = null;
-            id = null;
-
-            node = root[i];
-
-            // When you use a Memory proxy, and you set data: [] to contain record instances
-            // this node will already be a record. In this case we should not try to extract
-            // the record data from the object, but just use the record data attribute.
-            if (node.isModel) {
-                data = node.data;
-            } else {
-                data = me.extractRecordData(node);
-            }
-
-            if (data._clientId !== undefined) {
-                clientId = data._clientId;
-                delete data._clientId;
-            }
-
-            if (data[idProperty] !== undefined) {
-                id = data[idProperty];
-            }
-
-            if (me.getImplicitIncludes()) {
-                 me.readAssociated(data, node);
-            }
-
-            records.push({
-                clientId: clientId,
-                id: id,
-                data: data,
-                node: node
-            });
-        }
-
-        return records;
-    },
-
-    /**
-     * @private
-     * Loads a record's associations from the data object. This pre-populates `hasMany` and `belongsTo` associations
-     * on the record provided.
-     * @param {Ext.data.Model} record The record to load associations for
-     * @param {Object} data The data object
-     */
-    readAssociated: function(record, data) {
-        var associations = this.getModel().associations.items,
-            length = associations.length,
-            i = 0,
-            association, associationData, associationKey;
-
-        for (; i < length; i++) {
-            association = associations[i];
-            associationKey = association.getAssociationKey();
-            associationData = this.getAssociatedDataRoot(data, associationKey);
-
-            if (associationData) {
-                record[associationKey] = associationData;
-            }
-        }
-    },
-
-    /**
-     * @private
-     * Used internally by `readAssociated`. Given a data object (which could be json, xml etc) for a specific
-     * record, this should return the relevant part of that data for the given association name. If a complex
-     * mapping, this will traverse arrays and objects to resolve the data.
-     * @param {Object} data The raw data object
-     * @param {String} associationName The name of the association to get data for (uses associationKey if present)
-     * @return {Object} The root
-     */
-    getAssociatedDataRoot: function(data, associationName) {
-        var re = /[\[\.]/,
-            i  = String(associationName).search(re);
-
-        if (i >= 0) {
-            return Ext.functionFactory('obj', 'return obj' + (i > 0 ? '.' : '') + associationName)(data);
-        }
-
-        return data[associationName];
-    },
-
-    /**
-     * @private
-     * Reconfigures the meta data tied to this Reader
-     */
-    onMetaChange : function(meta) {
-        var fields = meta.fields,
-            me = this,
-            newModel, config, idProperty;
-
-        // save off the raw meta data
-        me.metaData = meta;
-
-        // set any reader-specific configs from meta if available
-        if (meta.rootProperty !== undefined) {
-            me.setRootProperty(meta.rootProperty);
-        }
-        else if (meta.root !== undefined) {
-            me.setRootProperty(meta.root);
-        }
-
-        if (meta.idProperty !== undefined) {
-            me.setIdProperty(meta.idProperty);
-        }
-        if (meta.totalProperty !== undefined) {
-            me.setTotalProperty(meta.totalProperty);
-        }
-        if (meta.successProperty !== undefined) {
-            me.setSuccessProperty(meta.successProperty);
-        }
-        if (meta.messageProperty !== undefined) {
-            me.setMessageProperty(meta.messageProperty);
-        }
-
-        if (fields) {
-            if (me.getModel()) {
-                me.getModel().setFields(fields);
-                me.buildExtractors();
-            }
-            else {
-                idProperty = me.getIdProperty();
-                config = {fields: fields};
-
-                if (idProperty) {
-                    config.idProperty = idProperty;
-                }
-
-                newModel = Ext.define("Ext.data.reader.MetaModel" + Ext.id(), {
-                    extend: 'Ext.data.Model',
-                    config: config
-                });
-
-                me.setModel(newModel);
-            }
-        }
-        else {
-            me.buildExtractors();
-        }
-    }
-
-
-    // Convert old properties in data into a config object
-}, function() {
-    Ext.apply(this.prototype, {
-        // @private
-        // Empty ResultSet to return when response is falsy (null|undefined|empty string)
-        nullResultSet: new Ext.data.ResultSet({
-            total  : 0,
-            count  : 0,
-            records: [],
-            success: false
-        })
-    });
-
-});
-
-/**
- * The JSON Reader is used by a Proxy to read a server response that is sent back in JSON format. This usually happens
- * as a result of loading a Store - for example we might create something like this:
- *
- *     Ext.define('User', {
- *         extend: 'Ext.data.Model',
- *         config: {
- *             fields: ['id', 'name', 'email']
- *         }
- *     });
- *
- *     var store = Ext.create('Ext.data.Store', {
- *         model: 'User',
- *         proxy: {
- *             type: 'ajax',
- *             url : 'users.json',
- *             reader: {
- *                 type: 'json'
- *             }
- *         }
- *     });
- *
- * The example above creates a 'User' model. Models are explained in the {@link Ext.data.Model Model} docs if you're not
- * already familiar with them.
- *
- * We created the simplest type of JSON Reader possible by simply telling our {@link Ext.data.Store Store}'s {@link
- * Ext.data.proxy.Proxy Proxy} that we want a JSON Reader. The Store automatically passes the configured model to the
- * Store, so it is as if we passed this instead:
- *
- *     reader: {
- *         type : 'json',
- *         model: 'User'
- *     }
- *
- * The reader we set up is ready to read data from our server - at the moment it will accept a response like this:
- *
- *     [
- *         {
- *             "id": 1,
- *             "name": "Ed Spencer",
- *             "email": "ed@sencha.com"
- *         },
- *         {
- *             "id": 2,
- *             "name": "Abe Elias",
- *             "email": "abe@sencha.com"
- *         }
- *     ]
- *
- * ## Reading other JSON formats
- *
- * If you already have your JSON format defined and it doesn't look quite like what we have above, you can usually pass
- * JsonReader a couple of configuration options to make it parse your format. For example, we can use the
- * {@link #rootProperty} configuration to parse data that comes back like this:
- *
- *     {
- *         "users": [
- *            {
- *                "id": 1,
- *                "name": "Ed Spencer",
- *                "email": "ed@sencha.com"
- *            },
- *            {
- *                "id": 2,
- *                "name": "Abe Elias",
- *                "email": "abe@sencha.com"
- *            }
- *         ]
- *     }
- *
- * To parse this we just pass in a {@link #rootProperty} configuration that matches the 'users' above:
- *
- *     reader: {
- *         type: 'json',
- *         rootProperty: 'users'
- *     }
- *
- * Sometimes the JSON structure is even more complicated. Document databases like CouchDB often provide metadata around
- * each record inside a nested structure like this:
- *
- *     {
- *         "total": 122,
- *         "offset": 0,
- *         "users": [
- *             {
- *                 "id": "ed-spencer-1",
- *                 "value": 1,
- *                 "user": {
- *                     "id": 1,
- *                     "name": "Ed Spencer",
- *                     "email": "ed@sencha.com"
- *                 }
- *             }
- *         ]
- *     }
- *
- * In the case above the record data is nested an additional level inside the "users" array as each "user" item has
- * additional metadata surrounding it ('id' and 'value' in this case). To parse data out of each "user" item in the JSON
- * above we need to specify the {@link #record} configuration like this:
- *
- *     reader: {
- *         type: 'json',
- *         record: 'user',
- *         rootProperty: 'users'
- *     }
- *
- * ## Response MetaData
- *
- * The server can return metadata in its response, in addition to the record data, that describe attributes
- * of the data set itself or are used to reconfigure the Reader. To pass metadata in the response you simply
- * add a `metaData` attribute to the root of the response data. The metaData attribute can contain anything,
- * but supports a specific set of properties that are handled by the Reader if they are present:
- *
- * - {@link #idProperty}: property name for the primary key field of the data
- * - {@link #rootProperty}: the property name of the root response node containing the record data
- * - {@link #totalProperty}: property name for the total number of records in the data
- * - {@link #successProperty}: property name for the success status of the response
- * - {@link #messageProperty}: property name for an optional response message
- * - {@link Ext.data.Model#cfg-fields fields}: Config used to reconfigure the Model's fields before converting the
- *   response data into records
- *
- * An initial Reader configuration containing all of these properties might look like this ("fields" would be
- * included in the Model definition, not shown):
- *
- *     reader: {
- *         type: 'json',
- *         idProperty: 'id',
- *         rootProperty: 'root',
- *         totalProperty: 'total',
- *         successProperty: 'success',
- *         messageProperty: 'message'
- *     }
- *
- * If you were to pass a response object containing attributes different from those initially defined above, you could
- * use the `metaData` attribute to reconfigure the Reader on the fly. For example:
- *
- *     {
- *         "count": 1,
- *         "ok": true,
- *         "msg": "Users found",
- *         "users": [{
- *             "userId": 123,
- *             "name": "Ed Spencer",
- *             "email": "ed@sencha.com"
- *         }],
- *         "metaData": {
- *             "idProperty": 'userId',
- *             "rootProperty": "users",
- *             "totalProperty": 'count',
- *             "successProperty": 'ok',
- *             "messageProperty": 'msg'
- *         }
- *     }
- *
- * You can also place any other arbitrary data you need into the `metaData` attribute which will be ignored by the Reader,
- * but will be accessible via the Reader's {@link #metaData} property. Application code can then process the passed
- * metadata in any way it chooses.
- *
- * A simple example for how this can be used would be customizing the fields for a Model that is bound to a grid. By passing
- * the `fields` property the Model will be automatically updated by the Reader internally, but that change will not be
- * reflected automatically in the grid unless you also update the column configuration. You could do this manually, or you
- * could simply pass a standard grid column config object as part of the `metaData` attribute
- * and then pass that along to the grid. Here's a very simple example for how that could be accomplished:
- *
- *     // response format:
- *     {
- *         ...
- *         "metaData": {
- *             "fields": [
- *                 { "name": "userId", "type": "int" },
- *                 { "name": "name", "type": "string" },
- *                 { "name": "birthday", "type": "date", "dateFormat": "Y-j-m" },
- *             ],
- *             "columns": [
- *                 { "text": "User ID", "dataIndex": "userId", "width": 40 },
- *                 { "text": "User Name", "dataIndex": "name", "flex": 1 },
- *                 { "text": "Birthday", "dataIndex": "birthday", "flex": 1, "format": 'Y-j-m', "xtype": "datecolumn" }
- *             ]
- *         }
- *     }
- */
-Ext.define('Ext.data.reader.Json', {
-    extend:  Ext.data.reader.Reader ,
-    alternateClassName: 'Ext.data.JsonReader',
-    alias : 'reader.json',
-
-    config: {
-        /**
-         * @cfg {String} [record=null]
-         * The optional location within the JSON response that the record data itself can be found at. See the
-         * JsonReader intro docs for more details. This is not often needed.
-         */
-        record: null,
-
-        /**
-         * @cfg {Boolean} [useSimpleAccessors=false]
-         * `true` to ensure that field names/mappings are treated as literals when reading values. For
-         * example, by default, using the mapping "foo.bar.baz" will try and read a property foo from the root, then a
-         * property bar from foo, then a property baz from bar. Setting the simple accessors to `true` will read the
-         * property with the name "foo.bar.baz" direct from the root object.
-         */
-        useSimpleAccessors: false
-    },
-
-    objectRe: /[\[\.]/,
-
-    // @inheritdoc
-    getResponseData: function(response) {
-        var responseText = response;
-
-        // Handle an XMLHttpRequest object
-        if (response && response.responseText) {
-            responseText = response.responseText;
-        }
-
-        // Handle the case where data has already been decoded
-        if (typeof responseText !== 'string') {
-            return responseText;
-        }
-
-        var data;
-        try {
-            data = Ext.decode(responseText);
-        }
-        catch (ex) {
-            /**
-             * @event exception Fires whenever the reader is unable to parse a response.
-             * @param {Ext.data.reader.Xml} reader A reference to this reader.
-             * @param {XMLHttpRequest} response The XMLHttpRequest response object.
-             * @param {String} error The error message.
-             */
-            this.fireEvent('exception', this, response, 'Unable to parse the JSON returned by the server: ' + ex.toString());
-            Ext.Logger.warn('Unable to parse the JSON returned by the server: ' + ex.toString());
-        }
-        //<debug>
-        if (!data) {
-            this.fireEvent('exception', this, response, 'JSON object not found');
-
-            Ext.Logger.warn('JSON object not found');
-        }
-        //</debug>
-
-        return data;
-    },
-
-    // @inheritdoc
-    buildExtractors: function() {
-        var me = this,
-            root = me.getRootProperty();
-
-        me.callParent(arguments);
-
-        if (root) {
-            me.rootAccessor = me.createAccessor(root);
-        } else {
-            delete me.rootAccessor;
-        }
-    },
-
-    /**
-     * We create this method because `root` is now a config so `getRoot` is already defined, but in the old
-     * data package `getRoot` was passed a data argument and it would return the data inside of the `root`
-     * property. This method handles both cases.
-     * @param data (Optional)
-     * @return {String/Object} Returns the config root value if this method was called without passing
-     * data. Else it returns the object in the data bound to the root.
-     * @private
-     */
-    getRoot: function(data) {
-        var fieldsCollection = this.getModel().getFields();
-
-        /*
-         * We check here whether the fields are dirty since the last read.
-         * This works around an issue when a Model is used for both a Tree and another
-         * source, because the tree decorates the model with extra fields and it causes
-         * issues because the readers aren't notified.
-         */
-        if (fieldsCollection.isDirty) {
-            this.buildExtractors(true);
-            delete fieldsCollection.isDirty;
-        }
-
-        if (this.rootAccessor) {
-            return this.rootAccessor.call(this, data);
-        } else {
-            return data;
-        }
-    },
-
-    /**
-     * @private
-     * We're just preparing the data for the superclass by pulling out the record objects we want. If a {@link #record}
-     * was specified we have to pull those out of the larger JSON object, which is most of what this function is doing
-     * @param {Object} root The JSON root node
-     * @return {Ext.data.Model[]} The records
-     */
-    extractData: function(root) {
-        var recordName = this.getRecord(),
-            data = [],
-            length, i;
-
-        if (recordName) {
-            length = root.length;
-
-            if (!length && Ext.isObject(root)) {
-                length = 1;
-                root = [root];
-            }
-
-            for (i = 0; i < length; i++) {
-                data[i] = root[i][recordName];
-            }
-        } else {
-            data = root;
-        }
-        return this.callParent([data]);
-    },
-
-    /**
-     * @private
-     * Returns an accessor function for the given property string. Gives support for properties such as the following:
-     * 'someProperty'
-     * 'some.property'
-     * 'some["property"]'
-     * This is used by buildExtractors to create optimized extractor functions when casting raw data into model instances.
-     */
-    createAccessor: function() {
-        var re = /[\[\.]/;
-
-        return function(expr) {
-            if (Ext.isEmpty(expr)) {
-                return Ext.emptyFn;
-            }
-            if (Ext.isFunction(expr)) {
-                return expr;
-            }
-            if (this.getUseSimpleAccessors() !== true) {
-                var i = String(expr).search(re);
-                if (i >= 0) {
-                    return Ext.functionFactory('obj', 'var value; try {value = obj' + (i > 0 ? '.' : '') + expr + '} catch(e) {}; return value;');
-                }
-            }
-            return function(obj) {
-                return obj[expr];
-            };
-        };
-    }(),
-
-    /**
-     * @private
-     * Returns an accessor expression for the passed Field. Gives support for properties such as the following:
-     * 'someProperty'
-     * 'some.property'
-     * 'some["property"]'
-     * This is used by buildExtractors to create optimized on extractor function which converts raw data into model instances.
-     */
-    createFieldAccessExpression: function(field, fieldVarName, dataName) {
-        var me     = this,
-            re     = me.objectRe,
-            hasMap = (field.getMapping() !== null),
-            map    = hasMap ? field.getMapping() : field.getName(),
-            result, operatorSearch;
-
-        if (typeof map === 'function') {
-            result = fieldVarName + '.getMapping()(' + dataName + ', this)';
-        }
-        else if (me.getUseSimpleAccessors() === true || ((operatorSearch = String(map).search(re)) < 0)) {
-            if (!hasMap || isNaN(map)) {
-                // If we don't provide a mapping, we may have a field name that is numeric
-                map = '"' + map + '"';
-            }
-            result = dataName + "[" + map + "]";
-        }
-        else {
-            result = dataName + (operatorSearch > 0 ? '.' : '') + map;
-        }
-
-        return result;
-    }
-});
-
-/**
- * @author Ed Spencer
- *
- * Base Writer class used by most subclasses of {@link Ext.data.proxy.Server}. This class is
- * responsible for taking a set of {@link Ext.data.Operation} objects and a {@link Ext.data.Request}
- * object and modifying that request based on the Operations.
- *
- * For example a Ext.data.writer.Json would format the Operations and their {@link Ext.data.Model}
- * instances based on the config options passed to the JsonWriter's constructor.
- *
- * Writers are not needed for any kind of local storage - whether via a
- * {@link Ext.data.proxy.WebStorage Web Storage proxy} (see {@link Ext.data.proxy.LocalStorage localStorage})
- * or just in memory via a {@link Ext.data.proxy.Memory MemoryProxy}.
- */
-Ext.define('Ext.data.writer.Writer', {
-    alias: 'writer.base',
-    alternateClassName: ['Ext.data.DataWriter', 'Ext.data.Writer'],
-
-    config: {
-        /**
-         * @cfg {Boolean} writeAllFields `true` to write all fields from the record to the server. If set to `false` it
-         * will only send the fields that were modified. Note that any fields that have
-         * {@link Ext.data.Field#persist} set to false will still be ignored.
-         */
-        writeAllFields: true,
-
-        /**
-         * @cfg {String} nameProperty This property is used to read the key for each value that will be sent to the server.
-         * For example:
-         *
-         *     Ext.define('Person', {
-         *         extend: 'Ext.data.Model',
-         *         fields: [{
-         *             name: 'first',
-         *             mapping: 'firstName'
-         *         }, {
-         *             name: 'last',
-         *             mapping: 'lastName'
-         *         }, {
-         *             name: 'age'
-         *         }]
-         *     });
-         *
-         *     new Ext.data.writer.Writer({
-         *         writeAllFields: true,
-         *         nameProperty: 'mapping'
-         *     });
-         *
-         * The following data will be sent to the server:
-         *
-         *     {
-         *         firstName: 'first name value',
-         *         lastName: 'last name value',
-         *         age: 1
-         *     }
-         *
-         * If the value is not present, the field name will always be used.
-         */
-        nameProperty: 'name'
-    },
-
-    /**
-     * Creates new Writer.
-     * @param {Object} config (optional) Config object.
-     */
-    constructor: function(config) {
-        this.initConfig(config);
-    },
-
-    /**
-     * Prepares a Proxy's Ext.data.Request object.
-     * @param {Ext.data.Request} request The request object.
-     * @return {Ext.data.Request} The modified request object.
-     */
-    write: function(request) {
-        var operation = request.getOperation(),
-            records   = operation.getRecords() || [],
-            len       = records.length,
-            i         = 0,
-            data      = [];
-
-        for (; i < len; i++) {
-            data.push(this.getRecordData(records[i]));
-        }
-        return this.writeRecords(request, data);
-    },
-
-    writeDate: function(field, date) {
-        if (!date) {
-            return null;
-        }
-
-        var dateFormat = field.getDateFormat() || 'timestamp';
-        switch (dateFormat) {
-            case 'timestamp':
-                return date.getTime()/1000;
-            case 'time':
-                return date.getTime();
-            default:
-                return Ext.Date.format(date, dateFormat);
-        }
-    },
-
-    /**
-     * Formats the data for each record before sending it to the server. This
-     * method should be overridden to format the data in a way that differs from the default.
-     * @param {Object} record The record that we are writing to the server.
-     * @return {Object} An object literal of name/value keys to be written to the server.
-     * By default this method returns the data property on the record.
-     */
-    getRecordData: function(record) {
-        var isPhantom = record.phantom === true,
-            writeAll = this.getWriteAllFields() || isPhantom,
-            nameProperty = this.getNameProperty(),
-            fields = record.getFields(),
-            data = {},
-            changes, name, field, key, value;
-
-        if (writeAll) {
-            fields.each(function(field) {
-                if (field.getPersist()) {
-                    name = field.config[nameProperty] || field.getName();
-                    value = record.get(field.getName());
-                    if (field.getType().type == 'date') {
-                        value = this.writeDate(field, value);
-                    }
-                    data[name] = value;
-                }
-            }, this);
-        } else {
-            // Only write the changes
-            changes = record.getChanges();
-            for (key in changes) {
-                if (changes.hasOwnProperty(key)) {
-                    field = fields.get(key);
-                    if (field.getPersist()) {
-                        name = field.config[nameProperty] || field.getName();
-                        value = changes[key];
-                        if (field.getType().type == 'date') {
-                            value = this.writeDate(field, value);
-                        }
-                        data[name] = value;
-                    }
-                }
-            }
-            if (!isPhantom) {
-                // always include the id for non phantoms
-                data[record.getIdProperty()] = record.getId();
-            }
-        }
-        return data;
-    }
-
-    // Convert old properties in data into a config object
-});
-
-/**
- * This class is used to write {@link Ext.data.Model} data to the server in a JSON format.
- * The {@link #allowSingle} configuration can be set to false to force the records to always be
- * encoded in an array, even if there is only a single record being sent.
- */
-Ext.define('Ext.data.writer.Json', {
-    extend:  Ext.data.writer.Writer ,
-    alternateClassName: 'Ext.data.JsonWriter',
-    alias: 'writer.json',
-
-    config: {
-        /**
-         * @cfg {String} rootProperty
-         * The key under which the records in this Writer will be placed. If you specify {@link #encode} to be true,
-         * we default this to 'records'.
-         *
-         * Example generated request, using root: 'records':
-         *
-         *     {'records': [{name: 'my record'}, {name: 'another record'}]}
-         *
-         */
-        rootProperty: undefined,
-
-        /**
-         * @cfg {Boolean} encode
-         * True to use Ext.encode() on the data before sending. The encode option should only be set to true when a
-         * {@link #root} is defined, because the values will be sent as part of the request parameters as opposed to
-         * a raw post. The root will be the name of the parameter sent to the server.
-         */
-        encode: false,
-
-        /**
-         * @cfg {Boolean} allowSingle
-         * False to ensure that records are always wrapped in an array, even if there is only one record being sent.
-         * When there is more than one record, they will always be encoded into an array.
-         *
-         * Example:
-         *
-         *     // with allowSingle: true
-         *     "root": {
-         *         "first": "Mark",
-         *         "last": "Corrigan"
-         *     }
-         *
-         *     // with allowSingle: false
-         *     "root": [{
-         *         "first": "Mark",
-         *         "last": "Corrigan"
-         *     }]
-         */
-        allowSingle: true,
-
-        encodeRequest: false
-    },
-
-    applyRootProperty: function(root) {
-        if (!root && (this.getEncode() || this.getEncodeRequest())) {
-            root = 'data';
-        }
-        return root;
-    },
-
-    //inherit docs
-    writeRecords: function(request, data) {
-        var root = this.getRootProperty(),
-            params = request.getParams(),
-            allowSingle = this.getAllowSingle(),
-            jsonData;
-
-        if (this.getAllowSingle() && data && data.length == 1) {
-            // convert to single object format
-            data = data[0];
-        }
-
-        if (this.getEncodeRequest()) {
-            jsonData = request.getJsonData() || {};
-            if (data && (data.length || (allowSingle && Ext.isObject(data)))) {
-                jsonData[root] = data;
-            }
-            request.setJsonData(Ext.apply(jsonData, params || {}));
-            request.setParams(null);
-            request.setMethod('POST');
-            return request;
-        }
-
-        if (!data || !(data.length || (allowSingle && Ext.isObject(data)))) {
-            return request;
-        }
-
-        if (this.getEncode()) {
-            if (root) {
-                // sending as a param, need to encode
-                params[root] = Ext.encode(data);
-            } else {
-                //<debug>
-                Ext.Logger.error('Must specify a root when using encode');
-                //</debug>
-            }
-        } else {
-            // send as jsonData
-            jsonData = request.getJsonData() || {};
-            if (root) {
-                jsonData[root] = data;
-            } else {
-                jsonData = data;
-            }
-            request.setJsonData(jsonData);
-        }
-        return request;
-    }
-
-});
-
-
-/*
- * @allowSingle: true
- * @encodeRequest: false
- * Url: update.json?param1=test
- * {'field1': 'test': 'field2': 'test'}
- *
- * @allowSingle: false
- * @encodeRequest: false
- * Url: update.json?param1=test
- * [{'field1': 'test', 'field2': 'test'}]
- *
- * @allowSingle: true
- * @root: 'data'
- * @encodeRequest: true
- * Url: update.json
- * {
- *    'param1': 'test',
- *    'data': {'field1': 'test', 'field2': 'test'}
- * }
- *
- * @allowSingle: false
- * @root: 'data'
- * @encodeRequest: true
- * Url: update.json
- * {
- *     'param1': 'test',
- *     'data': [{'field1': 'test', 'field2': 'test'}]
- * }
- *
- * @allowSingle: true
- * @root: data
- * @encodeRequest: false
- * Url: update.json
- * param1=test&data={'field1': 'test', 'field2': 'test'}
- *
- * @allowSingle: false
- * @root: data
- * @encodeRequest: false
- * @ncode: true
- * Url: update.json
- * param1=test&data=[{'field1': 'test', 'field2': 'test'}]
- *
- * @allowSingle: true
- * @root: data
- * @encodeRequest: false
- * Url: update.json?param1=test&data={'field1': 'test', 'field2': 'test'}
- *
- * @allowSingle: false
- * @root: data
- * @encodeRequest: false
- * Url: update.json?param1=test&data=[{'field1': 'test', 'field2': 'test'}]
- */
-
-/**
- * @author Ed Spencer
- * @class Ext.data.Batch
- *
- * Provides a mechanism to run one or more {@link Ext.data.Operation operations} in a given order. Fires the `operationcomplete` event
- * after the completion of each Operation, and the `complete` event when all Operations have been successfully executed. Fires an `exception`
- * event if any of the Operations encounter an exception.
- *
- * Usually these are only used internally by {@link Ext.data.proxy.Proxy} classes.
- */
-Ext.define('Ext.data.Batch', {
-    mixins: {
-        observable:  Ext.mixin.Observable 
-    },
-
-    config: {
-        /**
-         * @cfg {Boolean} autoStart `true` to immediately start processing the batch as soon as it is constructed.
-         */
-        autoStart: false,
-
-        /**
-         * @cfg {Boolean} pauseOnException `true` to automatically pause the execution of the batch if any operation encounters an exception.
-         */
-        pauseOnException: true,
-
-        /**
-         * @cfg {Ext.data.Proxy} proxy The proxy this Batch belongs to. Used to make the requests for each operation in the Batch.
-         */
-        proxy: null
-    },
-
-    /**
-     * The index of the current operation being executed.
-     * @property current
-     * @type Number
-     */
-    current: -1,
-
-    /**
-     * The total number of operations in this batch.
-     * @property total
-     * @type Number
-     * @readonly
-     */
-    total: 0,
-
-    /**
-     * `true` if the batch is currently running.
-     * @property isRunning
-     * @type Boolean
-     */
-    isRunning: false,
-
-    /**
-     * `true` if this batch has been executed completely.
-     * @property isComplete
-     * @type Boolean
-     */
-    isComplete: false,
-
-    /**
-     * `true` if this batch has encountered an exception. This is cleared at the start of each operation.
-     * @property hasException
-     * @type Boolean
-     */
-    hasException: false,
-
-    /**
-     * @event complete
-     * Fired when all operations of this batch have been completed.
-     * @param {Ext.data.Batch} batch The batch object.
-     * @param {Object} operation The last operation that was executed.
-     */
-
-    /**
-     * @event exception
-     * Fired when a operation encountered an exception.
-     * @param {Ext.data.Batch} batch The batch object.
-     * @param {Object} operation The operation that encountered the exception.
-     */
-
-    /**
-     * @event operationcomplete
-     * Fired when each operation of the batch completes.
-     * @param {Ext.data.Batch} batch The batch object.
-     * @param {Object} operation The operation that just completed.
-     */
-
-    /**
-     * Creates new Batch object.
-     * @param {Object} config (optional) Config object.
-     */
-    constructor: function(config) {
-        var me = this;
-
-        me.initConfig(config);
-
-        /**
-         * Ordered array of operations that will be executed by this batch
-         * @property {Ext.data.Operation[]} operations
-         */
-        me.operations = [];
-    },
-
-    /**
-     * Adds a new operation to this batch.
-     * @param {Object} operation The {@link Ext.data.Operation Operation} object.
-     */
-    add: function(operation) {
-        this.total++;
-
-        operation.setBatch(this);
-
-        this.operations.push(operation);
-    },
-
-    /**
-     * Kicks off the execution of the batch, continuing from the next operation if the previous
-     * operation encountered an exception, or if execution was paused.
-     */
-    start: function() {
-        this.hasException = false;
-        this.isRunning = true;
-
-        this.runNextOperation();
-    },
-
-    /**
-     * @private
-     * Runs the next operation, relative to `this.current`.
-     */
-    runNextOperation: function() {
-        this.runOperation(this.current + 1);
-    },
-
-    /**
-     * Pauses execution of the batch, but does not cancel the current operation.
-     */
-    pause: function() {
-        this.isRunning = false;
-    },
-
-    /**
-     * Executes a operation by its numeric index.
-     * @param {Number} index The operation index to run.
-     */
-    runOperation: function(index) {
-        var me = this,
-            operations = me.operations,
-            operation = operations[index],
-            onProxyReturn;
-
-        if (operation === undefined) {
-            me.isRunning = false;
-            me.isComplete = true;
-            me.fireEvent('complete', me, operations[operations.length - 1]);
-        } else {
-            me.current = index;
-
-            onProxyReturn = function(operation) {
-                var hasException = operation.hasException();
-
-                if (hasException) {
-                    me.hasException = true;
-                    me.fireEvent('exception', me, operation);
-                } else {
-                    me.fireEvent('operationcomplete', me, operation);
-                }
-
-                if (hasException && me.getPauseOnException()) {
-                    me.pause();
-                } else {
-                    operation.setCompleted();
-                    me.runNextOperation();
-                }
-            };
-
-            operation.setStarted();
-
-
-            me.getProxy()[operation.getAction()](operation, onProxyReturn, me);
-        }
-    }
-});
-
-/**
- * @author Ed Spencer
- * @aside guide proxies
- *
- * Proxies are used by {@link Ext.data.Store Stores} to handle the loading and saving of {@link Ext.data.Model Model}
- * data. Usually developers will not need to create or interact with proxies directly.
- *
- * # Types of Proxy
- *
- * There are two main types of Proxy - {@link Ext.data.proxy.Client Client} and {@link Ext.data.proxy.Server Server}.
- * The Client proxies save their data locally and include the following subclasses:
- *
- * - {@link Ext.data.proxy.LocalStorage LocalStorageProxy} - saves its data to localStorage if the browser supports it
- * - {@link Ext.data.proxy.Memory MemoryProxy} - holds data in memory only, any data is lost when the page is refreshed
- *
- * The Server proxies save their data by sending requests to some remote server. These proxies include:
- *
- * - {@link Ext.data.proxy.Ajax Ajax} - sends requests to a server on the same domain
- * - {@link Ext.data.proxy.JsonP JsonP} - uses JSON-P to send requests to a server on a different domain
- *
- * Proxies operate on the principle that all operations performed are either Create, Read, Update or Delete. These four
- * operations are mapped to the methods {@link #create}, {@link #read}, {@link #update} and {@link #destroy}
- * respectively. Each Proxy subclass implements these functions.
- *
- * The CRUD methods each expect an {@link Ext.data.Operation Operation} object as the sole argument. The Operation
- * encapsulates information about the action the Store wishes to perform, the {@link Ext.data.Model model} instances
- * that are to be modified, etc. See the {@link Ext.data.Operation Operation} documentation for more details. Each CRUD
- * method also accepts a callback function to be called asynchronously on completion.
- *
- * Proxies also support batching of Operations via a {@link Ext.data.Batch batch} object, invoked by the {@link #batch}
- * method.
- */
-Ext.define('Ext.data.proxy.Proxy', {
-    extend:  Ext.Evented ,
-
-    alias: 'proxy.proxy',
-
-    alternateClassName: ['Ext.data.DataProxy', 'Ext.data.Proxy'],
-
-               
-                               
-                               
-                         
-                            
-      
-
-    config: {
-        /**
-         * @cfg {String} batchOrder
-         * Comma-separated ordering 'create', 'update' and 'destroy' actions when batching. Override this to set a different
-         * order for the batched CRUD actions to be executed in.
-         * @accessor
-         */
-        batchOrder: 'create,update,destroy',
-
-        /**
-         * @cfg {Boolean} batchActions
-         * True to batch actions of a particular type when synchronizing the store.
-         * @accessor
-         */
-        batchActions: true,
-
-        /**
-         * @cfg {String/Ext.data.Model} model (required)
-         * The name of the Model to tie to this Proxy. Can be either the string name of the Model, or a reference to the
-         * Model constructor.
-         * @accessor
-         */
-        model: null,
-
-        /**
-         * @cfg {Object/String/Ext.data.reader.Reader} reader
-         * The Ext.data.reader.Reader to use to decode the server's response or data read from client. This can either be a
-         * Reader instance, a config object or just a valid Reader type name (e.g. 'json', 'xml').
-         * @accessor
-         */
-        reader: {
-            type: 'json'
-        },
-
-        /**
-         * @cfg {Object/String/Ext.data.writer.Writer} writer
-         * The Ext.data.writer.Writer to use to encode any request sent to the server or saved to client. This can either be
-         * a Writer instance, a config object or just a valid Writer type name (e.g. 'json', 'xml').
-         * @accessor
-         */
-        writer: {
-            type: 'json'
-        }
-    },
-
-    isProxy: true,
-
-    applyModel: function(model) {
-        if (typeof model == 'string') {
-            model = Ext.data.ModelManager.getModel(model);
-
-            if (!model) {
-                Ext.Logger.error('Model with name ' + arguments[0] + ' doesnt exist.');
-            }
-        }
-
-        if (model && !model.prototype.isModel && Ext.isObject(model)) {
-            model = Ext.data.ModelManager.registerType(model.storeId || model.id || Ext.id(), model);
-        }
-
-        return model;
-    },
-
-    updateModel: function(model) {
-        if (model) {
-            var reader = this.getReader();
-            if (reader && !reader.getModel()) {
-                reader.setModel(model);
-            }
-        }
-    },
-
-    applyReader: function(reader, currentReader) {
-        return Ext.factory(reader, Ext.data.Reader, currentReader, 'reader');
-    },
-
-    updateReader: function(reader) {
-        if (reader) {
-            var model = this.getModel();
-            if (!model) {
-                model = reader.getModel();
-                if (model) {
-                    this.setModel(model);
-                }
-            } else {
-                reader.setModel(model);
-            }
-
-            if (reader.onMetaChange) {
-                 reader.onMetaChange = Ext.Function.createSequence(reader.onMetaChange, this.onMetaChange, this);
-            }
-        }
-    },
-
-    onMetaChange: function(data) {
-        var model = this.getReader().getModel();
-        if (!this.getModel() && model) {
-            this.setModel(model);
-        }
-
-        /**
-         * @event metachange
-         * Fires whenever the server has sent back new metadata to reconfigure the Reader.
-         * @param {Ext.data.Proxy} this
-         * @param {Object} data The metadata sent back from the server
-         */
-        this.fireEvent('metachange', this, data);
-    },
-
-    applyWriter: function(writer, currentWriter) {
-        return Ext.factory(writer, Ext.data.Writer, currentWriter, 'writer');
-    },
-
-    /**
-     * Performs the given create operation. If you override this method in a custom Proxy, remember to always call the provided
-     * callback method when you are done with your operation.
-     * @param {Ext.data.Operation} operation The Operation to perform
-     * @param {Function} callback Callback function to be called when the Operation has completed (whether successful or not)
-     * @param {Object} scope Scope to execute the callback function in
-     * @method
-     */
-    create: Ext.emptyFn,
-
-    /**
-     * Performs the given read operation. If you override this method in a custom Proxy, remember to always call the provided
-     * callback method when you are done with your operation.
-     * @param {Ext.data.Operation} operation The Operation to perform
-     * @param {Function} callback Callback function to be called when the Operation has completed (whether successful or not)
-     * @param {Object} scope Scope to execute the callback function in
-     * @method
-     */
-    read: Ext.emptyFn,
-
-    /**
-     * Performs the given update operation. If you override this method in a custom Proxy, remember to always call the provided
-     * callback method when you are done with your operation.
-     * @param {Ext.data.Operation} operation The Operation to perform
-     * @param {Function} callback Callback function to be called when the Operation has completed (whether successful or not)
-     * @param {Object} scope Scope to execute the callback function in
-     * @method
-     */
-    update: Ext.emptyFn,
-
-    /**
-     * Performs the given destroy operation. If you override this method in a custom Proxy, remember to always call the provided
-     * callback method when you are done with your operation.
-     * @param {Ext.data.Operation} operation The Operation to perform
-     * @param {Function} callback Callback function to be called when the Operation has completed (whether successful or not)
-     * @param {Object} scope Scope to execute the callback function in
-     * @method
-     */
-    destroy: Ext.emptyFn,
-
-    onDestroy: function() {
-        Ext.destroy(this.getReader(), this.getWriter());
-    },
-
-    /**
-     * Performs a batch of {@link Ext.data.Operation Operations}, in the order specified by {@link #batchOrder}. Used
-     * internally by {@link Ext.data.Store}'s {@link Ext.data.Store#sync sync} method. Example usage:
-     *
-     *     myProxy.batch({
-     *         create : [myModel1, myModel2],
-     *         update : [myModel3],
-     *         destroy: [myModel4, myModel5]
-     *     });
-     *
-     * Where the myModel* above are {@link Ext.data.Model Model} instances - in this case 1 and 2 are new instances and
-     * have not been saved before, 3 has been saved previously but needs to be updated, and 4 and 5 have already been
-     * saved but should now be destroyed.
-     *
-     * @param {Object} options Object containing one or more properties supported by the batch method:
-     *
-     * @param {Object} options.operations Object containing the Model instances to act upon, keyed by action name
-     *
-     * @param {Object} [options.listeners] Event listeners object passed straight through to the Batch -
-     * see {@link Ext.data.Batch} for details
-     *
-     * @param {Ext.data.Batch/Object} [options.batch] A {@link Ext.data.Batch} object (or batch config to apply
-     * to the created batch). If unspecified a default batch will be auto-created.
-     *
-     * @param {Function} [options.callback] The function to be called upon completion of processing the batch.
-     * The callback is called regardless of success or failure and is passed the following parameters:
-     * @param {Ext.data.Batch} options.callback.batch The {@link Ext.data.Batch batch} that was processed,
-     * containing all operations in their current state after processing
-     * @param {Object} options.callback.options The options argument that was originally passed into batch
-     *
-     * @param {Function} [options.success] The function to be called upon successful completion of the batch. The
-     * success function is called only if no exceptions were reported in any operations. If one or more exceptions
-     * occurred then the `failure` function will be called instead. The success function is called
-     * with the following parameters:
-     * @param {Ext.data.Batch} options.success.batch The {@link Ext.data.Batch batch} that was processed,
-     * containing all operations in their current state after processing
-     * @param {Object} options.success.options The options argument that was originally passed into batch
-     *
-     * @param {Function} [options.failure] The function to be called upon unsuccessful completion of the batch. The
-     * failure function is called when one or more operations returns an exception during processing (even if some
-     * operations were also successful). The failure function is called with the following parameters:
-     * @param {Ext.data.Batch} options.failure.batch The {@link Ext.data.Batch batch} that was processed,
-     * containing all operations in their current state after processing
-     * @param {Object} options.failure.options The options argument that was originally passed into batch
-     *
-     * @param {Object} [options.scope] The scope in which to execute any callbacks (i.e. the `this` object inside
-     * the callback, success and/or failure functions). Defaults to the proxy.
-     *
-     * @return {Ext.data.Batch} The newly created Batch
-     */
-    batch: function(options, /* deprecated */listeners) {
-        var me = this,
-            useBatch = me.getBatchActions(),
-            model = me.getModel(),
-            batch,
-            records;
-
-        if (options.operations === undefined) {
-            // the old-style (operations, listeners) signature was called
-            // so convert to the single options argument syntax
-            options = {
-                operations: options,
-                listeners: listeners
-            };
-
-            // <debug warn>
-            Ext.Logger.deprecate('Passes old-style signature to Proxy.batch (operations, listeners). Please convert to single options argument syntax.');
-            // </debug>
-        }
-
-        if (options.batch && options.batch.isBatch) {
-            batch = options.batch;
-        } else {
-            batch = new Ext.data.Batch(options.batch || {});
-        }
-
-        batch.setProxy(me);
-
-        batch.on('complete', Ext.bind(me.onBatchComplete, me, [options], 0));
-        if (options.listeners) {
-            batch.on(options.listeners);
-        }
-
-        Ext.each(me.getBatchOrder().split(','), function(action) {
-             records = options.operations[action];
-             if (records) {
-                 if (useBatch) {
-                     batch.add(new Ext.data.Operation({
-                         action: action,
-                         records: records,
-                         model: model
-                     }));
-                 } else {
-                     Ext.each(records, function(record) {
-                         batch.add(new Ext.data.Operation({
-                             action : action,
-                             records: [record],
-                             model: model
-                         }));
-                     });
-                 }
-             }
-        }, me);
-
-        batch.start();
-        return batch;
-    },
-
-    /**
-      * @private
-      * The internal callback that the proxy uses to call any specified user callbacks after completion of a batch
-      */
-    onBatchComplete: function(batchOptions, batch) {
-         var scope = batchOptions.scope || this;
-
-         if (batch.hasException) {
-             if (Ext.isFunction(batchOptions.failure)) {
-                 Ext.callback(batchOptions.failure, scope, [batch, batchOptions]);
-             }
-         } else if (Ext.isFunction(batchOptions.success)) {
-             Ext.callback(batchOptions.success, scope, [batch, batchOptions]);
-         }
-
-         if (Ext.isFunction(batchOptions.callback)) {
-             Ext.callback(batchOptions.callback, scope, [batch, batchOptions]);
-         }
-    }
-
-}, function() {
-    // Ext.data2.proxy.ProxyMgr.registerType('proxy', this);
-
-    //backwards compatibility
-    // Ext.data.DataProxy = this;
-    // Ext.deprecate('platform', '2.0', function() {
-    //     Ext.data2.DataProxy = this;
-    // }, this);
-});
-
-/**
- * @author Ed Spencer
- *
- * Base class for any client-side storage. Used as a superclass for {@link Ext.data.proxy.Memory Memory} and
- * {@link Ext.data.proxy.WebStorage Web Storage} proxies. Do not use directly, use one of the subclasses instead.
- * @private
- */
-Ext.define('Ext.data.proxy.Client', {
-    extend:  Ext.data.proxy.Proxy ,
-    alternateClassName: 'Ext.proxy.ClientProxy',
-
-    /**
-     * Abstract function that must be implemented by each ClientProxy subclass. This should purge all record data
-     * from the client side storage, as well as removing any supporting data (such as lists of record IDs)
-     */
-    clear: function() {
-        //<debug>
-        Ext.Logger.error("The Ext.data.proxy.Client subclass that you are using has not defined a 'clear' function. See src/data/ClientProxy.js for details.");
-        //</debug>
-    }
-});
-
-/**
- * @author Ed Spencer
- * @aside guide proxies
- *
- * In-memory proxy. This proxy simply uses a local variable for data storage/retrieval, so its contents are lost on
- * every page refresh.
- *
- * Usually this Proxy isn't used directly, serving instead as a helper to a {@link Ext.data.Store Store} where a reader
- * is required to load data. For example, say we have a Store for a User model and have some inline data we want to
- * load, but this data isn't in quite the right format: we can use a MemoryProxy with a JsonReader to read it into our
- * Store:
- *
- *     //this is the model we will be using in the store
- *     Ext.define('User', {
- *         extend: 'Ext.data.Model',
- *         config: {
- *             fields: [
- *                 {name: 'id',    type: 'int'},
- *                 {name: 'name',  type: 'string'},
- *                 {name: 'phone', type: 'string', mapping: 'phoneNumber'}
- *             ]
- *         }
- *     });
- *
- *     //this data does not line up to our model fields - the phone field is called phoneNumber
- *     var data = {
- *         users: [
- *             {
- *                 id: 1,
- *                 name: 'Ed Spencer',
- *                 phoneNumber: '555 1234'
- *             },
- *             {
- *                 id: 2,
- *                 name: 'Abe Elias',
- *                 phoneNumber: '666 1234'
- *             }
- *         ]
- *     };
- *
- *     //note how we set the 'root' in the reader to match the data structure above
- *     var store = Ext.create('Ext.data.Store', {
- *         autoLoad: true,
- *         model: 'User',
- *         data : data,
- *         proxy: {
- *             type: 'memory',
- *             reader: {
- *                 type: 'json',
- *                 root: 'users'
- *             }
- *         }
- *     });
- */
-Ext.define('Ext.data.proxy.Memory', {
-    extend:  Ext.data.proxy.Client ,
-    alias: 'proxy.memory',
-    alternateClassName: 'Ext.data.MemoryProxy',
-
-    isMemoryProxy: true,
-
-    config: {
-        /**
-         * @cfg {Object} data
-         * Optional data to pass to configured Reader.
-         */
-        data: []
-    },
-
-    /**
-     * @private
-     * Fake processing function to commit the records, set the current operation
-     * to successful and call the callback if provided. This function is shared
-     * by the create, update and destroy methods to perform the bare minimum
-     * processing required for the proxy to register a result from the action.
-     */
-    finishOperation: function(operation, callback, scope) {
-        if (operation) {
-            var i = 0,
-                recs = operation.getRecords(),
-                len = recs.length;
-
-            for (i; i < len; i++) {
-                recs[i].commit();
-            }
-
-            operation.setCompleted();
-            operation.setSuccessful();
-
-            Ext.callback(callback, scope || this, [operation]);
-        }
-    },
-
-    /**
-     * Currently this is a hard-coded method that simply commits any records and sets the operation to successful,
-     * then calls the callback function, if provided. It is essentially mocking a server call in memory, but since
-     * there is no real back end in this case there's not much else to do. This method can be easily overridden to
-     * implement more complex logic if needed.
-     * @param {Ext.data.Operation} operation The Operation to perform
-     * @param {Function} callback Callback function to be called when the Operation has completed (whether
-     * successful or not)
-     * @param {Object} scope Scope to execute the callback function in
-     * @method
-     */
-    create: function() {
-        this.finishOperation.apply(this, arguments);
-    },
-
-    /**
-     * Currently this is a hard-coded method that simply commits any records and sets the operation to successful,
-     * then calls the callback function, if provided. It is essentially mocking a server call in memory, but since
-     * there is no real back end in this case there's not much else to do. This method can be easily overridden to
-     * implement more complex logic if needed.
-     * @param {Ext.data.Operation} operation The Operation to perform
-     * @param {Function} callback Callback function to be called when the Operation has completed (whether
-     * successful or not)
-     * @param {Object} scope Scope to execute the callback function in
-     * @method
-     */
-    update: function() {
-        this.finishOperation.apply(this, arguments);
-    },
-
-    /**
-     * Currently this is a hard-coded method that simply commits any records and sets the operation to successful,
-     * then calls the callback function, if provided. It is essentially mocking a server call in memory, but since
-     * there is no real back end in this case there's not much else to do. This method can be easily overridden to
-     * implement more complex logic if needed.
-     * @param {Ext.data.Operation} operation The Operation to perform
-     * @param {Function} callback Callback function to be called when the Operation has completed (whether
-     * successful or not)
-     * @param {Object} scope Scope to execute the callback function in
-     * @method
-     */
-    destroy: function() {
-        this.finishOperation.apply(this, arguments);
-    },
-
-    /**
-     * Reads data from the configured {@link #data} object. Uses the Proxy's {@link #reader}, if present.
-     * @param {Ext.data.Operation} operation The read Operation
-     * @param {Function} callback The callback to call when reading has completed
-     * @param {Object} scope The scope to call the callback function in
-     */
-    read: function(operation, callback, scope) {
-        var me     = this,
-            reader = me.getReader();
-
-        if (operation.process('read', reader.process(me.getData())) === false) {
-            this.fireEvent('exception', this, null, operation);
-        }
-
-        Ext.callback(callback, scope || me, [operation]);
-    },
-
-    clear: Ext.emptyFn
 });
 
 /**
@@ -67527,7 +67641,7 @@ Ext.define('Ext.data.Types', {
         /**
          * @property {Object} BOOL
          * This data type means that the raw data is converted into a Boolean before it is placed into
-         * a Record. The string "true" and the number 1 are converted to Boolean `true`.
+         * a Record. The string "true", "1" and the number 1 are converted to Boolean `true`. The String "0" will be converted to Boolean 'false'.
          *
          * The synonym `BOOLEAN` is equivalent.
          */
@@ -67536,7 +67650,7 @@ Ext.define('Ext.data.Types', {
                 if ((value === undefined || value === null || value === '') && this.getAllowNull()) {
                     return null;
                 }
-                return value !== 'false' && !!value;
+                return value !== 'false' && value !== '0' && !!value;
             },
             sortType: sortTypes.none,
             type: 'bool'
@@ -68599,11 +68713,11 @@ Ext.define('Ext.data.proxy.Server', {
             reader = me.getReader();
 
             try {
-                resultSet = reader.process(response);
+                resultSet = reader.process(me.getResponseResult(response));
             } catch(e) {
                 operation.setException(e.message);
 
-                me.fireEvent('exception', this, response, operation);
+                me.fireEvent('exception', me, response, operation);
                 return;
             }
 
@@ -68613,7 +68727,7 @@ Ext.define('Ext.data.proxy.Server', {
             }
 
             if (operation.process(action, resultSet, request, response) === false) {
-                this.fireEvent('exception', this, response, operation);
+                me.fireEvent('exception', me, response, operation);
             }
         } else {
             me.setException(operation, response);
@@ -68633,6 +68747,13 @@ Ext.define('Ext.data.proxy.Server', {
         }
 
         me.afterRequest(request, success);
+    },
+
+    /**
+     * @private
+     */
+    getResponseResult: function(response) {
+        return response;
     },
 
     /**
@@ -68808,7 +68929,7 @@ Ext.define('Ext.data.proxy.Server', {
      * @protected
      * @template
      */
-    doRequest: function(operation, callback, scope) {
+    doRequest: function() {
         //<debug>
         Ext.Logger.error("The doRequest function has not been implemented on your Ext.data.proxy.Server subclass. See src/data/ServerProxy.js for details");
         //</debug>
@@ -69057,6 +69178,14 @@ Ext.define('Ext.data.proxy.Ajax', {
         withCredentials: false,
 
         /**
+         * @cfg {Boolean} useDefaultXhrHeader
+         * Set this to false to not send the default Xhr header (X-Requested-With) with every request.
+         * This should be set to false when making CORS (cross-domain) requests.
+         * @accessor
+         */
+        useDefaultXhrHeader: true,
+
+        /**
          * @cfg {String} username
          * Most oData feeds require basic HTTP authentication. This configuration allows
          * you to specify the username.
@@ -69111,7 +69240,8 @@ Ext.define('Ext.data.proxy.Ajax', {
             method   : me.getMethod(request),
             callback : me.createRequestCallback(request, operation, callback, scope),
             scope    : me,
-            proxy    : me
+            proxy    : me,
+            useDefaultXhrHeader: me.getUseDefaultXhrHeader()
         });
 
         if (operation.getWithCredentials() || me.getWithCredentials()) {
@@ -70003,6 +70133,8 @@ Ext.define('Ext.data.association.HasMany', {
 
     /**
      * @private
+     * @deprecated as of v2.0.0 on an association. Instead use the store configuration.
+     *
      * Creates a function that returns an Ext.data.Store which is configured to load a set of data filtered
      * by the owner model's primary key - e.g. in a `hasMany` association where Group `hasMany` Users, this function
      * returns a Store configured to return the filtered set of a single Group's Users.
@@ -70010,7 +70142,6 @@ Ext.define('Ext.data.association.HasMany', {
      */
     applyStore: function(storeConfig) {
         var me = this,
-            association     = me,
             associatedModel = me.getAssociatedModel(),
             storeName       = me.getStoreName(),
             foreignKey      = me.getForeignKey(),
@@ -70811,9 +70942,13 @@ Ext.define('Ext.data.association.HasOne', {
 
             this.set(foreignKey, value);
 
-            record = Model.cache[Model.generateCacheId(associatedModel.modelName, value)];
-            if (record) {
-                this[instanceName] = record;
+            if (value || value === 0) {
+                record = Model.cache[Model.generateCacheId(associatedModel.modelName, value)];
+                if (record) {
+                    this[instanceName] = record;
+                }
+            } else {
+                delete this[instanceName];
             }
 
             if (Ext.isFunction(options)) {
@@ -70895,7 +71030,7 @@ Ext.define('Ext.data.association.HasOne', {
         var inverse = this.getInverseAssociation(),
             newRecord = reader.read([associationData]).getRecords()[0];
 
-        record[this.getInstanceName()] = newRecord;
+        record[this.getSetterName()].call(record, newRecord);
 
         //if the inverse association was found, set it now on each record we've just created
         if (inverse) {
@@ -71007,6 +71142,179 @@ Ext.define('Ext.data.Errors', {
         }
         
         return this.callParent([obj]);
+    }
+});
+
+/**
+ * @author Ed Spencer
+ * @aside guide models
+ *
+ * This singleton contains a set of validation functions that can be used to validate any type of data. They are most
+ * often used in {@link Ext.data.Model Models}, where they are automatically set up and executed.
+ */
+Ext.define('Ext.data.Validations', {
+    alternateClassName: 'Ext.data.validations',
+
+    singleton: true,
+
+    config: {
+        /**
+         * @property {String} presenceMessage
+         * The default error message used when a presence validation fails.
+         */
+        presenceMessage: 'must be present',
+
+        /**
+         * @property {String} lengthMessage
+         * The default error message used when a length validation fails.
+         */
+        lengthMessage: 'is the wrong length',
+
+        /**
+         * @property {Boolean} formatMessage
+         * The default error message used when a format validation fails.
+         */
+        formatMessage: 'is the wrong format',
+
+        /**
+         * @property {String} inclusionMessage
+         * The default error message used when an inclusion validation fails.
+         */
+        inclusionMessage: 'is not included in the list of acceptable values',
+
+        /**
+         * @property {String} exclusionMessage
+         * The default error message used when an exclusion validation fails.
+         */
+        exclusionMessage: 'is not an acceptable value',
+
+        /**
+         * @property {String} emailMessage
+         * The default error message used when an email validation fails
+         */
+        emailMessage: 'is not a valid email address'
+    },
+
+    constructor: function(config) {
+        this.initConfig(config);
+    },
+
+    /**
+     * Returns the configured error message for any of the validation types.
+     * @param {String} type The type of validation you want to get the error message for.
+     * @return {Object}
+     */
+    getMessage: function(type) {
+        var getterFn = this['get' + type[0].toUpperCase() + type.slice(1) + 'Message'];
+        if (getterFn) {
+            return getterFn.call(this);
+        }
+        return '';
+    },
+
+    /**
+     * The regular expression used to validate email addresses
+     * @property emailRe
+     * @type RegExp
+     */
+    emailRe: /^\s*[\w\-\+_]+(\.[\w\-\+_]+)*\@[\w\-\+_]+\.[\w\-\+_]+(\.[\w\-\+_]+)*\s*$/,
+
+    /**
+     * Validates that the given value is present.
+     * For example:
+     *
+     *     validations: [{type: 'presence', field: 'age'}]
+     *
+     * @param {Object} config Config object.
+     * @param {Object} value The value to validate.
+     * @return {Boolean} `true` if validation passed.
+     */
+    presence: function(config, value) {
+        if (arguments.length === 1) {
+            value = config;
+        }
+        return !!value || value === 0;
+    },
+
+    /**
+     * Returns `true` if the given value is between the configured min and max values.
+     * For example:
+     *
+     *     validations: [{type: 'length', field: 'name', min: 2}]
+     *
+     * @param {Object} config Config object.
+     * @param {String} value The value to validate.
+     * @return {Boolean} `true` if the value passes validation.
+     */
+    length: function(config, value) {
+        if (value === undefined || value === null) {
+            return false;
+        }
+
+        var length = value.length,
+            min    = config.min,
+            max    = config.max;
+
+        if ((min && length < min) || (max && length > max)) {
+            return false;
+        } else {
+            return true;
+        }
+    },
+
+    /**
+     * Validates that an email string is in the correct format.
+     * @param {Object} config Config object.
+     * @param {String} email The email address.
+     * @return {Boolean} `true` if the value passes validation.
+     */
+    email: function(config, email) {
+        return Ext.data.validations.emailRe.test(email);
+    },
+
+    /**
+     * Returns `true` if the given value passes validation against the configured `matcher` regex.
+     * For example:
+     *
+     *     validations: [{type: 'format', field: 'username', matcher: /([a-z]+)[0-9]{2,3}/}]
+     *
+     * @param {Object} config Config object.
+     * @param {String} value The value to validate.
+     * @return {Boolean} `true` if the value passes the format validation.
+     */
+    format: function(config, value) {
+        if (value === undefined || value === null) {
+            value = '';
+        }
+        return !!(config.matcher && config.matcher.test(value));
+    },
+
+    /**
+     * Validates that the given value is present in the configured `list`.
+     * For example:
+     *
+     *     validations: [{type: 'inclusion', field: 'gender', list: ['Male', 'Female']}]
+     *
+     * @param {Object} config Config object.
+     * @param {String} value The value to validate.
+     * @return {Boolean} `true` if the value is present in the list.
+     */
+    inclusion: function(config, value) {
+        return config.list && Ext.Array.indexOf(config.list,value) != -1;
+    },
+
+    /**
+     * Validates that the given value is present in the configured `list`.
+     * For example:
+     *
+     *     validations: [{type: 'exclusion', field: 'username', list: ['Admin', 'Operator']}]
+     *
+     * @param {Object} config Config object.
+     * @param {String} value The value to validate.
+     * @return {Boolean} `true` if the value is not present in the list.
+     */
+    exclusion: function(config, value) {
+        return config.list && Ext.Array.indexOf(config.list,value) == -1;
     }
 });
 
@@ -71518,6 +71826,26 @@ Ext.define('Ext.data.Model', {
             useCache = me.getUseCache(),
             idProperty = me.getIdProperty();
 
+        data = data || convertedData || {};
+
+        // We begin by checking if an id is passed to the constructor. If this is the case we override
+        // any possible id value that was passed in the data.
+        if (id || id === 0) {
+            // Lets skip using set here since it's so much faster
+            data[idProperty] = me.internalId = id;
+        }
+
+        // If we have an id set in the data we check to see if we already have a cached instance
+        // of this record. If that's the case then we just return that instance with the updated data
+        // passed to this constructor.
+        id = data[idProperty];
+        if (useCache && (id || id === 0)) {
+            cached = Ext.data.Model.cache[Ext.data.Model.generateCacheId(this, id)];
+            if (cached) {
+                cached.raw = raw || cached.raw;
+                return cached.mergeData(convertedData || data || {});
+            }
+        }
 
         /**
          * @property {Object} modified key/value pairs of all fields whose values have changed.
@@ -71536,41 +71864,32 @@ Ext.define('Ext.data.Model', {
          */
         me.stores = [];
 
-        data = data || convertedData || {};
-
-        // We begin by checking if an id is passed to the constructor. If this is the case we override
-        // any possible id value that was passed in the data.
-        if (id || id === 0) {
-            // Lets skip using set here since it's so much faster
-            data[idProperty] = me.internalId = id;
-        }
-
-        id = data[idProperty];
-        if (useCache && (id || id === 0)) {
-            cached = Ext.data.Model.cache[Ext.data.Model.generateCacheId(this, id)];
-            if (cached) {
-                return cached.mergeData(convertedData || data || {});
-            }
-        }
-
         if (convertedData) {
             me.setConvertedData(data);
         } else {
             me.setData(data);
         }
 
-        // If it does not have an id at this point, we generate it using the id strategy. This means
-        // that we will treat this record as a phantom record from now on
+        // me.id is always set to be randomly generated and should only be used for binding Observable events!
+        me.id = me.getIdentifier().generate(me);
+
+        // If it does not have an id in the data at this point, we use the one generated by the id strategy.
+        // This means that we will treat this record as a phantom record from now on
         id = me.data[idProperty];
         if (!id && id !== 0) {
-            me.data[idProperty] = me.internalId = me.id = me.getIdentifier().generate(me);
+            me.data[idProperty] = me.internalId = me.id;
             me.phantom = true;
 
+            // If we only now set an id on this model, it means we setData won't have handled the inline
+            // association data, which we will have to do now then.
             if (this.associations.length) {
                 this.handleInlineAssociationData(data);
             }
-        } else {
-            me.id = me.getIdentifier().generate(me);
+        }
+        else {
+            // We also want to make sure that the internalId has the same value as the id in
+            // the data object.
+            this.internalId = id;
         }
 
         if (useCache) {
@@ -71676,6 +71995,8 @@ Ext.define('Ext.data.Model', {
         var associations = this.associations.items,
             ln = associations.length,
             i, association, associationData, reader, proxy, associationKey;
+
+        data = Ext.apply({}, data, this.raw);
 
         for (i = 0; i < ln; i++) {
             association = associations[i];
@@ -73314,6 +73635,7 @@ Ext.define('Ext.data.Store', {
 
         /**
          * @cfg {String} model
+         * Returns Ext.data.Model and not a String.
          * Name of the {@link Ext.data.Model Model} associated with this store.
          * The string is used as an argument for {@link Ext.ModelManager#getModel}.
          * @accessor
@@ -73329,7 +73651,8 @@ Ext.define('Ext.data.Store', {
 
         /**
          * @cfg {Object[]} fields
-         * This may be used in place of specifying a {@link #model} configuration. The fields should be a
+         * Returns Ext.util.Collection not just an Object.
+         * Use in place of specifying a {@link #model} configuration. The fields should be a
          * set of {@link Ext.data.Field} configuration objects. The store will automatically create a {@link Ext.data.Model}
          * with these fields. In general this configuration option should be avoided, it exists for the purposes of
          * backwards compatibility. For anything more complicated, such as specifying a particular id property or
@@ -73384,7 +73707,7 @@ Ext.define('Ext.data.Store', {
         sorters: null,
 
         /**
-         * @cfg {Object[]} grouper
+         * @cfg {Object} grouper
          * A configuration object for this Store's {@link Ext.util.Grouper grouper}.
          *
          * For example, to group a store's items by the first letter of the last name:
@@ -73555,10 +73878,11 @@ Ext.define('Ext.data.Store', {
             }
 
             if (fields) {
-                model = new Ext.Class({
+                model = Ext.define('Ext.data.Store.ImplicitModel-' + (this.getStoreId() || Ext.id()), {
                     extend: 'Ext.data.Model',
                     config: {
                         fields: fields,
+                        useCache: false,
                         proxy: this.getProxy()
                     }
                 });
@@ -73742,7 +74066,7 @@ Ext.define('Ext.data.Store', {
             };
         }
 
-        grouper = Ext.factory(grouper, Ext.util.Grouper, this.getGrouper());
+        grouper = Ext.factory(grouper, Ext.util.Grouper);
         return grouper;
     },
 
@@ -73765,6 +74089,9 @@ Ext.define('Ext.data.Store', {
                     }
                 });
             }
+        }
+        if (oldGrouper) {
+            this.fireEvent('refresh', this, data);
         }
     },
 
@@ -73931,7 +74258,7 @@ Ext.define('Ext.data.Store', {
             removed = [],
             isPhantom,
             items = me.data.items,
-            record, index, j;
+            record, index;
 
         for (; i < ln; i++) {
             record = records[i];
@@ -74089,7 +74416,8 @@ Ext.define('Ext.data.Store', {
     },
 
     /**
-     * Returns a range of Records between specified indices.
+     * Returns a range of Records between specified indices. Note that if the store is filtered, only filtered results
+     * are returned.
      * @param {Number} [startIndex=0] (optional) The starting index.
      * @param {Number} [endIndex=-1] (optional) The ending index (defaults to the last Record in the Store).
      * @return {Ext.data.Model[]} An array of Records.
@@ -74387,7 +74715,7 @@ Ext.define('Ext.data.Store', {
                     anyMatch     : anyMatch,
                     caseSensitive: caseSensitive,
                     id           : property
-                }
+                };
             }
         }
 
@@ -74417,7 +74745,7 @@ Ext.define('Ext.data.Store', {
 
         data.filter({
             filterFn: function(record) {
-                return fn.call(scope || me, record, record.getId())
+                return fn.call(scope || me, record, record.getId());
             }
         });
 
@@ -75109,11 +75437,15 @@ Ext.define('Ext.data.Store', {
         this.clearData();
         var proxy = this.getProxy();
         if (proxy) {
-            // TODO: Use un() instead of clearListeners() when TOUCH-2723 is fixed.
-//          proxy.un('metachange', 'onMetaChange', this);
-            proxy.clearListeners();
+            proxy.onDestroy();
         }
         Ext.data.StoreManager.unregister(this);
+
+        if (this.implicitModel && this.getModel()) {
+          delete Ext.data.ModelManager.types[this.getModel().getName()];
+        }
+        Ext.destroy(this.data);
+
         this.callParent(arguments);
     }
 
@@ -78471,8 +78803,7 @@ Ext.define('Ext.chart.interactions.PanZoom', {
 
         modeToggleButton: {
             cls: ['x-panzoom-toggle', 'x-zooming'],
-            iconCls: 'expand',
-            iconMask: true
+            iconCls: 'expand'
         },
 
         hideLabelInGesture: false //Ext.os.is.Android
@@ -79318,6 +79649,12 @@ Ext.define("Ext.chart.series.sprite.Cartesian", {
                  */
                 labelOverflowPadding: 'number',
 
+                /**
+                 * @cfg {Number} [selectionTolerance=20]
+                 * The distance from the event position to the sprite's data points to trigger interactions (used for 'iteminfo', etc).
+                 */
+                selectionTolerance: 'number',
+
                 flipXY: 'bool',
                 renderer: 'default',
 
@@ -79338,6 +79675,7 @@ Ext.define("Ext.chart.series.sprite.Cartesian", {
                 dataMaxY: 1,
                 labels: null,
                 labelOverflowPadding: 10,
+                selectionTolerance: 20,
                 flipXY: false,
                 renderer: null,
                 transformFillStroke: false,
@@ -79507,11 +79845,12 @@ Ext.define("Ext.chart.series.sprite.Cartesian", {
             mat = sprite.attr.matrix,
             dataX = sprite.attr.dataX,
             dataY = sprite.attr.dataY,
+            selectionTolerance = sprite.attr.selectionTolerance,
             minX, minY, index = -1,
             imat = mat.clone().prependMatrix(this.surfaceMatrix).inverse(),
             center = imat.transformPoint([x, y]),
-            positionLB = imat.transformPoint([x - 22, y - 22]),
-            positionTR = imat.transformPoint([x + 22, y + 22]),
+            positionLB = imat.transformPoint([x - selectionTolerance, y - selectionTolerance]),
+            positionTR = imat.transformPoint([x + selectionTolerance, y + selectionTolerance]),
             left = Math.min(positionLB[0], positionTR[0]),
             right = Math.max(positionLB[0], positionTR[0]),
             top = Math.min(positionLB[1], positionTR[1]),
@@ -79519,8 +79858,7 @@ Ext.define("Ext.chart.series.sprite.Cartesian", {
 
         for (var i = 0; i < dataX.length; i++) {
             if (left < dataX[i] && dataX[i] < right && top < dataY[i] && dataY[i] < bottom) {
-                if (index === -1 || Math.abs(dataX[i] - center[0]) < minX &&
-                    Math.abs(dataY[i] - center[1]) < minY) {
+                if (index === -1 || (Math.abs(dataX[i] - center[0]) < minX) && (Math.abs(dataY[i] - center[1]) < minY)) {
                     minX = Math.abs(dataX[i] - center[0]);
                     minY = Math.abs(dataY[i] - center[1]);
                     index = i;
@@ -79562,6 +79900,7 @@ Ext.define("Ext.chart.series.sprite.StackedCartesian", {
                 dataStartY: 'data'
             },
             defaults: {
+                selectionTolerance: 20,
                 groupCount: 1,
                 groupOffset: 0,
                 dataStartY: null
@@ -79579,11 +79918,12 @@ Ext.define("Ext.chart.series.sprite.StackedCartesian", {
             dataX = sprite.attr.dataX,
             dataY = sprite.attr.dataY,
             dataStartY = sprite.attr.dataStartY,
+            selectionTolerance = sprite.attr.selectionTolerance,
             minX = 0.5, minY = Infinity, index = -1,
             imat = mat.clone().prependMatrix(this.surfaceMatrix).inverse(),
             center = imat.transformPoint([x, y]),
-            positionLB = imat.transformPoint([x - 22, y - 22]),
-            positionTR = imat.transformPoint([x + 22, y + 22]),
+            positionLB = imat.transformPoint([x - selectionTolerance, y - selectionTolerance]),
+            positionTR = imat.transformPoint([x + selectionTolerance, y + selectionTolerance]),
             dx, dy,
             top = Math.min(positionLB[1], positionTR[1]),
             bottom = Math.max(positionLB[1], positionTR[1]);
@@ -79948,7 +80288,35 @@ Ext.define("Ext.chart.series.sprite.Bar", {
                 translationY: surfaceMatrix.y(center, top)
             }, i, true);
         }
+    },
+
+    //@inheritdoc
+    getIndexNearPoint: function (x, y) {
+        var sprite = this,
+            attr = sprite.attr,
+            dataX = attr.dataX,
+            surface = sprite.getParent(),
+            surfaceRegion = surface.getRegion(),
+            surfaceHeight = surfaceRegion[3],
+            hitX, hitY, index = -1;
+
+        // The "items" sprites that draw the bars work in a reverse vertical coordinate system
+        // starting with 0 at the bottom and increasing the Y coordinate toward the top.
+        // See also Ext.chart.series.Bar.getItemForPoint(x,y) regarding the chart's InnerPadding.
+        //
+        // TODO: Cleanup the bar sprites.
+        hitX = x;
+        hitY = surfaceHeight - y;
+        
+        for (var i = 0; i < dataX.length; i++) {
+            var bbox = sprite.getMarkerBBox("items", i);
+            if (hitX >= bbox.x && hitX <= (bbox.x + bbox.width) && hitY >= bbox.y && hitY <= (bbox.y + bbox.height)) {
+                index = i;
+            }
+        }
+        return index;
     }
+
 });
 
 /**
@@ -80027,6 +80395,22 @@ Ext.define('Ext.chart.series.Bar', {
                     radius: 0
                 }
             }
+        }
+    },
+
+    getItemForPoint: function (x, y) {
+        if (this.getSprites()) {
+            var me = this,
+                chart = me.getChart(),
+                padding = chart.getInnerPadding();
+
+            // Convert the coordinates because the "items" sprites that draw the bars ignore the chart's InnerPadding.
+            // See also Ext.chart.series.sprite.Bar.getItemForPoint(x,y) regarding the series's vertical coordinate system.
+            //
+            // TODO: Cleanup the bar sprites.
+            arguments[0] = x - padding.left;
+            arguments[1] = y + padding.bottom;
+            return me.callParent(arguments);
         }
     },
 
@@ -81629,6 +82013,9 @@ Ext.define('Ext.chart.series.ItemPublisher', {
                 var series = subscriber[i],
                     item = series.getItemForPoint(x, y);
                 if (item) {
+                    // TODO: Don't stop at the first item.
+                    // Depending on the selectionTolerance, there might be an item in another
+                    // series that's closer to the event location. See test case 3943c.
                     dispatcher.doDispatchEvent(targetType, '#' + series.getId(), eventName, [series, item, e]);
                     return;
                 }
@@ -81889,11 +82276,61 @@ Ext.define("Ext.chart.series.sprite.Line", {
         }
     },
 
+    drawLabel: function (text, dataX, dataY, labelId, region) {
+        var me = this,
+            attr = me.attr,
+            labelCfg = me.labelCfg || (me.labelCfg = {}),
+            surfaceMatrix = me.surfaceMatrix,
+            labelX, labelY,
+            labelOverflowPadding = attr.labelOverflowPadding,
+            halfWidth, halfHeight,
+            labelBox;
+
+        labelCfg.text = text;
+
+        labelBox = this.getMarkerBBox('labels', labelId, true);
+        if (!labelBox) {
+            me.putMarker('labels', labelCfg, labelId);
+            labelBox = this.getMarkerBBox('labels', labelId, true);
+        }
+
+        if (attr.flipXY) {
+            labelCfg.rotationRads = Math.PI * 0.5;
+        } else {
+            labelCfg.rotationRads = 0;
+        }
+
+        halfWidth = labelBox.width / 2;
+        halfHeight = labelBox.height / 2;
+
+        labelX = dataX;
+        labelY = dataY + halfHeight + labelOverflowPadding;
+
+        if (labelX <= region[0] + halfWidth) {
+            labelX = region[0] + halfWidth;
+        } else if (labelX >= region[2] - halfWidth) {
+            labelX = region[2] - halfWidth;
+        } 
+
+        if (labelY <= region[1] + halfHeight) {
+            labelY = region[1] + halfHeight;
+        } else if (labelY >= region[3] - halfHeight) {
+            labelY = region[3] - halfHeight;
+        }
+
+        labelCfg.x = surfaceMatrix.x(labelX, labelY);
+        labelCfg.y = surfaceMatrix.y(labelX, labelY);
+
+        me.putMarker('labels', labelCfg, labelId);
+    },
+
     renderAggregates: function (aggregates, start, end, surface, ctx, clip, region) {
         var me = this,
             attr = me.attr,
             dataX = attr.dataX,
             dataY = attr.dataY,
+            labels = attr.labels,
+            drawLabels = labels && !!me.getBoundMarker("labels"),
             matrix = attr.matrix,
             surfaceMatrix = surface.matrix,
             pixel = surface.devicePixelRatio,
@@ -81944,6 +82381,10 @@ Ext.define("Ext.chart.series.sprite.Line", {
                 markerCfg.translationX = surfaceMatrix.x(x, y);
                 markerCfg.translationY = surfaceMatrix.y(x, y);
                 me.putMarker("markers", markerCfg, index, !attr.renderer);
+
+                if (drawLabels && labels[index]) {
+                    me.drawLabel(labels[index], x, y, index, region);
+                }
             }
             me.drawStroke(surface, ctx, list, region[1] - pixel);
             if (!attr.renderer) {
@@ -82182,7 +82623,8 @@ Ext.define('Ext.chart.series.Line', {
         return Ext.apply(parentConfig || {}, {
             fillArea: fillArea,
             step: me.config.step,
-            smooth: me.config.smooth
+            smooth: me.config.smooth,
+            selectionTolerance: me.config.selectionTolerance
         });
     }
 
@@ -82256,6 +82698,7 @@ Ext.define('Ext.chart.series.Polar', {
     getDefaultSpriteConfig: function () {
         return {
             type: this.seriesType,
+            renderer: this.getRenderer(),
             centerX: 0,
             centerY: 0,
             rotationCenterX: 0,
@@ -82409,6 +82852,10 @@ Ext.define("Ext.chart.series.sprite.PieSlice", {
         labelCfg.calloutColor = me.attr.fillStyle;
         labelCfg.globalAlpha = attr.globalAlpha * attr.fillOpacity;
 
+        // If a slice is empty, don't display the label.
+        // This behavior can be overridden by a renderer.
+        labelCfg.hidden = (attr.startAngle == attr.endAngle);
+
         if (attr.renderer) {
             labelCfg.type = 'label';
             changes = attr.renderer.call(me, me, labelCfg, me.rendererData, me.rendererIndex);
@@ -82431,7 +82878,7 @@ Ext.define("Ext.chart.series.sprite.PieSlice", {
             middle = (attr.endRho + attr.startRho) / 2,
             outer = middle + (bbox.width + padding) / 2,
             inner = middle - (bbox.width + padding) / 2,
-            l1, l2, l3;
+            sliceAngle, l1, l2, l3;
 
         if (padding < 0) {
             return 1;
@@ -82441,7 +82888,8 @@ Ext.define("Ext.chart.series.sprite.PieSlice", {
         }
         l1 = Math.sqrt(attr.endRho * attr.endRho - outer * outer);
         l2 = Math.sqrt(attr.endRho * attr.endRho - inner * inner);
-        l3 = Math.abs(Math.tan(Math.abs(attr.endAngle - attr.startAngle) / 2)) * inner;
+        sliceAngle = Math.abs(attr.endAngle - attr.startAngle);
+        l3 = (sliceAngle > Math.PI/2 ? inner : Math.abs(Math.tan(sliceAngle / 2)) * inner);
         if (bbox.height + padding * 2 > Math.min(l1, l2, l3) * 2) {
             return 0;
         }
@@ -82486,7 +82934,7 @@ Ext.define("Ext.chart.series.sprite.PieSlice", {
  * In this configuration we set `pie` as the type for the series, set an object with specific style properties for highlighting options
  * (triggered when hovering elements). We also set true to `showInLegend` so all the pie slices can be represented by a legend item.
  * We set `data1` as the value of the field to determine the angle span for each pie slice. We also set a label configuration object
- * where we set the field name of the store field to be renderer as text for the label. The labels will also be displayed rotated.
+ * where we set the field name of the store field to be rendered as text for the label. The labels will also be displayed rotated.
  * We set `contrast` to `true` to flip the color of the label if it is to similar to the background color. Finally, we set the font family
  * and size through the `font` parameter.
  *
@@ -82588,7 +83036,7 @@ Ext.define('Ext.chart.series.Pie', {
         }
 
         for (i = 0; i < length; i++) {
-            value = items[i].get(field);
+            value = Math.abs(Number(items[i].get(field))) || 0;
             if (!hidden[i]) {
                 sum += value;
             }
@@ -82598,14 +83046,13 @@ Ext.define('Ext.chart.series.Pie', {
             }
         }
 
-        if (sum === 0) {
-            return;
+        if (sum !== 0) {
+            sum = totalAngle / sum;
         }
-        sum = totalAngle / sum;
         for (i = 0; i < length; i++) {
             sprites[i].setAttributes({
                 startAngle: lastAngle,
-                endAngle: lastAngle = summation[i] * sum,
+                endAngle: lastAngle = (sum ? summation[i] * sum : 0),
                 globalAlpha: 1
             });
         }
@@ -82671,7 +83118,14 @@ Ext.define('Ext.chart.series.Pie', {
             offsetX = me.getOffsetX(),
             offsetY = me.getOffsetY(),
             sprites = me.sprites, sprite,
+            spriteIndex = 0, rendererData,
             i, spriteCreated = false;
+
+        rendererData = {
+            store: store,
+            field: me.getField(),
+            series: me
+        };
 
         for (i = 0; i < length; i++) {
             sprite = sprites[i];
@@ -82689,6 +83143,8 @@ Ext.define('Ext.chart.series.Pie', {
                     sprite.bindMarker('labels', me.getLabel());
                 }
                 sprite.setAttributes(this.getStyleByIndex(i));
+                sprite.rendererData = rendererData;
+                sprite.rendererIndex = spriteIndex++;
                 spriteCreated = true;
             }
         }
@@ -82759,7 +83215,7 @@ Ext.define('Ext.chart.series.Pie', {
                 hidden = this.getHidden();
             for (var i = 0; i < items.length; i++) {
                 target.push({
-                    name: labelField ? String(items[i].get(labelField))  : (field && field[i]) || this.getId(),
+                    name: labelField ? String(items[i].get(labelField))  : field + " " + i,
                     mark: this.getStyleByIndex(i).fillStyle || this.getStyleByIndex(i).strokeStyle || 'black',
                     disabled: hidden[i],
                     series: this.getId(),
@@ -84296,7 +84752,7 @@ Ext.define('Ext.data.proxy.Direct', {
          * @cfg url
          * @hide
          */
-         
+
         /**
          * @cfg {String/String[]} paramOrder
          * Defaults to undefined. A list of params to be executed server side.  Specify the params in the order in
@@ -84418,8 +84874,12 @@ Ext.define('Ext.data.proxy.Direct', {
         var me = this;
 
         return function(data, event) {
-            me.processResponse(event.getStatus(), operation, request, event.getResult(), callback, scope);
+            me.processResponse(event.getStatus(), operation, request, event, callback, scope);
         };
+    },
+
+    getResponseResult: function(response) {
+        return response.getResult();
     },
 
     // @inheritdoc
@@ -86506,179 +86966,6 @@ Ext.define('Ext.data.TreeStore', {
 });
 
 /**
- * @author Ed Spencer
- * @aside guide models
- *
- * This singleton contains a set of validation functions that can be used to validate any type of data. They are most
- * often used in {@link Ext.data.Model Models}, where they are automatically set up and executed.
- */
-Ext.define('Ext.data.Validations', {
-    alternateClassName: 'Ext.data.validations',
-
-    singleton: true,
-
-    config: {
-        /**
-         * @property {String} presenceMessage
-         * The default error message used when a presence validation fails.
-         */
-        presenceMessage: 'must be present',
-
-        /**
-         * @property {String} lengthMessage
-         * The default error message used when a length validation fails.
-         */
-        lengthMessage: 'is the wrong length',
-
-        /**
-         * @property {Boolean} formatMessage
-         * The default error message used when a format validation fails.
-         */
-        formatMessage: 'is the wrong format',
-
-        /**
-         * @property {String} inclusionMessage
-         * The default error message used when an inclusion validation fails.
-         */
-        inclusionMessage: 'is not included in the list of acceptable values',
-
-        /**
-         * @property {String} exclusionMessage
-         * The default error message used when an exclusion validation fails.
-         */
-        exclusionMessage: 'is not an acceptable value',
-
-        /**
-         * @property {String} emailMessage
-         * The default error message used when an email validation fails
-         */
-        emailMessage: 'is not a valid email address'
-    },
-
-    constructor: function(config) {
-        this.initConfig(config);
-    },
-
-    /**
-     * Returns the configured error message for any of the validation types.
-     * @param {String} type The type of validation you want to get the error message for.
-     * @return {Object}
-     */
-    getMessage: function(type) {
-        var getterFn = this['get' + type[0].toUpperCase() + type.slice(1) + 'Message'];
-        if (getterFn) {
-            return getterFn.call(this);
-        }
-        return '';
-    },
-
-    /**
-     * The regular expression used to validate email addresses
-     * @property emailRe
-     * @type RegExp
-     */
-    emailRe: /^\s*[\w\-\+_]+(\.[\w\-\+_]+)*\@[\w\-\+_]+\.[\w\-\+_]+(\.[\w\-\+_]+)*\s*$/,
-
-    /**
-     * Validates that the given value is present.
-     * For example:
-     *
-     *     validations: [{type: 'presence', field: 'age'}]
-     *
-     * @param {Object} config Config object.
-     * @param {Object} value The value to validate.
-     * @return {Boolean} `true` if validation passed.
-     */
-    presence: function(config, value) {
-        if (arguments.length === 1) {
-            value = config;
-        }
-        return !!value || value === 0;
-    },
-
-    /**
-     * Returns `true` if the given value is between the configured min and max values.
-     * For example:
-     *
-     *     validations: [{type: 'length', field: 'name', min: 2}]
-     *
-     * @param {Object} config Config object.
-     * @param {String} value The value to validate.
-     * @return {Boolean} `true` if the value passes validation.
-     */
-    length: function(config, value) {
-        if (value === undefined || value === null) {
-            return false;
-        }
-
-        var length = value.length,
-            min    = config.min,
-            max    = config.max;
-
-        if ((min && length < min) || (max && length > max)) {
-            return false;
-        } else {
-            return true;
-        }
-    },
-
-    /**
-     * Validates that an email string is in the correct format.
-     * @param {Object} config Config object.
-     * @param {String} email The email address.
-     * @return {Boolean} `true` if the value passes validation.
-     */
-    email: function(config, email) {
-        return Ext.data.validations.emailRe.test(email);
-    },
-
-    /**
-     * Returns `true` if the given value passes validation against the configured `matcher` regex.
-     * For example:
-     *
-     *     validations: [{type: 'format', field: 'username', matcher: /([a-z]+)[0-9]{2,3}/}]
-     *
-     * @param {Object} config Config object.
-     * @param {String} value The value to validate.
-     * @return {Boolean} `true` if the value passes the format validation.
-     */
-    format: function(config, value) {
-        if (value === undefined || value === null) {
-            value = '';
-        }
-        return !!(config.matcher && config.matcher.test(value));
-    },
-
-    /**
-     * Validates that the given value is present in the configured `list`.
-     * For example:
-     *
-     *     validations: [{type: 'inclusion', field: 'gender', list: ['Male', 'Female']}]
-     *
-     * @param {Object} config Config object.
-     * @param {String} value The value to validate.
-     * @return {Boolean} `true` if the value is present in the list.
-     */
-    inclusion: function(config, value) {
-        return config.list && Ext.Array.indexOf(config.list,value) != -1;
-    },
-
-    /**
-     * Validates that the given value is present in the configured `list`.
-     * For example:
-     *
-     *     validations: [{type: 'exclusion', field: 'username', list: ['Admin', 'Operator']}]
-     *
-     * @param {Object} config Config object.
-     * @param {String} value The value to validate.
-     * @return {Boolean} `true` if the value is not present in the list.
-     */
-    exclusion: function(config, value) {
-        return config.list && Ext.Array.indexOf(config.list,value) == -1;
-    }
-});
-
-/**
  * @author Tommy Maintz
  *
  * This class is a sequential id generator. A simple use of this class would be like so:
@@ -88070,7 +88357,41 @@ Ext.define('Ext.data.proxy.SessionStorage', {
 });
 
 /**
- * SQL proxy.
+ * SQL proxy lets you store data in a SQL database.
+ * The Sencha Touch SQL proxy outputs model data into an HTML5
+ * local database using WebSQL. 
+ * 
+ * You can create a Store for the proxy, for example:
+ * 
+ * Ext.require(["Ext.data.proxy.Sql"]);
+ * 
+ * Ext.define("User", {
+ *   extend: "Ext.data.model",
+ *   config: {
+ *     fields: [ "firstName", "lastName" ]
+ *   }  
+ * });
+ * 
+ * Ext.create("Ext.data.Store", {
+ *   model" "User",
+ *   storeId: "Users",
+ *   proxy: {
+ *     type: "sql""
+ *   }
+ * });
+ * 
+ * Ext.getStore("Users").add([{
+ *   firstName: "Polly",
+ *   lastName: "Hedra"
+ * });
+ * 
+ * Ext.getStore("Users").sync();
+ * 
+ * To destroy a table use:
+ * Ext.getStore("Users").getModel().getProxy().dropTable();
+ * 
+ * To recreate a table use:
+ * Ext.data.Store.sync() or Ext.data.Model.save()
  */
 Ext.define('Ext.data.proxy.Sql', {
     alias: 'proxy.sql',
@@ -88657,75 +88978,6 @@ Ext.define('Ext.data.proxy.Sql', {
 
     getDatabaseObject: function() {
         return openDatabase(this.getDatabase(), '1.0', 'Sencha Database', 5 * 1024 * 1024);
-    }
-});
-
-/**
- * @author Ed Spencer
- * @class Ext.data.reader.Array
- *
- * Data reader class to create an Array of {@link Ext.data.Model} objects from an Array.
- * Each element of that Array represents a row of data fields. The
- * fields are pulled into a Record object using as a subscript, the `mapping` property
- * of the field definition if it exists, or the field's ordinal position in the definition.
- *
- * Example code:
- *
- *     Employee = Ext.define('Employee', {
- *         extend: 'Ext.data.Model',
- *         config: {
- *             fields: [
- *                 'id',
- *                 {name: 'name', mapping: 1}, // "mapping" only needed if an "id" field is present which
- *                 {name: 'occupation', mapping: 2} // precludes using the ordinal position as the index.
- *             ]
- *         }
- *     });
- *
- *     var myReader = new Ext.data.reader.Array({
- *         model: 'Employee'
- *     }, Employee);
- *
- * This would consume an Array like this:
- *
- *     [ [1, 'Bill', 'Gardener'], [2, 'Ben', 'Horticulturalist'] ]
- *
- * @constructor
- * Create a new ArrayReader
- * @param {Object} meta Metadata configuration options.
- */
-Ext.define('Ext.data.reader.Array', {
-    extend:  Ext.data.reader.Json ,
-    alternateClassName: 'Ext.data.ArrayReader',
-    alias : 'reader.array',
-
-    // For Array Reader, methods in the base which use these properties must not see the defaults
-    config: {
-        totalProperty: undefined,
-        successProperty: undefined
-    },
-
-    /**
-     * @private
-     * Returns an accessor expression for the passed Field from an Array using either the Field's mapping, or
-     * its ordinal position in the fields collection as the index.
-     * This is used by buildExtractors to create optimized on extractor function which converts raw data into model instances.
-     */
-    createFieldAccessExpression: function(field, fieldVarName, dataName) {
-        var me     = this,
-            mapping = field.getMapping(),
-            index  = (mapping == null) ? me.getModel().getFields().indexOf(field) : mapping,
-            result;
-
-        if (typeof index === 'function') {
-            result = fieldVarName + '.getMapping()(' + dataName + ', this)';
-        } else {
-            if (isNaN(index)) {
-                index = '"' + index + '"';
-            }
-            result = dataName + "[" + index + "]";
-        }
-        return result;
     }
 });
 
@@ -90088,7 +90340,14 @@ Ext.define('Ext.dataview.List', {
          */
         useSimpleItems: true,
 
-        scrollable: null
+        scrollable: null,
+
+        /**
+         * @cfg {Boolean} striped
+         * Set this to true if you want the items in the list to be zebra striped, alternating their
+         * background color.
+         */
+        striped: false
     },
 
     platformConfig: [{
@@ -90521,7 +90780,7 @@ Ext.define('Ext.dataview.List', {
             storeCount = info.store.getCount(),
             itemCls = [],
             headerCls = [],
-            itemRemoveCls = [info.headerCls, info.footerCls, info.firstCls, info.lastCls, info.selectedCls],
+            itemRemoveCls = [info.headerCls, info.footerCls, info.firstCls, info.lastCls, info.selectedCls, info.stripeCls],
             headerRemoveCls = [info.headerCls, info.footerCls, info.firstCls, info.lastCls],
             ln, i, scrollDockItem;
 
@@ -90632,7 +90891,11 @@ Ext.define('Ext.dataview.List', {
             if (!infinite) {
                 for (i = 0, ln = scrollDockItems.top.length; i < ln; i++) {
                     scrollDockItem = scrollDockItems.top[i];
-                    scrollDockItem.renderElement.insertBefore(item.renderElement);
+                    if (info.grouped) {
+                        scrollDockItem.renderElement.insertBefore(header.renderElement);
+                    } else {
+                        scrollDockItem.renderElement.insertBefore(item.renderElement);
+                    }
                 }
             }
         }
@@ -90653,6 +90916,10 @@ Ext.define('Ext.dataview.List', {
                     scrollDockItem.renderElement.insertAfter(item.renderElement);
                 }
             }
+        }
+
+        if (info.striped && index % 2 == 1) {
+            itemCls.push(info.stripeCls);
         }
 
         if (currentItemCls) {
@@ -91018,6 +91285,8 @@ Ext.define('Ext.dataview.List', {
             footerCls: baseCls + '-footer-wrap',
             firstCls: baseCls + '-item-first',
             lastCls: baseCls + '-item-last',
+            stripeCls: baseCls + '-item-odd',
+            striped: me.getStriped(),
             itemMap: me.getItemMap(),
             defaultItemHeight: me.getItemHeight()
         };
@@ -93549,24 +93818,6 @@ Ext.define('Ext.dom.CompositeElement', {
         return Ext.get(el);
     }
 
-}, function() {
-    Ext.dom.Element.select = function(selector, unique, root) {
-        var elements;
-
-        if (typeof selector == "string") {
-            elements = Ext.dom.Element.selectorFunction(selector, root);
-        }
-        else if (selector.length !== undefined) {
-            elements = selector;
-        }
-        else {
-            //<debug>
-            throw new Error("[Ext.select] Invalid selector specified: " + selector);
-            //</debug>
-        }
-
-        return (unique === true) ? new Ext.CompositeElement(elements) : new Ext.CompositeElementLite(elements);
-    };
 });
 
 // Using @mixins to include all members of Ext.event.Touch
@@ -93732,7 +93983,7 @@ Ext.define('Ext.event.Dom', {
      * @return {Number}
      */
     getPageX: function() {
-        return this.browserEvent.pageX;
+        return this.pageX || this.browserEvent.pageX;
     },
 
     /**
@@ -93741,7 +93992,7 @@ Ext.define('Ext.event.Dom', {
      * @return {Number}
      */
     getPageY: function() {
-        return this.browserEvent.pageY;
+        return this.pageY || this.browserEvent.pageY;
     },
 
     /**
@@ -94466,8 +94717,7 @@ Ext.define('Ext.event.publisher.Dom', {
 
     idOrClassSelectorRegex: /^([#|\.])([\w\-]+)$/,
 
-    handledEvents: ['click', 'focus', 'blur', 'paste', 'input', 'change',
-                    'mousemove', 'mousedown', 'mouseup', 'mouseover', 'mouseout',
+    handledEvents: ['focus', 'blur', 'paste', 'input', 'change',
                     'keyup', 'keydown', 'keypress', 'submit',
                     'transitionend', 'animationstart', 'animationend'],
 
@@ -94872,7 +95122,6 @@ Ext.define('Ext.event.publisher.Dom', {
 
     onEvent: function(e) {
         var eventName = this.eventNameMap[e.type];
-
         // Set the current frame start time to be the timestamp of the event.
         Ext.frameStartTime = e.timeStamp;
 
@@ -95648,6 +95897,8 @@ Ext.define('Ext.event.publisher.TouchGesture', {
                             
       
 
+    isNotPreventable: /^(select|a)$/i,
+
     handledEvents: ['touchstart', 'touchmove', 'touchend', 'touchcancel'],
 
     mouseToTouchMap: {
@@ -95682,13 +95933,18 @@ Ext.define('Ext.event.publisher.TouchGesture', {
         if (Ext.browser.is.Chrome && Ext.os.is.Android) {
             this.screenPositionRatio = Ext.browser.version.gt('18') ? 1 : 1 / window.devicePixelRatio;
         }
+        else if (Ext.browser.is.AndroidStock4) {
+            this.screenPositionRatio = 1;
+        }
         else if (Ext.os.is.BlackBerry) {
             this.screenPositionRatio = 1 / window.devicePixelRatio;
         }
-        else {
-            this.screenPositionRatio = (Ext.browser.engineName == 'WebKit' && Ext.os.is.Desktop) ? 1 : window.innerWidth / window.screen.width;
+        else if (Ext.browser.engineName == 'WebKit' && Ext.os.is.Desktop) {
+            this.screenPositionRatio = 1;
         }
-
+        else {
+            this.screenPositionRatio = window.innerWidth / window.screen.width;
+        }
         this.initConfig(config);
 
         return this.callSuper();
@@ -95861,41 +96117,45 @@ Ext.define('Ext.event.publisher.TouchGesture', {
     updateTouch: function(touch) {
         var identifier = touch.identifier,
             currentTouch = this.touchesMap[identifier],
-            ratio = this.screenPositionRatio,
-            screenX = touch.screenX * ratio,
-            screenY = touch.screenY * ratio,
-            target, targetWindow, framePageBox, x, y, offsets;
+            target, x, y;
+//            ratio = this.screenPositionRatio,
+//            screenX = touch.screenX * ratio,
+//            screenY = touch.screenY * ratio,
+//            target, targetWindow, framePageBox, x, y, offsets;
 
         if (!currentTouch) {
             target = this.getElementTarget(touch.target);
-            targetWindow = target.ownerDocument.defaultView;
+//            targetWindow = target.ownerDocument.defaultView;
 
             this.touchesMap[identifier] = currentTouch = {
                 identifier: identifier,
                 target: target,
-                targets: this.getBubblingTargets(target),
-                offsets: { x: 0, y: 0 }
+                targets: this.getBubblingTargets(target)
+//                offsets: { x: 0, y: 0 }
             };
 
             this.currentIdentifiers.push(identifier);
-
-            offsets = currentTouch.offsets;
-
-            if (targetWindow !== document.defaultView) {
-                framePageBox = targetWindow.frameElement.getBoundingClientRect();
-                offsets.x = framePageBox.left + touch.pageX - screenX;
-                offsets.y = framePageBox.top + touch.pageY - screenY;
-            }
-            else {
-                offsets.x = touch.pageX - screenX;
-                offsets.y = touch.pageY - screenY;
-            }
+//
+//            offsets = currentTouch.offsets;
+//
+//            if (targetWindow !== document.defaultView) {
+//                framePageBox = targetWindow.frameElement.getBoundingClientRect();
+//                offsets.x = framePageBox.left + touch.pageX - screenX;
+//                offsets.y = framePageBox.top + touch.pageY - screenY;
+//            }
+//            else {
+//                offsets.x = touch.pageX - screenX;
+//                offsets.y = touch.pageY - screenY;
+//            }
         }
 
-        offsets = currentTouch.offsets;
+//        offsets = currentTouch.offsets;
 
-        x = Math.round(offsets.x + screenX);
-        y = Math.round(offsets.y + screenY);
+//        x = Math.round(offsets.x + screenX);
+//        y = Math.round(offsets.y + screenY);
+
+        x  = touch.pageX;
+        y  = touch.pageY;
 
         if (x === currentTouch.pageX && y === currentTouch.pageY) {
             return false;
@@ -95929,8 +96189,10 @@ Ext.define('Ext.event.publisher.TouchGesture', {
 
     onTouchStart: function(e) {
         var changedTouches = e.changedTouches,
+            target = e.target,
             ln = changedTouches.length,
-            i, touch;
+            isNotPreventable = this.isNotPreventable,
+            i, touch, parent;
 
         this.updateTouches(changedTouches);
 
@@ -95948,6 +96210,13 @@ Ext.define('Ext.event.publisher.TouchGesture', {
         }
 
         this.invokeRecognizers('onTouchStart', e);
+
+        parent = target.parentNode || {};
+
+        // Prevent all emulated mouse events by stopping the default of touchstart. This will also stop the focus event.
+        if (Ext.os.is.iOS && !isNotPreventable.test(target.tagName) && !isNotPreventable.test(parent.tagName)) {
+            e.preventDefault();
+        }
     },
 
     onTouchMove: function(e) {
@@ -96086,6 +96355,16 @@ Ext.define('Ext.event.publisher.TouchGesture', {
     else if (Ext.os.is.ChromeOS || !Ext.feature.has.Touch) {
         this.override({
             handledEvents: ['touchstart', 'touchmove', 'touchend', 'touchcancel', 'mousedown', 'mousemove', 'mouseup']
+        });
+    }
+    else if (!Ext.browser.is.Silk && Ext.feature.has.Touch) {
+        // Stop all mousedown events on Touch capable browsers. This will prevent the 'focus' event from the emulated mouse events on non-iOS devices
+        Ext.onDocumentReady(function() {
+            window.document.body.addEventListener('mousedown', function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }, true);
         });
     }
 });
@@ -96375,8 +96654,7 @@ Ext.define('Ext.event.recognizer.Drag', {
         if (Math.abs(point.getDistanceTo(startPoint)) >= minDistance) {
             this.isStarted = true;
 
-            this.lastPoint = this.previousPoint = this.lastPoint = point;
-//            this.startPoint = new Ext.util.LineSegment(startPoint, point).getInBetweenPoint(minDistance);
+            this.previousPoint = this.lastPoint = point;
 
             this.resetInfo('x', e, touch);
             this.resetInfo('y', e, touch);
@@ -97348,15 +97626,18 @@ Ext.define('Ext.field.Checkbox', {
 
     // @private
     initialize: function() {
-        var me = this;
+        var me = this,
+            component = me.getComponent();
 
         me.callParent();
 
-        me.getComponent().on({
+        component.on({
             scope: me,
             order: 'before',
             masktap: 'onMaskTap'
         });
+
+        component.doMaskTap = Ext.emptyFn;
 
         me.label.on({
             scope: me,
@@ -99267,6 +99548,9 @@ Ext.define('Ext.field.DatePicker', {
             masktap: 'onMaskTap'
         });
 
+
+        component.doMaskTap = Ext.emptyFn;
+
         if (Ext.browser.is.AndroidStock2) {
             component.input.dom.disabled = true;
         }
@@ -100314,6 +100598,8 @@ Ext.define('Ext.field.Select', {
             masktap: 'onMaskTap'
         });
 
+        component.doMaskTap = Ext.emptyFn;
+
         if (Ext.browser.is.AndroidStock2) {
             component.input.dom.disabled = true;
         }
@@ -101050,12 +101336,14 @@ Ext.define('Ext.slider.Slider', {
     setIndexValue: function(index, value, animation) {
         var thumb = this.getThumb(index),
             values = this.getValue(),
+            minValue = this.getMinValue(),
             offsetValueRatio = this.offsetValueRatio,
+            increment = this.getIncrement(),
             draggable = thumb.getDraggable();
 
-        draggable.setOffset((value - this.getMinValue()) * offsetValueRatio, null, animation);
+        draggable.setOffset((value - minValue) * offsetValueRatio, null, animation);
 
-        values[index] = value;
+        values[index] = minValue + Math.round((draggable.offset.x / offsetValueRatio) / increment) * increment;
     },
 
     onThumbDragEnd: function(thumb, e) {
@@ -102241,13 +102529,15 @@ Ext.define('Ext.field.Toggle', {
      *         xtype: 'togglefield',
      *         label: 'Event Example',
      *         listeners: {
-     *             change: function(field, newValue) {
+     *             change: function(field, slider, thumb, newValue, oldValue) {
      *                 console.log('Value of this toggle has changed:', (newValue) ? 'ON' : 'OFF');
      *             }
      *         }
      *     });
      *
-     * @param {Ext.field.Toggle} me
+     * @param {Ext.field.Toggle} this
+     * @param {Ext.slider.Toggle} Slider instance
+     * @param {Ext.slider.Thumb} Thumb instance
      * @param {Number} newValue the new value of this thumb
      * @param {Number} oldValue the old value of this thumb
      */
@@ -102765,6 +103055,7 @@ Ext.define('Ext.form.Panel', {
      * @param {Ext.form.Panel} this This FormPanel.
      * @param {Object} values A hash collection of the qualified form values about to be submitted.
      * @param {Object} options Submission options hash (only available when `standardSubmit` is `false`).
+     * @param {Ext.EventObject} e The event object if the form was submitted via a HTML5 form submit event.
      */
 
     /**
@@ -102857,6 +103148,11 @@ Ext.define('Ext.form.Panel', {
     getElementConfig: function() {
         var config = this.callParent();
         config.tag = "form";
+        config.children.push({
+            tag: 'input',
+            type: 'submit',
+            style: 'visibility: hidden;'
+        });
 
         return config;
     },
@@ -102909,7 +103205,7 @@ Ext.define('Ext.form.Panel', {
         if (e && !me.getStandardSubmit()) {
             e.stopEvent();
         } else {
-            this.submit();
+            this.submit(null, e);
         }
     },
 
@@ -102996,7 +103292,7 @@ Ext.define('Ext.form.Panel', {
      *
      * @return {Ext.data.Connection} The request object.
      */
-    submit: function(options) {
+    submit: function(options, e) {
         var me = this,
             form = me.element.dom || {},
             formValues;
@@ -103015,7 +103311,7 @@ Ext.define('Ext.form.Panel', {
 
         formValues = me.getValues(me.getStandardSubmit() || !options.submitDisabled);
 
-        return me.fireAction('beforesubmit', [me, formValues, options], 'doBeforeSubmit');
+        return me.fireAction('beforesubmit', [me, formValues, options, e], 'doBeforeSubmit');
     },
 
     doBeforeSubmit: function(me, formValues, options) {
@@ -103739,7 +104035,7 @@ Ext.define('Ext.fx.runner.Css', {
             formattedName = cache[name];
 
         if (!formattedName) {
-            if (this.prefixedProperties[name] && Ext.browser.is.WebKit) {
+            if (!Ext.feature.has.CssTransformNoPrefix && this.prefixedProperties[name]) {
                 formattedName = this.vendorPrefix + name;
             }
             else {
@@ -106875,7 +107171,7 @@ Ext.define('Ext.plugin.PullRefresh', {
     },
 
     /**
-     * @event latestfeteched
+     * @event latestfetched
      * Fires when the latest data has been fetched
      */
 
@@ -106912,6 +107208,7 @@ Ext.define('Ext.plugin.PullRefresh', {
         }
 
         scroller = scrollable.getScroller();
+        scroller.setAutoRefresh(false);
 
         me.lastUpdated = new Date();
 
@@ -106948,7 +107245,7 @@ Ext.define('Ext.plugin.PullRefresh', {
             scope: me
         });
 
-		me.resetRefreshState();
+        me.resetRefreshState();
     },
 
     onScrollableChange: function() {
@@ -106988,7 +107285,7 @@ Ext.define('Ext.plugin.PullRefresh', {
             model: store.getModel(),
             limit: store.getPageSize(),
             action: 'read',
-			sorters: store.getSorters(),
+            sorters: store.getSorters(),
             filters: store.getRemoteFilter() ? store.getFilters() : []
         });
 
@@ -107050,8 +107347,10 @@ Ext.define('Ext.plugin.PullRefresh', {
             scope: me
         });
 
-        scroller.minPosition.y = 0;
-        scroller.scrollTo(null, 0, {duration: me.getSnappingAnimationDuration()});
+        if (scroller.position.y < 0) {
+            scroller.minPosition.y = 0;
+            scroller.scrollTo(null, 0, {duration: scroller.isTouching ? 0 : me.getSnappingAnimationDuration()});
+        }
     },
 
     onPainted: function() {
@@ -107429,7 +107728,7 @@ Ext.define('Ext.tab.Bar', {
     parseActiveTab: function(tab) {
         //we need to call getItems to initialize the items, otherwise they will not exist yet.
         if (typeof tab == 'number') {
-            return this.getInnerItems()[tab];
+			return this.getItems().items[tab];
         }
         else if (typeof tab == 'string') {
             tab = Ext.getCmp(tab);
@@ -109224,6 +109523,10 @@ Ext.define('Ext.viewport.Default', {
 Ext.define('Ext.viewport.Android', {
     extend:  Ext.viewport.Default ,
 
+    config: {
+        autoBlurInput: false
+    },
+
     constructor: function() {
         this.on('orientationchange', 'doFireOrientationChangeEvent', this, { prepend: true });
         this.on('orientationchange', 'hideKeyboardIfNeeded', this, { prepend: true });
@@ -109242,6 +109545,7 @@ Ext.define('Ext.viewport.Android', {
             this.dummyInput = input = document.createElement('input');
             input.style.position = 'absolute';
             input.style.opacity = '0';
+            input.style.pointerEvents = 'none';
             document.body.appendChild(input);
         }
 
@@ -109502,10 +109806,11 @@ Ext.define('Ext.viewport.Android', {
 
     if (version.gtEq('4')) {
         this.override({
-            doBlurInput: Ext.emptyFn,
             onResize: function() {
                 this.callParent();
-                this.doFixSize();
+                if (this.getAutoMaximize()) {
+                    this.doFixSize();
+                }
             }
         });
     }

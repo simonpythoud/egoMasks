@@ -2,7 +2,7 @@ Ext.define("EgoMasks.view.integration.MasksList", {
     extend: 'Ext.Panel',
     xtype: 'masksList',
     requires: [
-        'Ext.Label', 
+        'Ext.Label'
     ],
     config: {
         layout: 'vbox',

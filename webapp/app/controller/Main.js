@@ -16,7 +16,10 @@ Ext.define('EgoMasks.controller.Main', {
             backFromIntegrationBtn: 'integration button#backHome',
             backFromDocumentationBtn: 'documentation button[ui=back]',
             backFromStatisticsBtn: 'statistics button[ui=back]', 
-            backFromHistoryBtn: 'history button[ui=back]'
+            backFromHistoryBtn: 'history button[ui=back]', 
+            enButton: '#enButton', 
+            frButton: '#frButton', 
+            esButton: '#esButton'
         },
         control: {
             openNewIntegrationBtn: {
@@ -42,6 +45,21 @@ Ext.define('EgoMasks.controller.Main', {
             }, 
             backFromStatisticsBtn: {
                 tap: 'gotoOverview'
+            },
+            enButton: {
+                tap: function() {
+                    Ux.locale.Manager.updateLocale('en');
+                }
+            },
+            frButton: {
+                tap: function() {
+                    Ux.locale.Manager.updateLocale('fr');
+                }
+            },
+            esButton: {
+                tap: function() {
+                    Ux.locale.Manager.updateLocale('es');
+                }
             }
         }
     },

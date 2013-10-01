@@ -44,6 +44,10 @@
             "x-bootstrap": true
         },
         {
+            "path": "bootstrap.js",
+            "x-bootstrap": true
+        },
+        {
             "path": "app.js",
             "bundle": true,  /* Indicates that all class dependencies are concatenated into this file when build */
             "update": "delta"
@@ -124,7 +128,8 @@
         "resources/icons",
         "resources/startup",
         "resources/docs",
-	"resources/data"
+	   "resources/data", 
+       "resources/locales"
     ],
 
     /**
@@ -151,6 +156,12 @@
     },
 
     /**
+     * List of package names to require for the cmd build process
+     */
+    "requires": [
+    ],
+
+    /**
      * Build options
      */
     "buildOptions": {
@@ -164,5 +175,66 @@
      * Uniquely generated id for this application, used as prefix for localStorage keys.
      * Normally you should never change this value.
      */
-    "id": "3f1d1b7d-ca5b-4204-aeb2-fb0fd4f4136c"
+    "id": "3f1d1b7d-ca5b-4204-aeb2-fb0fd4f4136c",
+    
+    /**
+    * Platform Properties for this application.
+    * These settings are used for the Cordova Packager process to allow for 
+    * custom JS, CSS, and Resources per platform
+    */
+     "platform" : "web",
+
+     "platforms" : {
+        "web" : {
+
+        },
+        "ios" : {
+            "package": "com.myCompany",
+            "js": [
+                {
+                    "path" : "native/src/ios/cordova.js"
+                }
+            ]/*,
+            "resources": [
+                "resources/cordova/ios"
+            ],
+            "css": [
+                {
+                    "path": "resources/css/ios/app-ios.css"
+                }
+            ]*/
+        },
+        "android" : {
+            "package": "com.myCompany",
+            "js": [
+                {
+                    "path" : "native/src/android/cordova.js"
+                }
+            ]/*,
+            "resources": [
+                "resources/cordova/android"
+            ],
+            "css": [
+                {
+                    "path": "resources/css/android/app-android.css"
+                }
+            ]*/
+        },
+        "bb10" : {
+            "package": "com.myCompany",
+            "js": [
+                {
+                    "path" : "native/src/bb10/cordova.js"
+                }
+            ]/*,
+            "resources": [
+                "resources/cordova/bb10"
+            ],
+            "css": [
+                {
+                    "path": "resources/css/bb10/app-bb10.css"
+                }
+            ]*/
+        }
+    }
 }

@@ -5,17 +5,19 @@ Ext.define("EgoMasks.view.Overview", {
     'EgoMasks.view.overview.List',
     'EgoMasks.view.overview.Detail',
     'EgoMasks.view.LoginPanel',
+    'EgoMasks.view.LoginBox',
+    'EgoMasks.view.Options',
     'Ext.TitleBar'
     ],
     config: {
         styleHtmlContent: true,
-        scrollable: false,
+        //scrollable: false,
         layout: 'vbox',
         flex: 1,
         items: [{
                 docked: 'top',
                 xtype: 'titlebar',
-                title: 'Emotional Integration',
+                locales: {title: 'General.emotionalIntegration'},
                 platformConfig: [{
                     platform: ['blackberry'],
                     title: 'Emotional Integration on BlackBerry',
@@ -31,6 +33,11 @@ Ext.define("EgoMasks.view.Overview", {
                     ui: 'action',
                     text: 'Login',
                     id: 'login'
+                }, {
+                    align: 'right',
+                    ui: 'gray',
+                    iconCls: 'settings',
+                    id: 'options'
                 }]
             },{
             defaults: {

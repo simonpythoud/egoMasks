@@ -2,7 +2,7 @@ Ext.define("EgoMasks.view.Contemplation", {
     extend: 'Ext.tab.Panel',
     xtype: 'contemplation',
     requires: [
-    'Ext.TitleBar',
+    'Ext.TitleBar'
     ],
     config: {
         tabBarPosition: 'bottom',
