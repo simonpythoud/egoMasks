@@ -1,3 +1,35 @@
+// Defines variables 
+$base-color: #000000;
+
+
+// Similar to $base-color, $base-gradient allows you to drastically change the appearance of your 
+// app by modifying the gradient style of all elements like buttons, toolbars, and tabbars. 
+// The four included values for gradients are ‘matte’, ‘bevel’, ‘glossy’, ‘recessed’, and ‘flat’.
+$base_gradient: 'flat';
+
+
+
+/*
+Examples of sencha theming variables: 
+
+$body-bg-color: #000;
+ 
+$base-color: #333;
+$base-gradient: 'matte';
+$active-color: #B2DF1E;
+ 
+$tabs-dark: $base-color;
+$tabs-light: #555;
+ 
+$tabs-bottom-radius: .4em;
+$tabs-bottom-gradient: 'bevel';
+$tabs-bar-gradient: 'matte';
+$tabs-bottom-active-gradient: 'recessed';
+ 
+$toolbar-gradient: 'glossy';
+
+*/
+
 // The following two lines import the default Sencha Touch theme. If you are building
 // a new theme, remove them and the add your own CSS on top of the base CSS (which
 // is already included in your app.json file).
@@ -8,10 +40,6 @@
 @include icon('play');
 @include icon('pause');
 @include icon('chart2');
-
-.x-body {
-    /*background-color: #000;*/
-}
 
 .x-button-normal, .x-button-action, .x-button, 
 .x-panel.x-floating .x-panel-inner, .x-panel.x-floating>.x-body, .x-msgbox .x-panel-inner, .x-msgbox>.x-body, .x-form.x-floating .x-panel-inner, .x-form.x-floating>.x-body  {
@@ -25,8 +53,6 @@
         border: 2px solid #fff;
     }
 }
-
-
 
 
 // Vertical text for the masks group name
@@ -77,7 +103,7 @@
 // Loading screen
 html, body {
     height: 100%;
-    background-color: #1985D0
+    background-color: #000;
 }
 
 #appLoadingIndicator {
@@ -86,35 +112,22 @@ html, body {
     margin-top: -15px;
     text-align: center;
     width: 100%;
-    height: 30px;
+    height: 80px;
     -webkit-animation-name: appLoadingIndicator;
-    -webkit-animation-duration: 0.5s;
+    -webkit-animation-duration: 0.8s;
     -webkit-animation-iteration-count: infinite;
     -webkit-animation-direction: linear;
-
-    /*Special below*/
-    height: 80px;
-    -webkit-animation-duration: 0.8s;
 }
 
 #appLoadingIndicator > * {
     background-color: #FFFFFF;
     display: inline-block;
-    height: 30px;
-    -webkit-border-radius: 15px;
     margin: 0 5px;
-    width: 30px;
-    opacity: 0.8;
-
-    /*Special below*/
-    background-color: #FFFFFF;
-    display: inline-block;
-    height: 80px;
-    margin: 0 5px;
+    height: 100%;
     width: 80px;
     opacity: 1;
     background: url("../images/mahajrya.png");
-    background-size: 80px
+    background-size: cover;
 }
 
 @-webkit-keyframes appLoadingIndicator{
@@ -122,7 +135,7 @@ html, body {
         opacity: 0.8
     }
     50% {
-        opacity: 0
+        opacity: 0.1
     }
     100% {
         opacity: 0.8

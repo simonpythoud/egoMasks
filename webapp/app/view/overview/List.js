@@ -6,8 +6,8 @@ Ext.define('EgoMasks.view.overview.List', {
     ],
 
     config: {
-        cls: 'overview-list ', //+ scrollCls,
-        //scrollable: isMobile,
+        cls: 'overview-list '+ scrollCls,
+        scrollable: isMobile,
 
         store: null,
         

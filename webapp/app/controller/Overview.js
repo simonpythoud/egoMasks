@@ -60,7 +60,6 @@ Ext.define('EgoMasks.controller.Overview', {
         isPhone?
             this.loginBox.show():
             this.loginBox.showBy(btn);
-        
     },
     
     showLoginPanel: function(btn, e){
@@ -76,7 +75,6 @@ Ext.define('EgoMasks.controller.Overview', {
         
         isPhone?
             this.optionsPanel.show():
-            this.optionsPanel.showBy(btn);
-        
-    },
+            this.optionsPanel.showBy(btn);   
+    }
 });

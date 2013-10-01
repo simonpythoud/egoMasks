@@ -46,36 +46,36 @@ Ext.define("EgoMasks.view.Overview", {
             layout: 'vbox',
             flex: 1,
             items: [{
-                    flex: isMobile?1:4,    
-                    items:  [{
-                        xtype: 'overviewlist', 
-                        flex: 2,
-                        hidden: isMobile?true:false
-                    },{
-                        xtype: 'button',
-                        text: 'New Integration',
-                        id: 'openNewIntegration',
-                        flex: 1
-                    },{
-                        xtype: 'button',
-                        text: 'History',
-                        id: 'openHistory',
-                        flex: 1,
-                        hidden: isMobile?false:true
-                    }]
+                flex: isMobile?1:4,    
+                items:  [{
+                    xtype: 'overviewlist', 
+                    flex: 2,
+                    hidden: isMobile?true:false
                 },{
+                    xtype: 'button',
+                    text: 'New Integration',
+                    id: 'openNewIntegration',
+                    flex: 1
+                },{
+                    xtype: 'button',
+                    text: 'History',
+                    id: 'openHistory',
                     flex: 1,
-                    items: [{
-                        xtype: 'button',
-                        text: 'Statistics',
-                        id: 'openStatistics',
-                        flex: 1
-                    },{
-                        xtype: 'button',
-                        text: 'Documentation',
-                        id: 'openDocumentation',
-                        flex: 1
-                    }]
+                    hidden: isMobile?false:true
+                }]
+            },{
+                flex: 1,
+                items: [{
+                    xtype: 'button',
+                    text: 'Statistics',
+                    id: 'openStatistics',
+                    flex: 1
+                },{
+                    xtype: 'button',
+                    text: 'Documentation',
+                    id: 'openDocumentation',
+                    flex: 1
+                }]
             }]
         }]
     }

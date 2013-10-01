@@ -16,6 +16,9 @@ Thumbs.db
 # sass cache folder
 webapp/resources/sass/.sass-cache/
 
+# sencha package folders not used
+webapp/build/package/EgoMasks/resources/sass
+
 # sencha config files
 webapp/.sencha/
 

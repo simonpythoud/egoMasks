@@ -128,8 +128,8 @@
         "resources/icons",
         "resources/startup",
         "resources/docs",
-	   "resources/data", 
-       "resources/locales"
+	    "resources/data", 
+        "resources/locales"
     ],
 
     /**

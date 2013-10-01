@@ -16,30 +16,31 @@ Ext.define("EgoMasks.view.integration.Masks", {
         },{ 
             xtype: 'integrationBox',
             flex: 1, 
-            docked: 'top'
+            // docked: 'top'
         },{
-            //xtype: 'carousel', 
-            //indicator: false,
+            xtype: 'carousel', 
+            indicator: false,
+            //xtype: 'panel',
             layout: 'card',
             activeItem: 1,
             flex: 2,
             items: [{
-                layout: 'vbox',
-                items: [{
-                    docked: 'top',
-                    xtype: 'titlebar',
-                    title: 'Chart of the current integration',
-                    items: {
-                        ui: 'back',
-                        text: 'Back',
-                        align: 'left'
-                    }
-                },{
-                    flex: 1,
-                    xtype: 'button', 
-                    iconCls: 'chart2'
-                }]
-            },{
+            //     layout: 'vbox',
+            //     items: [{
+            //         docked: 'top',
+            //         xtype: 'titlebar',
+            //         title: 'Chart of the current integration',
+            //         items: {
+            //             ui: 'back',
+            //             text: 'Back',
+            //             align: 'left'
+            //         }
+            //     },{
+            //         flex: 1,
+            //         xtype: 'button', 
+            //         iconCls: 'chart2'
+            //     }]
+            // },{
                 xtype: 'masksList'
             },{
                 items: [{
@@ -54,19 +55,19 @@ Ext.define("EgoMasks.view.integration.Masks", {
                 },{
                     html: '<h1>MaskName</h1><p><b>def:</b> Here is the defintion of that mask</p><ul><li>Is it ... ?</li><li>Is it ... ?</li></p>'
                 }]
-            },{
-                items: [{
-                    docked: 'top',
-                    xtype: 'titlebar',
-                    title: 'Note about this integration',
-                    items: [{
-                        ui: 'back',
-                        text: 'Back',
-                        align: 'left'
-                    }]
-                },{
-                    html: '"Add a note" goes here'
-                }]
+            // },{
+            //     items: [{
+            //         docked: 'top',
+            //         xtype: 'titlebar',
+            //         title: 'Note about this integration',
+            //         items: [{
+            //             ui: 'back',
+            //             text: 'Back',
+            //             align: 'left'
+            //         }]
+            //     },{
+            //         html: '"Add a note" goes here'
+            //     }]
             }]
         }]
     }

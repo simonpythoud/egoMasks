@@ -323,6 +323,41 @@ app.put('/maskintegrations/:id', function(req, res){
 });
 
 
+
+
+// AUTHENTICATION START
+
+
+// Login
+app.get('/login', function(req, res){
+    console.log("Login")
+    res.send({
+        success: true,
+        params: req.params
+    });
+});
+
+// Redirect
+app.get('/logged', function(req, res){
+    console.log("Logged")
+    res.send({
+        success: true,
+        params: req.params
+    });
+});
+
+// Logout
+app.get('/logout', function(req, res){
+    console.log("Logout")
+    res.send({
+        success: true,
+        params: req.params
+    });
+});
+
+// AUTEHTICATION STOP
+
+
 var port = process.env.PORT || 3000;
 app.listen(port, function(){
     //console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

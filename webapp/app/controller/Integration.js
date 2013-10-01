@@ -179,7 +179,7 @@ Ext.define('EgoMasks.controller.Integration', {
     },
     
     showBigChart: function(){
-        this.masksCarousel.setActiveItem(0);
+        this.maskssaCarousel.setActiveItem(0);
     },
     
     backToMasksList: function(){
