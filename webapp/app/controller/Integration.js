@@ -6,24 +6,24 @@ Ext.define('EgoMasks.controller.Integration', {
     
     config: {
         refs: {
-            integrationPanel: 'integration',
-            informationPanel: 'integration information',
-            masksPanel: 'integration masks',
-            smilePanel: 'integration smile',
-            startIntegrationBtn: 'integration information button#startIntegration',
-            enjoyIntegrationBtn: 'integration masks button#enjoyIntegration',
-            completeIntegrationBtn: 'integration smile button#completeIntegration',
-            integrationHeader: 'integrationHeader',
-            integrationHeaderMaskName: 'integrationHeader #maskName',
-            integrationHeaderMaskTimer: 'integrationHeader #maskTimer',
-            integrationHeaderGlobalTimer: 'integrationHeader #globalTimer',
-            integrationHeaderMaskClicker: 'integrationHeader #maskClicker',
+            integrationPanel: '#integration',
+            informationPanel: '#integration information',
+            masksPanel: '#integration #masks',
+            smilePanel: '#integration smile',
+            startIntegrationBtn: '#integration information button#startIntegration',
+            enjoyIntegrationBtn: '#integration #masks button#enjoyIntegration',
+            completeIntegrationBtn: '#integration smile button#completeIntegration',
+            integrationHeader: '#integrationHeader',
+            integrationHeaderMaskName: '#integrationHeader #maskName',
+            integrationHeaderMaskTimer: '#integrationHeader #maskTimer',
+            integrationHeaderGlobalTimer: '#integrationHeader #globalTimer',
+            integrationHeaderMaskClicker: '#integrationHeader #maskClicker',
             masksList: 'masksList', 
             masksListBtns: 'masksList button', // all buttons in the masks list
-            masksBackBtn: 'masks button[ui=back]',
-            masksCarousel: 'masks carousel', 
-            showHelpBtn: 'integrationHeader #showHelpBtn', 
-            showAddNoteBtn: 'integrationHeader #showAddNoteBtn'
+            masksBackBtn: '#masks button[ui=back]',
+            masksCarousel: '#masks carousel', 
+            showHelpBtn: '#integrationHeader #showHelpBtn', 
+            showAddNoteBtn: '#integrationHeader #showAddNoteBtn'
             
         },
         control: {

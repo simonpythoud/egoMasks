@@ -3,7 +3,7 @@ Ext.define('EgoMasks.controller.Overview', {
     
     config: {
         refs: {
-            overviewList: 'overview list',
+            overviewList: '#overview list',
             historyList: 'history list',
             overviewDetailInner: 'detail #htmlArea', 
             loginButton: 'button#login',

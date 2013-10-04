@@ -11,7 +11,9 @@ Ext.define('EgoMasks.profile.Phone', {
     
     //this profile will be activated if we detect we're running on a Phone
     isActive: function(app) {
-        return Ext.os.is.Phone;
+        var isActive = Ext.os.is.Phone;
+        if(isActive) EgoMasks.activeProfile = 'phone';
+        return isActive;
     }, 
 
     // Not mandatory to keep the launch function

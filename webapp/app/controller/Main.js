@@ -4,8 +4,8 @@ Ext.define('EgoMasks.controller.Main', {
     config: {
         refs: {
             mainPanel: '#mainContainer',
-            overviewPanel: 'overview',
-            integrationPanel: 'integration',
+            overviewPanel: '#overview',
+            integrationPanel: '#integration',
             historyPanel: 'history',
             documentationPanel: 'documentation',
             statisticsPanel: 'statistics',
@@ -14,7 +14,7 @@ Ext.define('EgoMasks.controller.Main', {
             openHistoryBtn: 'button#openHistory',
             openDocumentationBtn: 'button#openDocumentation',
             openStatisticsBtn: 'button#openStatistics',
-            backFromIntegrationBtn: 'integration button#backHome',
+            backFromIntegrationBtn: '#integration button#backHome',
             backFromDocumentationBtn: 'documentation button[ui=back]',
             backFromStatisticsBtn: 'statistics button[ui=back]', 
             backFromHistoryBtn: 'history button[ui=back]', 
@@ -101,11 +101,11 @@ Ext.define('EgoMasks.controller.Main', {
     }, 
 
     gotoOverview: function(btn, event, e){
-        this.main.setActiveItem('overview');
+        this.main.setActiveItem(EgoMasks.activeProfile + '-overview');
     },
     
     gotoIntegration: function(btn, event, e){
-        this.main.setActiveItem('integration');
+        this.main.setActiveItem(EgoMasks.activeProfile + '-integration');
     },
     
     gotoHistory: function(btn, event, e){
