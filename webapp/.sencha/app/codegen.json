@@ -35,6 +35,9 @@
     },
     "index.html.tpl.merge": {
       "5c2622f8945945e183e62230dbbcdc870ee41e31": "eJydVU1vGjEQvfMrJhvlEnVZogoppYAq5UONlKqVQg49eu0BHLz2yh4gKMp/z3gXkuVDRakPyGY8857fjN72T65/X43+/rmBn6Nf98NWf0qFgUJYPcZAgyQBI+xkkKBNHx+SGEehhi3g1S+QBMip8AH55uPoNr1M1iHSZHD4YkWBr/2sPtWRQCuDQKsSBwnhM2UyhHVWtbLz84/DOdw8i6LkBDcGYUFbTVoYME4obSd8VloKcr7dzLkj0AE8SlcUaBUqIAczxBJoygERoOBCBdfhbelC0Hmk5KD0bqEVctlAwhKMEVUu5KxZfDnVkQ5N0TNEcHMvkWt6hEDaGMgxEosEGXfsPGMijLUPBKQLbJTK3vdR8y+QO7WCl48LMYB6MqUeXHQ6Z9+3IpHWxLu5Val0xvkenF58u+xed95vvbbet6eiLO9rye42iu0gsQwsrbM9EHlwZk64jUeu7EF3l0Uh/ETbtAqmF93yeSeJ+5sKoydcVqIl9NvxpVY0PfS6zbu/dnZLpkvMZ5qrxgZGwmmcMWa9/8JjiWruRf3kTrsbjt3WzL7eSVaduWk7juOIR2E0T2KNY7RF0eB1rEVDnreXY22/rdY2C6VDacQqkoyYaW6cnH1W4tx5hT71TGoeuEt77a27z/LBXmjd2f3irhRS0ypqfnlQiB8b+Bmuxp57Gw71dluVztmOTLtIW8HXrVP3SPI/UuPc/h9wvetnlRmujfEkTWHEXhEbxi5i3BKKObtGjuxdJVuaJSGpspQHtGy7cMX+JmzlbvlcGwUrdqOoloki8cRBmm5cV3oda6hBUmjpXeVPPmn68JNYiPpaAsHLQdIOFUzGBbNGUqZwwexKtlZqP7F38zOqNP44ZPXXoR+tbI2s9KKCPdDEhu3Ha1wo/n7qv/W2n9WITICtdNh6Az5F4Bg\u003d"
+    },
+    "{profileFileName}.js.tpl.merge": {
+      "99a94fcf631093dae0e3543382df4b40aa060c43": "eJxdUDFuwzAM3POK25wAhrM7U4esRfeig2rRCQGFMiQ6TmD475Vko2jDQZCOPOruzg9tLPUstK9mMwzv5kZLMwTfs6Nmlvysasw7pKKHktgW1Tmx0nDzsc5VdWmX43hc18HIE8ZaVvZiHDpnYqSIpx8DNh6EyEZcKVDhdl56vrTbb7nuTFNs8flV/0I3b8m9YFF9oBcsLdPgnaNQGgVf/gnVK0dsVjGxc/hOsjvlu1Gy4B4TwZJSp+lWBUIYRVgu8AKDNZyyi+NbplGLfpQuO96neA5/jATSMQhycD42HLdoT6us3XI4/QB37nfu"
     }
   },
   "targets": {
@@ -276,6 +279,46 @@
         "library": "core",
         "controllerNamespace": "EgoMasks.controller",
         "appStores": ""
+      }
+    },
+    "app/profile/Phone.js": {
+      "source": "{profileFileName}.js.tpl.merge",
+      "version": "99a94fcf631093dae0e3543382df4b40aa060c43",
+      "parameters": {
+        "appName": "EgoMasks",
+        "profileFileName": "Phone",
+        "name": "Phone",
+        "profileName": "Phone"
+      }
+    },
+    "app/profile/Tablet.js": {
+      "source": "{profileFileName}.js.tpl.merge",
+      "version": "99a94fcf631093dae0e3543382df4b40aa060c43",
+      "parameters": {
+        "appName": "EgoMasks",
+        "profileFileName": "Tablet",
+        "name": "Tablet",
+        "profileName": "Tablet"
+      }
+    },
+    "app/profile/Desktop.js": {
+      "source": "{profileFileName}.js.tpl.merge",
+      "version": "99a94fcf631093dae0e3543382df4b40aa060c43",
+      "parameters": {
+        "appName": "EgoMasks",
+        "profileFileName": "Desktop",
+        "name": "Desktop",
+        "profileName": "Desktop"
+      }
+    },
+    "app/profile/Tagadatsouintsoin.js": {
+      "source": "{profileFileName}.js.tpl.merge",
+      "version": "99a94fcf631093dae0e3543382df4b40aa060c43",
+      "parameters": {
+        "appName": "EgoMasks",
+        "profileFileName": "Tagadatsouintsoin",
+        "name": "Tagadatsouintsoin",
+        "profileName": "Tagadatsouintsoin"
       }
     }
   }

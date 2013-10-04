@@ -8,12 +8,6 @@ Ext.define("EgoMasks.view.documentation.Document", {
         styleHtmlContent: true,
         scrollable: true,
 
-        // Make it hidden by default
-        hidden: true,
-
-        // Set the width and height of the panel
-        fullscreen: true,
-
         layout: 'fit',
 
         items: [{

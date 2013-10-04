@@ -16,8 +16,8 @@ Ext.define("EgoMasks.view.LoginPanel", {
         hidden: true,
 
         // Set the width and height of the panel
-        width: isPhone ? '90%' : 550,
-        height: isPhone ? '80%' : 300,
+        width: 550, //isPhone ? '90%' : 550,
+        height: 300, //isPhone ? '80%' : 300,
 
         // Style the content and make it scrollable
         scrollable: true,

@@ -32,7 +32,7 @@ Ext.define('EgoMasks.model.Integration', {
         hasMany: {model: 'EgoMasks.model.MaskIntegration', name: 'maskIntegration'},
         proxy: {
             type: 'rest',
-            url: baseUrl + '/integrations',
+            url: '/integrations',
             reader: {
                 type: 'json', 
                 rootProperty: 'integrations'

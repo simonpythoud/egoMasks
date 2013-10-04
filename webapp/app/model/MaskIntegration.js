@@ -26,7 +26,7 @@ Ext.define('EgoMasks.model.MaskIntegration', {
         }],
         proxy: {
             type: 'rest',
-            url: baseUrl + '/maskintegrations',
+            url: '/maskintegrations',
             reader: {
                 type: 'json', 
                 rootProperty: 'maskintegrations'

@@ -1,4 +1,13 @@
-{
+{   
+    "Menu": {
+        "title": "ES Menu", 
+        "overview": "ES Overview",
+        "newIntegration": "ES New Integration", 
+        "history": "ES History", 
+        "statistics": "ES Statistics", 
+        "documentation": "ES Documentation", 
+        "options": "ES Options"
+    },
     "Login": {
         "title": "ES Login"
     },

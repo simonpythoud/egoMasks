@@ -13,17 +13,17 @@ Ext.define('EgoMasks.controller.Integration', {
             startIntegrationBtn: 'integration information button#startIntegration',
             enjoyIntegrationBtn: 'integration masks button#enjoyIntegration',
             completeIntegrationBtn: 'integration smile button#completeIntegration',
-            integrationBox: 'integrationBox',
-            integrationBoxMaskName: 'integrationBox #maskName',
-            integrationBoxMaskTimer: 'integrationBox #maskTimer',
-            integrationBoxGlobalTimer: 'integrationBox #globalTimer',
-            integrationBoxMaskClicker: 'integrationBox #maskClicker',
+            integrationHeader: 'integrationHeader',
+            integrationHeaderMaskName: 'integrationHeader #maskName',
+            integrationHeaderMaskTimer: 'integrationHeader #maskTimer',
+            integrationHeaderGlobalTimer: 'integrationHeader #globalTimer',
+            integrationHeaderMaskClicker: 'integrationHeader #maskClicker',
             masksList: 'masksList', 
             masksListBtns: 'masksList button', // all buttons in the masks list
             masksBackBtn: 'masks button[ui=back]',
             masksCarousel: 'masks carousel', 
-            showHelpBtn: 'integrationBox #showHelpBtn', 
-            showAddNoteBtn: 'integrationBox #showAddNoteBtn'
+            showHelpBtn: 'integrationHeader #showHelpBtn', 
+            showAddNoteBtn: 'integrationHeader #showAddNoteBtn'
             
         },
         control: {
@@ -39,7 +39,7 @@ Ext.define('EgoMasks.controller.Integration', {
             completeIntegrationBtn: {
                 tap: 'completeIntegration'
             }, 
-            integrationBoxMaskName: {
+            integrationHeaderMaskName: {
                 tap: 'switchTimer'
             },
             masksListBtns: {
@@ -59,18 +59,18 @@ Ext.define('EgoMasks.controller.Integration', {
     
     //called when the Application is launched, remove if not needed
     launch: function(app) {
+
+        EgoMasks.integrationCtrl = this;
         
-        this.mainCtrl = app.getController('Main');
-        this.overviewCtrl = app.getController('Overview');
         this.integration = this.getIntegrationPanel();
         this.information = this.getInformationPanel();
         this.masks = this.getMasksPanel();
         this.smile = this.getSmilePanel();
         
-        this.integrationBoxMaskName = this.getIntegrationBoxMaskName();
-        this.integrationBoxGlobalTimer = this.getIntegrationBoxGlobalTimer();
-        this.integrationBoxMaskTimer = this.getIntegrationBoxMaskTimer();
-        this.integrationBoxMaskClicker = this.getIntegrationBoxMaskClicker();
+        this.integrationHeaderMaskName = this.getIntegrationHeaderMaskName();
+        this.integrationHeaderGlobalTimer = this.getIntegrationHeaderGlobalTimer();
+        this.integrationHeaderMaskTimer = this.getIntegrationHeaderMaskTimer();
+        this.integrationHeaderMaskClicker = this.getIntegrationHeaderMaskClicker();
         
         this.masksList = this.getMasksList();
         this.masksCarousel = this.getMasksCarousel();
@@ -95,7 +95,7 @@ Ext.define('EgoMasks.controller.Integration', {
 
             var groupPanel = Ext.create('Ext.Panel', {
                 cls: 'masksGroup',
-                layout: 'hbox',
+                layout: Ext.os.is.Phone?'vbox':'hbox',
                 items: [{ 
                     xtype: 'label', 
                     html: groupRecord.get('name'),
@@ -146,19 +146,19 @@ Ext.define('EgoMasks.controller.Integration', {
             this.currentIntegration.save();
         
             // Add the model to the overview list store
-            this.overviewCtrl.store.add(this.currentIntegration);
+            EgoMasks.overviewCtrl.store.add(this.currentIntegration);
         
             this.integration.setActiveItem(this.masks);
         }
         
-        this.integrationBoxGlobalTimer.setRecord(this.currentIntegration);
+        this.integrationHeaderGlobalTimer.setRecord(this.currentIntegration);
         
-        this.integrationBoxMaskName.setText('>> Select a mask below <<');
-        this.integrationBoxMaskName.setIconCls('');
+        this.integrationHeaderMaskName.setText('>> Select a mask below <<');
+        this.integrationHeaderMaskName.setIconCls('');
 
         var emptyMiModel = Ext.create('EgoMasks.model.MaskIntegration');
-        this.integrationBoxMaskClicker.setRecord(emptyMiModel);
-        this.integrationBoxMaskTimer.setRecord(emptyMiModel);
+        this.integrationHeaderMaskClicker.setRecord(emptyMiModel);
+        this.integrationHeaderMaskTimer.setRecord(emptyMiModel);
     },
     
     enjoyIntegration: function(btn, event, e){
@@ -174,24 +174,24 @@ Ext.define('EgoMasks.controller.Integration', {
     },
     
     completeIntegration: function(btn, event, e){
-        this.mainCtrl.gotoOverview();
+        EgoMasks.mainCtrl.gotoOverview();
         this.integration.setActiveItem(this.information);
     },
     
     showBigChart: function(){
-        this.maskssaCarousel.setActiveItem(0);
+        this.masksCarousel.setActiveItem('masksChart');
     },
     
     backToMasksList: function(){
-        this.masksCarousel.setActiveItem(1);
+        this.masksCarousel.setActiveItem('masksList');
     },
     
     showMaskHelp: function(){
-        this.masksCarousel.setActiveItem(2);
+        this.masksCarousel.setActiveItem('masksHelper');
     },
     
     showAddNote: function(){
-        this.masksCarousel.setActiveItem(3);
+        this.masksCarousel.setActiveItem('masksNote');
     }, 
     
     
@@ -229,10 +229,10 @@ Ext.define('EgoMasks.controller.Integration', {
         // Save the model
         this.miRecord.save();
         
-        this.integrationBoxMaskName.setText(maskRecord.get('name'));
+        this.integrationHeaderMaskName.setText(maskRecord.get('name'));
 
-        this.integrationBoxMaskClicker.setRecord(this.miRecord);
-        this.integrationBoxMaskTimer.setRecord(this.miRecord);
+        this.integrationHeaderMaskClicker.setRecord(this.miRecord);
+        this.integrationHeaderMaskTimer.setRecord(this.miRecord);
         
 
         this.startTimer();
@@ -241,7 +241,7 @@ Ext.define('EgoMasks.controller.Integration', {
     
     startTimer: function(){
         this.integrationInProgress = true;
-        this.integrationBoxMaskName.setIconCls('play');
+        this.integrationHeaderMaskName.setIconCls('play');
 
         var that = this;   
         var start = new Date().getTime() - this.currentIntegration.get('duration');
@@ -256,7 +256,7 @@ Ext.define('EgoMasks.controller.Integration', {
     
     stopTimer: function(){
         this.integrationInProgress = false;
-        this.integrationBoxMaskName.setIconCls('pause');
+        this.integrationHeaderMaskName.setIconCls('pause');
         clearInterval(this.updateInterval);
     },
     

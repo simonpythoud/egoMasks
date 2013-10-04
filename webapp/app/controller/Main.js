@@ -3,16 +3,17 @@ Ext.define('EgoMasks.controller.Main', {
     
     config: {
         refs: {
-            mainPanel: 'mainview',
+            mainPanel: '#mainContainer',
             overviewPanel: 'overview',
             integrationPanel: 'integration',
             historyPanel: 'history',
             documentationPanel: 'documentation',
             statisticsPanel: 'statistics',
-            openNewIntegrationBtn: 'overview button#openNewIntegration',
-            openHistoryBtn: 'overview button#openHistory',
-            openDocumentationBtn: 'overview button#openDocumentation',
-            openStatisticsBtn: 'overview button#openStatistics',
+            openOverviewBtn: 'button#openOverview',
+            openNewIntegrationBtn: 'button#openNewIntegration',
+            openHistoryBtn: 'button#openHistory',
+            openDocumentationBtn: 'button#openDocumentation',
+            openStatisticsBtn: 'button#openStatistics',
             backFromIntegrationBtn: 'integration button#backHome',
             backFromDocumentationBtn: 'documentation button[ui=back]',
             backFromStatisticsBtn: 'statistics button[ui=back]', 
@@ -24,6 +25,9 @@ Ext.define('EgoMasks.controller.Main', {
         control: {
             openNewIntegrationBtn: {
                 tap: 'gotoIntegration'
+            }, 
+            openOverviewBtn: {
+                tap: 'gotoOverview'
             }, 
             openHistoryBtn: {
                 tap: 'gotoHistory'
@@ -60,37 +64,59 @@ Ext.define('EgoMasks.controller.Main', {
                 tap: function() {
                     Ux.locale.Manager.updateLocale('es');
                 }
+            }, 
+            'viewport': {
+                //capture the orientation change event
+                orientationchange: //'onOrientationchange'
+                    function(viewport, orientation, width, height){
+                        console.log('rpc.view.home.indexView ~ handleOrientationChange');
+                        // Execute the code that needs to fire on Orientation Change.
+                        alert('orientationchange: ' + orientation + '  w: ' + width + '  h: ' + height);
+                }
             }
         }
     },
+
+    init: function(){
+        // Set the base URL for the server requests
+        var baseUrl = 'http://localhost:3000'; //'http://egomasks.herokuapp.com/'; //
+        
+        var maskIntegrationProxy = EgoMasks.model.MaskIntegration.getProxy();
+        maskIntegrationProxy.setUrl(
+            baseUrl + maskIntegrationProxy.getUrl()
+        );
+
+        var integrationProxy = EgoMasks.model.Integration.getProxy();
+        integrationProxy.setUrl(
+            baseUrl + integrationProxy.getUrl()
+        );
+
+        Ext.getStore('Integrations').load();
+    },
     
-    //called when the Application is launched, remove if not needed
     launch: function(app) {
+        EgoMasks.mainCtrl = this;
+
         this.main = this.getMainPanel();
-        this.overview = this.getOverviewPanel();
-        this.integration = this.getIntegrationPanel();
-        this.history = this.getHistoryPanel();
-        this.documentation = this.getDocumentationPanel();
-        this.statistics = this.getStatisticsPanel();
     }, 
-    
+
     gotoOverview: function(btn, event, e){
-        this.main.setActiveItem(this.overview);
+        this.main.setActiveItem('overview');
     },
     
     gotoIntegration: function(btn, event, e){
-        this.main.setActiveItem(this.integration);
+        this.main.setActiveItem('integration');
     },
     
     gotoHistory: function(btn, event, e){
-        this.main.setActiveItem(this.history);
+        this.main.setActiveItem('history');
     },
     
     gotoDocumentation: function(btn, event, e){
-        this.main.setActiveItem(this.documentation);
+        this.main.setActiveItem('documentation');
     },
     
     gotoStatistics: function(btn, event, e){
-        this.main.setActiveItem(this.statistics);
+        this.main.setActiveItem('statistics');
     }
 });

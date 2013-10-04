@@ -1,4 +1,13 @@
 {
+    "Menu": {
+        "title": "Menu", 
+        "overview": "Overview",
+        "newIntegration": "New Integration", 
+        "history": "History", 
+        "statistics": "Statistics", 
+        "documentation": "Documentation", 
+        "options": "Options"
+    },   
     "Login": {
         "title": "Login"
     },

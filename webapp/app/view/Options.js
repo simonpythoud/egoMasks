@@ -15,8 +15,8 @@ Ext.define('EgoMasks.view.Options', {
         hidden: true,
 
         // Set the width and height of the panel
-        width: isPhone ? '90%' : 200,
-        height: isPhone ? '50%' : 200,
+        width: 200, //isPhone ? '90%' : 200,
+        height: 200, //isPhone ? '50%' : 200,
         
         // Style Html to improve styles
         styleHtmlContent: true,

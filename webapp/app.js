@@ -12,11 +12,10 @@
 //@require Ux/locale/override/st/navigation/View.js
 
 //Add hacks variable used within the app
-urlParams = Ext.Object.fromQueryString(window.location.search.substring(1));
-baseUrl= 'http://localhost:3000'; //'http://egomasks.herokuapp.com/'; //
-isPhone = (urlParams.isPhone != null)?(urlParams.isPhone === '1'):(Ext.os.deviceType == 'Phone') // Define a variable used for sizing purpose
-isMobile= (urlParams.isMobile != null)?(urlParams.isMobile === '1'):('ontouchstart' in window); // For scroll purpose. true if mobile, false if browser
-scrollCls = isMobile? ' ': ' browserScroll';
+//urlParams = Ext.Object.fromQueryString(window.location.search.substring(1));
+//isPhone = (urlParams.isPhone != null)?(urlParams.isPhone === '1'):(Ext.os.deviceType == 'Phone') // Define a variable used for sizing purpose
+//isMobile= (urlParams.isMobile != null)?(urlParams.isMobile === '1'):('ontouchstart' in window); // For scroll purpose. true if mobile, false if browser
+//scrollCls = isMobile? ' ': ' browserScroll';
 // Test if vertical or horizontal and then arrange the first page with it
 
 Ext.application({
@@ -48,8 +47,10 @@ Ext.application({
         'Document'
     ],
 
-    views: [
-        'Main'
+    profiles: [
+        'Phone', 
+    //    'Tablet', 
+    //    'Desktop'
     ],
 
     icon: {
@@ -82,9 +83,6 @@ Ext.application({
 
         // Destroy the #appLoadingIndicator element
         Ext.fly('appLoadingIndicator').destroy();
-
-        // Initialize the main view
-        Ext.Viewport.add(Ext.create('EgoMasks.view.Main'));
     },
 
     onUpdated: function() {

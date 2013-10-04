@@ -5,9 +5,10 @@ Ext.define('EgoMasks.controller.Overview', {
         refs: {
             overviewList: 'overview list',
             historyList: 'history list',
-            overviewDetailInner: 'overview detail #htmlArea', 
-            loginButton: 'overview button#login',
-            optionsButton: 'overview button#options'
+            overviewDetailInner: 'detail #htmlArea', 
+            loginButton: 'button#login',
+            optionsButton: 'button#options', 
+            openOptionsButton: 'button#openOptions'
         },
         control: {
             overviewList: {
@@ -21,18 +22,23 @@ Ext.define('EgoMasks.controller.Overview', {
             }, 
             optionsButton: {
                 tap: 'showOptions'
+            }, 
+            openOptionsButton: {
+                tap: 'showOptions'
             }
         }
     },
     
     //called when the Application is launched, remove if not needed
     launch: function(app) {
+        EgoMasks.overviewCtrl = this;
+
         this.list = this.getOverviewList();
         this.historyList = this.getHistoryList();
         
         this.store = Ext.getStore('Integrations');
+        if (this.list) this.list.setStore(this.store);
         
-        this.list.setStore(this.store);
         this.historyList.setStore(this.store);
     }, 
 
@@ -57,8 +63,8 @@ Ext.define('EgoMasks.controller.Overview', {
         
         if(!this.loginBox)this.loginBox = Ext.Viewport.add({xtype:'loginBox'});
         
-        isPhone?
-            this.loginBox.show():
+        //isPhone?
+        //    this.loginBox.show():
             this.loginBox.showBy(btn);
     },
     
@@ -73,8 +79,8 @@ Ext.define('EgoMasks.controller.Overview', {
         
         if(!this.optionsPanel)this.optionsPanel = Ext.Viewport.add({xtype:'options'});
         
-        isPhone?
-            this.optionsPanel.show():
+        //isPhone?
+        //    this.optionsPanel.show():
             this.optionsPanel.showBy(btn);   
     }
 });

@@ -13,8 +13,8 @@ Ext.define("EgoMasks.view.LoginBox", {
         hidden: true,
 
         // Set the width and height of the panel
-        width: isPhone ? '90%' : 250,
-        height: isPhone ? '40%' : 100,
+        width: 250, //isPhone ? '90%' : 250,
+        height: 100, //isPhone ? '40%' : 100,
         
         // Style Html to improve styles
         styleHtmlContent: true,

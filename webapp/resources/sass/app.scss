@@ -1,16 +1,16 @@
 // Defines variables 
-$base-color: #000000;
+//$base-color: #000000;
 
 
 // Similar to $base-color, $base-gradient allows you to drastically change the appearance of your 
 // app by modifying the gradient style of all elements like buttons, toolbars, and tabbars. 
 // The four included values for gradients are ‘matte’, ‘bevel’, ‘glossy’, ‘recessed’, and ‘flat’.
-$base_gradient: 'flat';
+//$base_gradient: 'flat';
 
 
 
-/*
-Examples of sencha theming variables: 
+///*
+//Examples of sencha theming variables: 
 
 $body-bg-color: #000;
  
@@ -28,7 +28,7 @@ $tabs-bottom-active-gradient: 'recessed';
  
 $toolbar-gradient: 'glossy';
 
-*/
+//*/
 
 // The following two lines import the default Sencha Touch theme. If you are building
 // a new theme, remove them and the add your own CSS on top of the base CSS (which
@@ -134,7 +134,7 @@ html, body {
     0% {
         opacity: 0.8
     }
-    50% {
+    20% {
         opacity: 0.1
     }
     100% {
@@ -147,6 +147,7 @@ html, body {
 .browserScroll .x-scroll-container {
     overflow: auto;
 }
+
 
 #integrationBox {
     height: 15em;
@@ -161,5 +162,74 @@ html, body {
 .masksList {
     margin: 5px 2px;
 }
+
+// Desktop Specific
+.desktopMain {
+    width: 80%;
+    min-width: 800px;
+    margin: 0 auto;
+
+    .x-inner {
+        overflow: hidden;
+    }
+
+    .overviewList .x-scroll-container,
+    .masksList .x-scroll-container{
+        overflow: auto;
+    }
+
+    .x-button-back {
+        display: none !important;
+    }
+
+    .x-stretched {
+    //    height: 100%;
+    }
+    // Transition when the menu is hidden
+    .desktopMenu{
+        background: lightgray;
+        width: 220px;
+        height: 100%;
+        transition: margin-left 500ms ease;
+
+        &.reduced{
+            margin-left: -220px;
+        }
+
+        .x-button {
+            margin: 5px;
+        }
+    }
+
+    // Set no color for the mask overlay (when displaying a modal box)
+    .x-mask, .x-mask.x-mask-gray
+    {
+        background-color: transparent;
+    }
+}
+
+// Phone Specific
+.phoneMain {
+    
+    .masksGroup {
+        height: 5.2em;
+
+        .x-button-normal {
+            height: 3em;
+        }
+    }
+
+    .verticalGroupName{
+        height: 2em;
+        width: auto;
+        line-height: 2em;
+    }
+
+}
+
+
+
+
+
 
 // CUSTOM EGOMASKS CSS END -----------------
