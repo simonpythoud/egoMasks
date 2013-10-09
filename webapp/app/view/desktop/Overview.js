@@ -11,24 +11,23 @@ Ext.define("EgoMasks.view.desktop.Overview", {
         //scrollable: false,
         layout: 'vbox',
         items:  [{
-            xtype: 'titlebar',
-            locales: {title: 'Menu.overview'},
-            docked: ''
-        },{
             flex: 1,
             layout: 'vbox',
             items: [{
-                html: '<h1>Integration waiting list</h1>'
+                xtype: 'titlebar',
+                locales: {title: 'Overview.waitingList'}
             },{
                 flex: 1,
                 html: 'The waiting list items comes here... '
             }]
         },{
-            flex: 1,  
+            flex: 2,  
             layout: 'vbox',  
             items: [{
-                html: '<h1>Previous integration</h1>'
+                xtype: 'titlebar',
+                locales: {title: 'Overview.previousIntegration'}
             },{
+                flex: 1,
                 xtype: 'overviewlist', 
             }]
             

@@ -7,6 +7,11 @@
 Ext.Loader.addClassPathMappings({
   "EgoMasks": "app",
   "EgoMasks.view.Contemplation": "app/view/Comptemplation.js",
+  "EgoMasks.view.Integration": "app/view/Integration__old.js",
+  "EgoMasks.view.Main": "app/view/Main__old.js",
+  "EgoMasks.view.Overview": "app/view/Overview__old.js",
+  "EgoMasks.view.integration.IntegrationBox": "app/view/integration/IntegrationBox__old.js",
+  "EgoMasks.view.integration.Masks": "app/view/integration/Masks__old.js",
   "Ext": "touch/src",
   "Ext.device.Purchases.Product": "touch/src/device/purchases/Sencha.js",
   "Ext.device.filesystem.DirectoryEntry": "touch/src/device/filesystem/HTML5.js",
@@ -26,11 +31,15 @@ Ext.ClassManager.addNameAlternateMappings({
   "EgoMasks.controller.Integration": [],
   "EgoMasks.controller.Main": [],
   "EgoMasks.controller.Overview": [],
+  "EgoMasks.controller.desktop.Menu": [],
   "EgoMasks.model.Document": [],
   "EgoMasks.model.Integration": [],
   "EgoMasks.model.Mask": [],
   "EgoMasks.model.MaskGroup": [],
   "EgoMasks.model.MaskIntegration": [],
+  "EgoMasks.profile.Desktop": [],
+  "EgoMasks.profile.Phone": [],
+  "EgoMasks.profile.Tablet": [],
   "EgoMasks.store.Documents": [],
   "EgoMasks.store.Integrations": [],
   "EgoMasks.store.MaskGroups": [],
@@ -45,15 +54,37 @@ Ext.ClassManager.addNameAlternateMappings({
   "EgoMasks.view.Options": [],
   "EgoMasks.view.Overview": [],
   "EgoMasks.view.Statistics": [],
+  "EgoMasks.view.desktop.Integration": [],
+  "EgoMasks.view.desktop.Main": [],
+  "EgoMasks.view.desktop.Menu": [],
+  "EgoMasks.view.desktop.Overview": [],
+  "EgoMasks.view.desktop.TitleBar": [],
+  "EgoMasks.view.desktop.integration.Header": [],
+  "EgoMasks.view.desktop.integration.Masks": [],
   "EgoMasks.view.documentation.Document": [],
   "EgoMasks.view.integration.Information": [],
   "EgoMasks.view.integration.IntegrationBox": [],
   "EgoMasks.view.integration.Masks": [],
-  "EgoMasks.view.integration.MasksList": [],
   "EgoMasks.view.integration.Smile": [],
+  "EgoMasks.view.integration.box.GlobalTimer": [],
   "EgoMasks.view.integration.box.MaskTimer": [],
+  "EgoMasks.view.integration.masks.Chart": [],
+  "EgoMasks.view.integration.masks.Helper": [],
+  "EgoMasks.view.integration.masks.List": [],
+  "EgoMasks.view.integration.masks.Note": [],
   "EgoMasks.view.overview.Detail": [],
   "EgoMasks.view.overview.List": [],
+  "EgoMasks.view.phone.Integration": [],
+  "EgoMasks.view.phone.Main": [],
+  "EgoMasks.view.phone.Overview": [],
+  "EgoMasks.view.phone.integration.Header": [],
+  "EgoMasks.view.phone.integration.Masks": [],
+  "EgoMasks.view.phone.integration.masks.List": [],
+  "EgoMasks.view.tablet.Integration": [],
+  "EgoMasks.view.tablet.Main": [],
+  "EgoMasks.view.tablet.Overview": [],
+  "EgoMasks.view.tablet.integration.Header": [],
+  "EgoMasks.view.tablet.integration.Masks": [],
   "Ext.AbstractComponent": [],
   "Ext.AbstractManager": [],
   "Ext.AbstractPlugin": [],
@@ -794,11 +825,15 @@ Ext.ClassManager.addNameAliasMappings({
   "EgoMasks.controller.Integration": [],
   "EgoMasks.controller.Main": [],
   "EgoMasks.controller.Overview": [],
+  "EgoMasks.controller.desktop.Menu": [],
   "EgoMasks.model.Document": [],
   "EgoMasks.model.Integration": [],
   "EgoMasks.model.Mask": [],
   "EgoMasks.model.MaskGroup": [],
   "EgoMasks.model.MaskIntegration": [],
+  "EgoMasks.profile.Desktop": [],
+  "EgoMasks.profile.Phone": [],
+  "EgoMasks.profile.Tablet": [],
   "EgoMasks.store.Documents": [],
   "EgoMasks.store.Integrations": [],
   "EgoMasks.store.MaskGroups": [],
@@ -833,6 +868,27 @@ Ext.ClassManager.addNameAliasMappings({
   "EgoMasks.view.Statistics": [
     "widget.statistics"
   ],
+  "EgoMasks.view.desktop.Integration": [
+    "widget.desktop-integration"
+  ],
+  "EgoMasks.view.desktop.Main": [
+    "widget.desktop-mainview"
+  ],
+  "EgoMasks.view.desktop.Menu": [
+    "widget.desktop-menu"
+  ],
+  "EgoMasks.view.desktop.Overview": [
+    "widget.desktop-overview"
+  ],
+  "EgoMasks.view.desktop.TitleBar": [
+    "widget.desktop-titleBar"
+  ],
+  "EgoMasks.view.desktop.integration.Header": [
+    "widget.desktop-integrationHeader"
+  ],
+  "EgoMasks.view.desktop.integration.Masks": [
+    "widget.desktop-masks"
+  ],
   "EgoMasks.view.documentation.Document": [
     "widget.document"
   ],
@@ -845,20 +901,65 @@ Ext.ClassManager.addNameAliasMappings({
   "EgoMasks.view.integration.Masks": [
     "widget.masks"
   ],
-  "EgoMasks.view.integration.MasksList": [
-    "widget.masksList"
-  ],
   "EgoMasks.view.integration.Smile": [
     "widget.smile"
   ],
+  "EgoMasks.view.integration.box.GlobalTimer": [
+    "widget.globalTimer"
+  ],
   "EgoMasks.view.integration.box.MaskTimer": [
     "widget.maskTimer"
+  ],
+  "EgoMasks.view.integration.masks.Chart": [
+    "widget.masksChart"
+  ],
+  "EgoMasks.view.integration.masks.Helper": [
+    "widget.masksHelper"
+  ],
+  "EgoMasks.view.integration.masks.List": [
+    "widget.masksList"
+  ],
+  "EgoMasks.view.integration.masks.Note": [
+    "widget.masksNote"
   ],
   "EgoMasks.view.overview.Detail": [
     "widget.detail"
   ],
   "EgoMasks.view.overview.List": [
     "widget.overviewlist"
+  ],
+  "EgoMasks.view.phone.Integration": [
+    "widget.phone-integration"
+  ],
+  "EgoMasks.view.phone.Main": [
+    "widget.phone-mainview"
+  ],
+  "EgoMasks.view.phone.Overview": [
+    "widget.phone-overview"
+  ],
+  "EgoMasks.view.phone.integration.Header": [
+    "widget.phone-integrationHeader"
+  ],
+  "EgoMasks.view.phone.integration.Masks": [
+    "widget.phone-masks"
+  ],
+  "EgoMasks.view.phone.integration.masks.List": [
+    "widget.phone-masksList"
+  ],
+  "EgoMasks.view.tablet.Integration": [
+    "widget.tablet-integration"
+  ],
+  "EgoMasks.view.tablet.Main": [
+    "widget.tablet-mainview"
+  ],
+  "EgoMasks.view.tablet.Overview": [
+    "widget.tablet-overview"
+  ],
+  "EgoMasks.view.tablet.integration.Header": [
+    "widget.tablet-integrationHeader"
+  ],
+  "EgoMasks.view.tablet.integration.Masks": [
+    "widget.tablet-masks"
   ],
   "Ext.AbstractComponent": [],
   "Ext.AbstractManager": [],

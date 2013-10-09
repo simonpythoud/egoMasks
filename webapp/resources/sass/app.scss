@@ -163,6 +163,12 @@ html, body {
     margin: 5px 2px;
 }
 
+// Set no color for the mask overlay (when displaying a modal box)
+.x-mask, .x-mask.x-mask-gray
+{
+    background-color: transparent;
+}
+
 // Desktop Specific
 .desktopMain {
     width: 80%;
@@ -199,12 +205,6 @@ html, body {
         .x-button {
             margin: 5px;
         }
-    }
-
-    // Set no color for the mask overlay (when displaying a modal box)
-    .x-mask, .x-mask.x-mask-gray
-    {
-        background-color: transparent;
     }
 }
 

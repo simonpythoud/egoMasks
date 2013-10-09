@@ -40,14 +40,14 @@ Ext.define("EgoMasks.view.tablet.Overview", {
             layout: 'vbox',
             flex: 1,
             items:  [{
-                xtype: 'overviewlist', 
-                flex: 2,
-            },{
                 xtype: 'button',
                 text: 'New Integration',
                 id: 'openNewIntegration',
                 flex: 1
             },{
+                xtype: 'overviewlist', 
+                flex: 2,
+            },{ 
                 xtype: 'button',
                 text: 'History',
                 id: 'openHistory',

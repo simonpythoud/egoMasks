@@ -79,7 +79,7 @@ Ext.define('EgoMasks.controller.Main', {
 
     init: function(){
         // Set the base URL for the server requests
-        var baseUrl = 'http://localhost:3000'; //'http://egomasks.herokuapp.com/'; //
+        var baseUrl = 'http://egomasks.herokuapp.com'; //'http://localhost:3000'; //
         
         var maskIntegrationProxy = EgoMasks.model.MaskIntegration.getProxy();
         maskIntegrationProxy.setUrl(

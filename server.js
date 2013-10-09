@@ -43,7 +43,7 @@ app.configure(function(){
     }));
     app.use(express.methodOverride());
     app.use(app.router);
-    app.use(express.static(__dirname + '/webapp'));
+    app.use(express.static(__dirname + '/production'));
     app.set('view engine', 'jade');
 });
 
