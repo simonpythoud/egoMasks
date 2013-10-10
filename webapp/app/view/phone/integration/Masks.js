@@ -17,7 +17,7 @@ Ext.define("EgoMasks.view.phone.integration.Masks", {
             docked: 'top',
             xtype: 'titlebar',
             title: 'Integration'
-        },{ 
+        },{
             xtype: 'phone-integrationHeader',
             flex: 1, 
         },{

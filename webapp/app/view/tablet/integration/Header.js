@@ -7,7 +7,7 @@ Ext.define("EgoMasks.view.tablet.integration.Header", {
     ],
     config: {
         id: 'integrationHeader',
-        layout: 'hbox', 
+        layout: 'hbox',
         items: [{
                 layout: 'vbox',
                 flex: 1, 

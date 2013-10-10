@@ -47,7 +47,7 @@ Ext.define("EgoMasks.view.tablet.Overview", {
             },{
                 xtype: 'overviewlist', 
                 flex: 2,
-            },{ 
+            },{
                 xtype: 'button',
                 text: 'History',
                 id: 'openHistory',

@@ -7,7 +7,11 @@
         "statistics": "Statistics", 
         "documentation": "Documentation", 
         "options": "Options"
-    },   
+    },  
+    "Overview": {
+        "waitingList": "<h1>Integration waiting list</h1>",
+        "previousIntegration":"<h1>Previous integration</h1>'"
+    },
     "Login": {
         "title": "Login"
     },

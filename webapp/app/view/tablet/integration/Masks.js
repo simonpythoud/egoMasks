@@ -17,7 +17,7 @@ Ext.define("EgoMasks.view.tablet.integration.Masks", {
             docked: 'top',
             xtype: 'titlebar',
             title: 'Integration'
-        },{ 
+        },{
             xtype: 'tablet-integrationHeader',
             flex: 1, 
         },{

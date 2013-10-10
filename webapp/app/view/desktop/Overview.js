@@ -1,6 +1,6 @@
 Ext.define("EgoMasks.view.desktop.Overview", {
     extend: 'Ext.Panel',
-    xtype: 'desktop-overview', 
+    xtype: 'desktop-overview',
     requires: [
     'EgoMasks.view.overview.List',
     'EgoMasks.view.overview.Detail'
@@ -30,7 +30,6 @@ Ext.define("EgoMasks.view.desktop.Overview", {
                 flex: 1,
                 xtype: 'overviewlist', 
             }]
-            
         }]
     }
 });
