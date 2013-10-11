@@ -19,13 +19,13 @@ Ext.define("EgoMasks.view.phone.integration.Masks", {
             title: 'Integration'
         },{
             xtype: 'phone-integrationHeader',
-            flex: 1, 
+            flex: 1
         },{
             xtype: 'carousel', 
             indicator: false,
             layout: 'card',
             activeItem: 1,
-            flex: 2,
+            flex: 2, 
             items: [{
                 xtype: 'masksChart'
             },{

@@ -6,6 +6,7 @@ Ext.define("EgoMasks.view.phone.Main", {
     'EgoMasks.view.phone.Integration',
     'EgoMasks.view.History',
     'EgoMasks.view.Documentation', 
+    'EgoMasks.view.documentation.Document', 
     'EgoMasks.view.Statistics'
     ],
     config: {
@@ -22,6 +23,8 @@ Ext.define("EgoMasks.view.phone.Main", {
             xtype: 'documentation'
         },{
             xtype: 'statistics'
+        },{
+            xtype: 'document'
         }]
     }
 });

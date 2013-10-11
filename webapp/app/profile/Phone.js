@@ -6,14 +6,12 @@ Ext.define('EgoMasks.profile.Phone', {
         views: ['Main'],
         models: [],
         stores: [],
-        controllers: []
+        controllers: ['Orientation']
     },
     
     //this profile will be activated if we detect we're running on a Phone
     isActive: function(app) {
-        var isActive = Ext.os.is.Phone;
-        if(isActive) EgoMasks.activeProfile = 'phone';
-        return isActive;
+        return Ext.os.is.Phone? EgoMasks.activeProfile = 'phone': false;
     }, 
 
     // Not mandatory to keep the launch function

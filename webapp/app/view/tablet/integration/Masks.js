@@ -19,7 +19,7 @@ Ext.define("EgoMasks.view.tablet.integration.Masks", {
             title: 'Integration'
         },{
             xtype: 'tablet-integrationHeader',
-            flex: 1, 
+            flex: 1
         },{
             xtype: 'carousel', 
             indicator: false,

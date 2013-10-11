@@ -1,12 +1,12 @@
-Ext.define("EgoMasks.view.integration.IntegrationBox", {
+Ext.define("EgoMasks.view.integration.desktop.IntegrationBox", {
     extend: 'Ext.Panel',
-    xtype: 'integrationHeader',
+    xtype: 'desktopIntegrationBox',
     requires: [
     'EgoMasks.view.integration.box.MaskTimer'
     ],
     config: {
         layout: isPhone? 'vbox': 'hbox',
-        id: 'integrationHeader',
+        id: 'integrationBox',
         items: [{
                 layout: isPhone? 'hbox': 'vbox',
                 flex: 1, 

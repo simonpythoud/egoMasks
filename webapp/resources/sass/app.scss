@@ -4,7 +4,7 @@
 
 // Similar to $base-color, $base-gradient allows you to drastically change the appearance of your 
 // app by modifying the gradient style of all elements like buttons, toolbars, and tabbars. 
-// The four included values for gradients are ‘matte’, ‘bevel’, ‘glossy’, ‘recessed’, and ‘flat’.
+// The four included values for gradients are ‚Äòmatte‚Äô, ‚Äòbevel‚Äô, ‚Äòglossy‚Äô, ‚Äòrecessed‚Äô, and ‚Äòflat‚Äô.
 //$base_gradient: 'flat';
 
 
@@ -204,6 +204,9 @@ html, body {
 
         .x-button {
             margin: 5px;
+            &.active {
+                background: darkgray;
+            }
         }
     }
 }

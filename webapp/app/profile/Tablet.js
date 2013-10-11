@@ -6,14 +6,12 @@ Ext.define('EgoMasks.profile.Tablet', {
         views: ['Main'],
         models: [],
         stores: [],
-        controllers: []
+        controllers: ['Orientation']
     },
     
     //this profile will be activated if we detect we're running on a Tablet
     isActive: function(app) {
-        var isActive = Ext.os.is.Tablet;
-        if(isActive) EgoMasks.activeProfile = 'tablet';
-        return isActive;
+        return Ext.os.is.Tablet? EgoMasks.activeProfile = 'tablet': false;
     }, 
 
     // Not mandatory to keep the launch function

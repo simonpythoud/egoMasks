@@ -56,7 +56,7 @@
         var filterPlatform = window.Ext.filterPlatform = function(platform) {
             var profileMatch = false,
                 ua = navigator.userAgent,
-                j, jln;
+                j, jln, exclude;
 
             platform = [].concat(platform);
 
@@ -124,6 +124,9 @@
                     case 'ie10':
                         profileMatch = /MSIE 10/.test(ua);
                         break;
+                    case 'windows':
+                        profileMatch = /MSIE 10/.test(ua) || /Trident/.test(ua);
+                        break;
                     case 'tizen':
                         profileMatch = /Tizen/.test(ua);
                         break;
@@ -142,12 +145,13 @@
 
             if (typeof path != 'string') {
                 platform = path.platform;
+                exclude = path.exclude;
                 theme = path.theme;
                 path = path.path;
             }
 
             if (platform) {
-                if (!filterPlatform(platform)) {
+                if (!filterPlatform(platform) || filterPlatform(exclude)) {
                     continue;
                 }
                 Ext.theme = {
@@ -162,11 +166,12 @@
 
             if (typeof path != 'string') {
                 platform = path.platform;
+                exclude = path.exclude;
                 path = path.path;
             }
 
             if (platform) {
-                if (!filterPlatform(platform)) {
+                if (!filterPlatform(platform) || filterPlatform(exclude)) {
                     continue;
                 }
             }
@@ -175,7 +180,7 @@
         }
     }
 
-})(this);Ext.blink({"id":"3f1d1b7d-ca5b-4204-aeb2-fb0fd4f4136c","js":[{"path":"app.js","update":"delta"}],"css":[{"path":"resources/css/app.css","update":"delta","platform":["chrome","safari","ios","android","firefox"]},{"path":"resources/css/base.css","theme":"Base","platform":["base"]},{"path":"resources/css/sencha-touch.css","theme":"Apple","platform":["ios"]},{"path":"resources/css/android.css","theme":"Android","platform":["android"]},{"path":"resources/css/wp.css","update":"delta","platform":["ie10"]},{"path":"resources/css/bb10.css","update":"delta","platform":["blackberry"]}]});</script>
+})(this);Ext.blink({"id":"3f1d1b7d-ca5b-4204-aeb2-fb0fd4f4136c","js":[{"path":"app.js","update":"delta"}],"css":[{"path":"resources/css/app.css","update":"delta"}]});</script>
 </head>
 <body>
     <div id="appLoadingIndicator">

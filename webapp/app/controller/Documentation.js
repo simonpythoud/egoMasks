@@ -1,13 +1,13 @@
 Ext.define('EgoMasks.controller.Documentation', {
     extend: 'Ext.app.Controller',
     requires: [
-    'EgoMasks.store.Documents',
-    'EgoMasks.view.documentation.Document'
+    'EgoMasks.store.Documents'
     ],
     
     config: {
         refs: {
-            documentationPanel: 'documentation'
+            documentationPanel: 'documentation', 
+            documentPanel: 'document'
         },
         control: {
             'documentation button#openIntroductionToEgo': {
@@ -25,7 +25,7 @@ Ext.define('EgoMasks.controller.Documentation', {
             'document button#downloadOriginal': {
                 tap: 'downloadOriginal'
             }, 
-            'document button[ui=back]': {
+            'document button[id=close]': {
                 tap: 'closeDocument'
             }
         }
@@ -34,8 +34,9 @@ Ext.define('EgoMasks.controller.Documentation', {
     //called when the Application is launched, remove if not needed
     launch: function(app) {
         this.documentation = this.getDocumentationPanel();
-        this.document = Ext.create('EgoMasks.view.documentation.Document');
         this.documentsStore = Ext.create('EgoMasks.store.Documents');
+
+        this.document = this.getDocumentPanel();
     },
     
     openIntroductionToEgo: function(btn, event, e){
@@ -58,12 +59,14 @@ Ext.define('EgoMasks.controller.Documentation', {
         this.selectedDocument = this.documentsStore.getById(documentID);
         this.document.down('titlebar').setTitle(this.selectedDocument.get('title'));
         this.document.setHtml(this.selectedDocument.get('html'));
-        this.document.show();
+
+        EgoMasks.mainCtrl.gotoDocument();
     },
     
     closeDocument: function(){
         this.selectedDocument = null;
-        this.document.hide();
+        
+        EgoMasks.mainCtrl.gotoDocumentation();
     },
     
     downloadOriginal: function(){

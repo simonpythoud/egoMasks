@@ -19,7 +19,7 @@ Ext.define("EgoMasks.view.desktop.integration.Masks", {
             title: 'Integration'
         },{ 
             xtype: 'desktop-integrationHeader',
-            flex: 1, 
+            flex: 1
             // docked: 'top'
         },{
             //xtype: 'carousel', 

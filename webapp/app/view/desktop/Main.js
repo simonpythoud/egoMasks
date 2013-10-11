@@ -8,6 +8,7 @@ Ext.define("EgoMasks.view.desktop.Main", {
         'EgoMasks.view.desktop.Integration',
         'EgoMasks.view.History',
         'EgoMasks.view.Documentation', 
+        'EgoMasks.view.documentation.Document', 
         'EgoMasks.view.Statistics', 
         'EgoMasks.view.LoginPanel',
         'EgoMasks.view.LoginBox',
@@ -37,6 +38,8 @@ Ext.define("EgoMasks.view.desktop.Main", {
                 xtype: 'documentation'
             },{
                 xtype: 'statistics'
+            },{
+                xtype: 'document'
             }]
         }]
     }

@@ -11,7 +11,7 @@ Ext.Loader.addClassPathMappings({
   "EgoMasks.view.Main": "app/view/Main__old.js",
   "EgoMasks.view.Overview": "app/view/Overview__old.js",
   "EgoMasks.view.integration.IntegrationBox": "app/view/integration/IntegrationBox__old.js",
-  "EgoMasks.view.integration.Masks": "app/view/integration/Masks__old.js",
+  "EgoMasks.view.integration.desktop.IntegrationBox": "app/view/desktop/IntegrationBox.js",
   "Ext": "touch/src",
   "Ext.device.Purchases.Product": "touch/src/device/purchases/Sencha.js",
   "Ext.device.filesystem.DirectoryEntry": "touch/src/device/filesystem/HTML5.js",
@@ -30,8 +30,11 @@ Ext.ClassManager.addNameAlternateMappings({
   "EgoMasks.controller.Documentation": [],
   "EgoMasks.controller.Integration": [],
   "EgoMasks.controller.Main": [],
+  "EgoMasks.controller.Orientation": [],
   "EgoMasks.controller.Overview": [],
   "EgoMasks.controller.desktop.Menu": [],
+  "EgoMasks.controller.phone.Orientation": [],
+  "EgoMasks.controller.tablet.Orientation": [],
   "EgoMasks.model.Document": [],
   "EgoMasks.model.Integration": [],
   "EgoMasks.model.Mask": [],
@@ -68,6 +71,7 @@ Ext.ClassManager.addNameAlternateMappings({
   "EgoMasks.view.integration.Smile": [],
   "EgoMasks.view.integration.box.GlobalTimer": [],
   "EgoMasks.view.integration.box.MaskTimer": [],
+  "EgoMasks.view.integration.desktop.IntegrationBox": [],
   "EgoMasks.view.integration.masks.Chart": [],
   "EgoMasks.view.integration.masks.Helper": [],
   "EgoMasks.view.integration.masks.List": [],
@@ -824,8 +828,11 @@ Ext.ClassManager.addNameAliasMappings({
   "EgoMasks.controller.Documentation": [],
   "EgoMasks.controller.Integration": [],
   "EgoMasks.controller.Main": [],
+  "EgoMasks.controller.Orientation": [],
   "EgoMasks.controller.Overview": [],
   "EgoMasks.controller.desktop.Menu": [],
+  "EgoMasks.controller.phone.Orientation": [],
+  "EgoMasks.controller.tablet.Orientation": [],
   "EgoMasks.model.Document": [],
   "EgoMasks.model.Integration": [],
   "EgoMasks.model.Mask": [],
@@ -896,7 +903,7 @@ Ext.ClassManager.addNameAliasMappings({
     "widget.information"
   ],
   "EgoMasks.view.integration.IntegrationBox": [
-    "widget.integrationBox"
+    "widget.integrationHeader"
   ],
   "EgoMasks.view.integration.Masks": [
     "widget.masks"
@@ -909,6 +916,9 @@ Ext.ClassManager.addNameAliasMappings({
   ],
   "EgoMasks.view.integration.box.MaskTimer": [
     "widget.maskTimer"
+  ],
+  "EgoMasks.view.integration.desktop.IntegrationBox": [
+    "widget.desktopIntegrationBox"
   ],
   "EgoMasks.view.integration.masks.Chart": [
     "widget.masksChart"
@@ -1908,15 +1918,3 @@ Ext.ClassManager.addNameAliasMappings({
   "Ux.locale.override.st.picker.Date": [],
   "Ux.locale.override.st.picker.Picker": []
 });
-Ext.Loader.loadScriptFile("Ux/locale/Manager.js", Ext.emptyFn);;
-Ext.Loader.loadScriptFile("Ux/locale/override/st/Component.js", Ext.emptyFn);;
-Ext.Loader.loadScriptFile("Ux/locale/override/st/Button.js", Ext.emptyFn);;
-Ext.Loader.loadScriptFile("Ux/locale/override/st/Container.js", Ext.emptyFn);;
-Ext.Loader.loadScriptFile("Ux/locale/override/st/TitleBar.js", Ext.emptyFn);;
-Ext.Loader.loadScriptFile("Ux/locale/override/st/field/Field.js", Ext.emptyFn);;
-Ext.Loader.loadScriptFile("Ux/locale/override/st/field/DatePicker.js", Ext.emptyFn);;
-Ext.Loader.loadScriptFile("Ux/locale/override/st/form/FieldSet.js", Ext.emptyFn);;
-Ext.Loader.loadScriptFile("Ux/locale/override/st/picker/Picker.js", Ext.emptyFn);;
-Ext.Loader.loadScriptFile("Ux/locale/override/st/picker/Date.js", Ext.emptyFn);;
-Ext.Loader.loadScriptFile("Ux/locale/override/st/navigation/Bar.js", Ext.emptyFn);;
-Ext.Loader.loadScriptFile("Ux/locale/override/st/navigation/View.js", Ext.emptyFn);;

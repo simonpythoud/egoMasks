@@ -4,6 +4,7 @@ Ext.define('EgoMasks.controller.desktop.Menu', {
     config: {
         refs: {
             menuButton: '#titleBar button#showMenu',
+            menuButtons: '#menu button',
             desktopMenu: '#menu', 
             optionsButton: 'button#options'
         },
@@ -11,15 +12,14 @@ Ext.define('EgoMasks.controller.desktop.Menu', {
             menuButton: {
                 tap: 'toggleMenu'
             },
+            menuButtons: {
+                tap: 'setActiveButton'
+            },
             optionsButton: {
                 tap: 'showOptionsMenu'
             }
         }
     },
-    
-    //called when the Application is launched, remove if not needed
-    launch: function(app) {
-    }, 
 
     toggleMenu: function(btn, e){
         var menu = this.getDesktopMenu();
@@ -29,5 +29,15 @@ Ext.define('EgoMasks.controller.desktop.Menu', {
     showOptionsMenu: function(btn, e){
         if(!this.optionsPanel)this.optionsPanel = Ext.Viewport.add({xtype:'options'});
         this.optionsPanel.showBy(btn);   
+    }, 
+
+    setActiveButton: function(btn, e){
+        // remove cls on previous selected button
+        if(this.activeButton){
+            this.activeButton.removeCls('active');
+        }
+
+        // set the new active button
+        (this.activeButton = btn).addCls('active');
     }
 });

@@ -16,27 +16,26 @@ Ext.define("EgoMasks.view.tablet.Overview", {
         layout: 'vbox',
         flex: 1,
         items: [{
-                docked: 'top',
-                xtype: 'titlebar',
-                locales: {title: 'General.emotionalIntegration'},
-                items: [{
-                    align: 'right',
-                    disabled: true,
-                    text: 'Not logged',
-                    id: 'userinfo'
-                }, {
-                    align: 'right',
-                    ui: 'action',
-                    text: 'Login',
-                    id: 'login'
-                }, {
-                    align: 'right',
-                    ui: 'gray',
-                    iconCls: 'settings',
-                    id: 'options'
-                }]
-            },{
-
+            docked: 'top',
+            xtype: 'titlebar',
+            locales: {title: 'General.emotionalIntegration'},
+            items: [{
+                align: 'right',
+                disabled: true,
+                text: 'Not logged',
+                id: 'userinfo'
+            }, {
+                align: 'right',
+                ui: 'action',
+                text: 'Login',
+                id: 'login'
+            }, {
+                align: 'right',
+                ui: 'gray',
+                iconCls: 'settings',
+                id: 'options'
+            }]
+        },{
             layout: 'vbox',
             flex: 1,
             items:  [{
@@ -46,8 +45,12 @@ Ext.define("EgoMasks.view.tablet.Overview", {
                 flex: 1
             },{
                 xtype: 'overviewlist', 
-                flex: 2,
-            },{
+                flex: 2
+            }]
+        },{
+            layout: 'vbox',
+            flex: 1,
+            items:  [{
                 xtype: 'button',
                 text: 'History',
                 id: 'openHistory',

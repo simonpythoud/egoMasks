@@ -5,7 +5,7 @@ Ext.define("EgoMasks.view.integration.Masks", {
         'Ext.TitleBar',
         'Ext.Label', 
         'EgoMasks.view.tablet.integration.Header',
-        //'EgoMasks.view.phone.integration.Header',
+        'EgoMasks.view.phone.integration.Header',
         'EgoMasks.view.integration.masks.Chart',
         'EgoMasks.view.integration.masks.List',
         'EgoMasks.view.integration.masks.Helper',

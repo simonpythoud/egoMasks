@@ -4,7 +4,6 @@ Ext.define('EgoMasks.controller.Main', {
     config: {
         refs: {
             mainPanel: '#mainContainer',
-            overviewPanel: '#overview',
             integrationPanel: '#integration',
             historyPanel: 'history',
             documentationPanel: 'documentation',
@@ -64,15 +63,6 @@ Ext.define('EgoMasks.controller.Main', {
                 tap: function() {
                     Ux.locale.Manager.updateLocale('es');
                 }
-            }, 
-            'viewport': {
-                //capture the orientation change event
-                orientationchange: //'onOrientationchange'
-                    function(viewport, orientation, width, height){
-                        console.log('rpc.view.home.indexView ~ handleOrientationChange');
-                        // Execute the code that needs to fire on Orientation Change.
-                        alert('orientationchange: ' + orientation + '  w: ' + width + '  h: ' + height);
-                }
             }
         }
     },
@@ -118,5 +108,14 @@ Ext.define('EgoMasks.controller.Main', {
     
     gotoStatistics: function(btn, event, e){
         this.main.setActiveItem('statistics');
+    },
+    
+    gotoDocument: function(){
+        this.main.setActiveItem('document');
+    }, 
+
+    // Not yet used but could be useful
+    gotoXtype: function(xtype){
+        this.main.setActiveItem(xtype);
     }
 });

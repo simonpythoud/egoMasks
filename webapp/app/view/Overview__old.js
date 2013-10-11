@@ -44,7 +44,7 @@ Ext.define("EgoMasks.view.Overview", {
                 flex: isMobile?1:4,    
                 items:  [{
                     xtype: 'overviewlist', 
-                    flex: 2,
+                    flex: 2
                     // PHONE ONLY : HIDE
                     // TABLET ONLY: SHOW
                 },{

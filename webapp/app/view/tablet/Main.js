@@ -6,6 +6,7 @@ Ext.define("EgoMasks.view.tablet.Main", {
     'EgoMasks.view.tablet.Integration',
     'EgoMasks.view.History',
     'EgoMasks.view.Documentation', 
+    'EgoMasks.view.documentation.Document', 
     'EgoMasks.view.Statistics'
     ],
     config: {
@@ -21,6 +22,8 @@ Ext.define("EgoMasks.view.tablet.Main", {
             xtype: 'documentation'
         },{
             xtype: 'statistics'
+        },{
+            xtype: 'document'
         }]
     }
 });

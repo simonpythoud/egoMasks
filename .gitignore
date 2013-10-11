@@ -22,9 +22,14 @@ webapp/build/package/EgoMasks/resources/sass
 # sencha config files
 webapp/.sencha/
 
+# sencha backup files
+webapp/.sencha_backup/
+
 # Build and Release Folders
 archive/
 # build/
 
 # node folder
 node_modules
+
+server

@@ -8,7 +8,7 @@ Ext.define("EgoMasks.view.phone.integration.masks.List", {
         id: 'masksList',
         layout: 'vbox',
         cls: 'masksList ',
-        //scrollable: isMobile
+        scrollable: true
 
         // Items are dynamically created in Integration Controller
     }

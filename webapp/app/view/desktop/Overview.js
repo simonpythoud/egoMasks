@@ -28,7 +28,7 @@ Ext.define("EgoMasks.view.desktop.Overview", {
                 locales: {title: 'Overview.previousIntegration'}
             },{
                 flex: 1,
-                xtype: 'overviewlist', 
+                xtype: 'overviewlist'
             }]
         }]
     }
